@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ForSaleNFC — Clean MVP</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #000;
+    color: #fff;
+    min-height: 100vh;
+    padding: 24px;
+  }
+  h1 {
+    font-size: 28px;
+    margin-bottom: 6px;
+    color: #fff;
+  }
+  .subtitle {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #222;
+    padding-bottom: 16px;
+  }
+  .tab {
+    background: #111;
+    color: #fff;
+    border: 1px solid #333;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+  .tab:hover { border-color: #FFD700; }
+  .tab.active {
+    background: #FFD700;
+    color: #000;
+    border-color: #FFD700;
+  }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .stat {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .stat-num {
+    font-size: 36px;
+    font-weight: 700;
+    color: #FFD700;
+  }
+  .stat-label {
+    color: #888;
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  .section {
+    background: #0a0a0a;
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .section h2 {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  label {
+    display: block;
+    color: #aaa;
+    font-size: 12px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  input, textarea, select {
+    width: 100%;
+    background: #111;
+    border: 1px solid #333;
+    color: #fff;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: #FFD700;
+  }
+  textarea { min-height: 70px; resize: vertical; }
+
+  .btn {
+    background: #FFD700;
+    color: #000;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn:hover { background: #FFC700; }
+  .btn-secondary {
+    background: #111;
+    color: #fff;
+    border: 1px solid #333;
+  }
+  .btn-secondary:hover { border-color: #FFD700; }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .log-item {
+    background: #111;
+    border: 1px solid #222;
+    border-left: 3px solid #FFD700;
+    padding: 14px 16px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+  .log-item .name { font-weight: 600; font-size: 15px; }
+  .log-item .meta { color: #888; font-size: 12px; margin-top: 4px; }
+  .empty { color: #555; font-style: italic; }
+
+  /* Tap page preview */
+  .tap-preview {
+    max-width: 400px;
+    margin: 0 auto;
+    background: #0a0a0a;
+    border: 1px solid #222;
+    border-radius: 16px;
+    padding: 32px 24px;
+    text-align: center;
+  }
+  .tap-preview h3 {
+    color: #FFD700;
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+  .tap-preview .addr { font-size: 18px; margin-bottom: 6px; }
+  .tap-preview .price { font-size: 28px; font-weight: 700; color: #FFD700; margin: 16px 0; }
+  .tap-preview .btn { width: 100%; margin-top: 16px; padding: 14px; font-size: 16px; }
+
+  .notif {
+    background: #111;
+    border: 1px solid #222;
+    border-left: 3px solid #FFD700;
+    padding: 14px 16px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .notif .unread { width: 8px; height: 8px; background: #FFD700; border-radius: 50%; }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #FFD700;
+    color: #000;
+    padding: 14px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<h1>ForSaleNFC — Clean MVP</h1>
+<div class="subtitle">Clean rebuild with working tabs and Create Showing</div>
+
+<div class="tabs">
+  <button class="tab active" data-page="dashboard">Agent Dashboard</button>
+  <button class="tab" data-page="tap">Buyer Tap Page</button>
+  <button class="tab" data-page="notifications">Agent Notifications</button>
+  <button class="tab" data-page="broker">Broker View</button>
+  <button class="tab" data-page="profile">⚙ My Profile</button>
+</div>
+
+<!-- ========== AGENT DASHBOARD ========== -->
+<div class="page active" id="page-dashboard">
+  <div class="stats">
+    <div class="stat"><div class="stat-num" id="stat-showings">0</div><div class="stat-label">Showings</div></div>
+    <div class="stat"><div class="stat-num" id="stat-buyers">0</div><div class="stat-label">Interested buyers</div></div>
+    <div class="stat"><div class="stat-num" id="stat-opens">0</div><div class="stat-label">Buyer opens</div></div>
+  </div>
+
+  <div class="section">
+    <h2>Create Showing</h2>
+    <div class="form-grid">
+      <div>
+        <label>Buyer Name</label>
+        <input id="in-name" placeholder="Rich Dawson">
+      </div>
+      <div>
+        <label>Card Code</label>
+        <input id="in-card" placeholder="FS-001">
+      </div>
+      <div>
+        <label>Property Address</label>
+        <input id="in-addr" placeholder="123 Main St">
+      </div>
+      <div>
+        <label>Price</label>
+        <input id="in-price" placeholder="$375,000">
+      </div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <label>Notes</label>
+      <textarea id="in-notes" placeholder="Any notes for this buyer"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn" onclick="createShowing()">Create Showing</button>
+      <button class="btn btn-secondary" onclick="clearShowings()">Clear Local Showings</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Showing Log</h2>
+    <div id="log"><div class="empty">No showings yet.</div></div>
+  </div>
+</div>
+
+<!-- ========== BUYER TAP PAGE ========== -->
+<div class="page" id="page-tap">
+  <div class="section">
+    <h2>Buyer Tap Page Preview</h2>
+    <div class="subtitle" style="margin-bottom:20px;">What a buyer sees when they tap an NFC card</div>
+    <div class="tap-preview">
+      <h3>🏡 ForSaleNFC</h3>
+      <div class="addr">123 Main St</div>
+      <div class="price">$375,000</div>
+      <div style="color:#888;font-size:14px;">Tap to connect with the listing agent</div>
+      <button class="btn" onclick="showToast('Agent notified!')">I'm Interested</button>
+      <button class="btn btn-secondary" style="width:100%;margin-top:10px;padding:14px;" onclick="showToast('Info requested')">Request More Info</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== AGENT NOTIFICATIONS ========== -->
+<div class="page" id="page-notifications">
+  <div class="section">
+    <h2>Recent Notifications</h2>
+    <div id="notifs">
+      <div class="empty">No notifications yet. They'll appear here when buyers tap your cards.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== BROKER VIEW ========== -->
+<div class="page" id="page-broker">
+  <div class="stats">
+    <div class="stat"><div class="stat-num" style="color:#FFD700">0</div><div class="stat-label">Total Agents</div></div>
+    <div class="stat"><div class="stat-num" style="color:#FFD700">0</div><div class="stat-label">Total Showings</div></div>
+    <div class="stat"><div class="stat-num" style="color:#FFD700">0</div><div class="stat-label">Active Cards</div></div>
+  </div>
+  <div class="section">
+    <h2>Brokerage Overview</h2>
+    <div class="empty">Broker-level analytics and agent management will appear here.</div>
+  </div>
+</div>
+
+<!-- ========== MY PROFILE ========== -->
+<div class="page" id="page-profile">
+  <div class="section">
+    <h2>My Profile</h2>
+    <div class="form-grid">
+      <div>
+        <label>Agent Name</label>
+        <input id="prof-name" placeholder="Your name">
+      </div>
+      <div>
+        <label>Email</label>
+        <input id="prof-email" placeholder="you@example.com">
+      </div>
+      <div>
+        <label>Phone</label>
+        <input id="prof-phone" placeholder="(555) 123-4567">
+      </div>
+      <div>
+        <label>Brokerage</label>
+        <input id="prof-broker" placeholder="Your brokerage">
+      </div>
+    </div>
+    <button class="btn" onclick="saveProfile()">Save Profile</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// Tab switching
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('page-' + t.dataset.page).classList.add('active');
+  });
+});
+
+// Showings data (in memory + localStorage)
+function loadShowings() {
+  try { return JSON.parse(localStorage.getItem('fsnfc_showings') || '[]'); }
+  catch (e) { return []; }
+}
+function saveShowings(arr) {
+  localStorage.setItem('fsnfc_showings', JSON.stringify(arr));
+}
+
+function createShowing() {
+  const name = document.getElementById('in-name').value.trim();
+  const card = document.getElementById('in-card').value.trim();
+  const addr = document.getElementById('in-addr').value.trim();
+  const price = document.getElementById('in-price').value.trim();
+  const notes = document.getElementById('in-notes').value.trim();
+  if (!name || !addr) {
+    showToast('Buyer Name and Address are required');
+    return;
+  }
+  const showings = loadShowings();
+  showings.unshift({
+    name, card, addr, price, notes,
+    createdAt: new Date().toISOString()
+  });
+  saveShowings(showings);
+  document.getElementById('in-name').value = '';
+  document.getElementById('in-card').value = '';
+  document.getElementById('in-addr').value = '';
+  document.getElementById('in-price').value = '';
+  document.getElementById('in-notes').value = '';
+  renderLog();
+  showToast('Showing created!');
+}
+
+function clearShowings() {
+  if (confirm('Clear all local showings?')) {
+    saveShowings([]);
+    renderLog();
+    showToast('Cleared');
+  }
+}
+
+function renderLog() {
+  const showings = loadShowings();
+  const log = document.getElementById('log');
+  document.getElementById('stat-showings').textContent = showings.length;
+  document.getElementById('stat-buyers').textContent = showings.length;
+  document.getElementById('stat-opens').textContent = 0;
+  if (showings.length === 0) {
+    log.innerHTML = '<div class="empty">No showings yet.</div>';
+    return;
+  }
+  log.innerHTML = showings.map(s => `
+    <div class="log-item">
+      <div class="name">${escapeHtml(s.name)} <span style="color:#888;font-weight:400">— ${escapeHtml(s.addr)}</span></div>
+      <div class="meta">
+        ${s.card ? 'Card: ' + escapeHtml(s.card) + ' · ' : ''}
+        ${s.price ? escapeHtml(s.price) + ' · ' : ''}
+        ${new Date(s.createdAt).toLocaleString()}
+      </div>
+      ${s.notes ? '<div style="color:#aaa;font-size:13px;margin-top:6px;">' + escapeHtml(s.notes) + '</div>' : ''}
+    </div>
+  `).join('');
+}
+
+function saveProfile() {
+  const profile = {
+    name: document.getElementById('prof-name').value,
+    email: document.getElementById('prof-email').value,
+    phone: document.getElementById('prof-phone').value,
+    broker: document.getElementById('prof-broker').value
+  };
+  localStorage.setItem('fsnfc_profile', JSON.stringify(profile));
+  showToast('Profile saved!');
+}
+
+function loadProfile() {
+  try {
+    const p = JSON.parse(localStorage.getItem('fsnfc_profile') || '{}');
+    if (p.name) document.getElementById('prof-name').value = p.name;
+    if (p.email) document.getElementById('prof-email').value = p.email;
+    if (p.phone) document.getElementById('prof-phone').value = p.phone;
+    if (p.broker) document.getElementById('prof-broker').value = p.broker;
+  } catch (e) {}
+}
+
+function escapeHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// Init
+renderLog();
+loadProfile();
+</script>
+</body>
+</html>
