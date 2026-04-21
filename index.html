@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ForSaleNFC</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#0C0F1A;--surface:#131828;--card:#1A2238;--border:rgba(255,255,255,0.07);--white:#FFFFFF;--offwhite:#E8E6F0;--muted:#7A7F9A;--orange:#E06030;--orange2:#FF7040;--teal:#00C4A7;--green:#2ECC8A;--blue:#4A90D9;--red:#E05050;--gold:#F0A500}
@@ -20,29 +21,23 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .nav-tab:not(.active){background:var(--card);color:var(--muted)}
 .nav-tab:not(.active):hover{color:var(--white)}
 .view{display:none}.view.active{display:block}
-
-/* DASHBOARD */
 .wrap{max-width:1000px;margin:0 auto;padding:32px 24px}
 .page-title{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--white);letter-spacing:1px}
 .page-sub{font-size:13px;color:var(--muted);margin-top:4px;margin-bottom:24px}
-
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
 .stat-box{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:18px}
 .stat-val{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--orange);line-height:1}
 .stat-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
-
 .panel{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:24px;margin-bottom:24px}
 .panel-title{font-size:16px;font-weight:600;color:var(--white);margin-bottom:4px}
 .panel-sub{font-size:12px;color:var(--muted);margin-bottom:20px}
-
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
 .form-group{display:flex;flex-direction:column;gap:6px}
-.form-group label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:'DM Mono',monospace}
-.form-group input,.form-group select,.form-group textarea{background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 12px;outline:none;transition:border-color .15s;width:100%}
-.form-group input:focus,.form-group select:focus{border-color:var(--orange)}
-.form-group input::placeholder{color:var(--muted)}
-.form-group select option{background:var(--card)}
-
+.form-group label,.pfield label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:'DM Mono',monospace}
+.form-group input,.form-group select,.form-group textarea,.pinput{background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 12px;outline:none;transition:border-color .15s;width:100%}
+.form-group input:focus,.form-group select:focus,.pinput:focus{border-color:var(--orange)}
+.form-group input::placeholder,.pinput::placeholder{color:var(--muted)}
+.form-group select option,.pinput option{background:var(--card)}
 .props-section{margin-bottom:16px}
 .props-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:10px}
 .prop-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px 10px}
@@ -56,21 +51,19 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .prop-remove:hover{background:rgba(224,80,80,.2)}
 .add-prop-btn{background:transparent;border:1px dashed var(--border);color:var(--muted);padding:9px 16px;border-radius:4px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;width:100%}
 .add-prop-btn:hover{border-color:var(--orange);color:var(--orange)}
-
 .btn{padding:12px 22px;background:var(--orange);color:var(--white);border:none;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s;letter-spacing:.3px}
 .btn:hover{background:var(--orange2)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
 .btn.full{width:100%;padding:14px}
 .btn.ghost{background:var(--card);color:var(--white);border:1px solid var(--border)}
 .btn.ghost:hover{background:var(--surface)}
 .btn.teal{background:var(--teal);color:#0C0F1A}
-
 .log{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden}
 .log-header{background:var(--card);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
 .log-title{font-size:14px;font-weight:600;color:var(--white)}
 .log-count{font-size:11px;color:var(--muted)}
 .log-row{padding:16px 20px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:auto 1fr auto auto auto;gap:16px;align-items:center}
 .log-row:last-child{border-bottom:none}
-.log-row.new{background:rgba(224,96,48,.05);border-left:3px solid var(--orange)}
 .card-id{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:6px 10px;font-family:'DM Mono',monospace;font-size:12px;color:var(--teal);font-weight:600;white-space:nowrap}
 .buyer-name{font-size:14px;font-weight:600;color:var(--white);margin-bottom:3px}
 .buyer-props{font-size:11px;color:var(--muted)}
@@ -83,12 +76,10 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .btn-del{background:rgba(224,80,80,.1);border:1px solid rgba(224,80,80,.2);border-radius:4px;color:var(--red);padding:6px 10px;cursor:pointer;font-size:11px;font-weight:600;font-family:'DM Sans',sans-serif;white-space:nowrap}
 .btn-del:hover{background:rgba(224,80,80,.2)}
 .empty-state{padding:40px 20px;text-align:center;color:var(--muted);font-style:italic;font-size:13px}
-
-/* TAP PAGE */
 .tap-wrap{max-width:480px;margin:0 auto;padding-bottom:40px}
 .tap-header{background:var(--surface);border-bottom:1px solid var(--border);padding:22px 20px;text-align:center}
 .tap-photo{width:68px;height:68px;border-radius:50%;background:var(--card);border:3px solid var(--orange);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:30px;overflow:hidden}
-.tap-photo img{width:100%;height:100%;object-fit:cover;display:none}
+.tap-photo img{width:100%;height:100%;object-fit:cover}
 .tap-agent-name{font-size:18px;font-weight:700;color:var(--white);margin-bottom:2px}
 .tap-agent-title{font-size:11px;color:var(--muted);margin-bottom:14px}
 .tap-btns{display:flex;gap:8px;justify-content:center}
@@ -107,7 +98,6 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .prop-card-text{font-size:13px;color:var(--white);word-break:break-word;line-height:1.5}
 .prop-card-link{color:var(--orange);text-decoration:none;font-weight:500}
 .prop-card-link:hover{text-decoration:underline}
-
 .interest-section{margin:12px 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px}
 .is-title{font-size:14px;font-weight:600;color:var(--white);margin-bottom:4px}
 .is-sub{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6}
@@ -117,13 +107,10 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .if-group input::placeholder{color:var(--muted)}
 .if-success{background:rgba(46,204,138,.1);border:1px solid var(--green);color:var(--green);padding:12px;border-radius:4px;font-size:13px;text-align:center;display:none;margin-top:10px}
 .powered-by{text-align:center;padding:24px 16px;font-size:11px;color:var(--muted)}
-.powered-by a{color:var(--orange);text-decoration:none}
-
+.powered-by a{color:var(--orange);text-decoration:none;cursor:pointer}
 .card-not-found{max-width:480px;margin:60px auto;padding:40px 24px;text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:8px}
 .card-not-found h2{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--white);margin-bottom:8px}
-.card-not-found p{font-size:13px;color:var(--muted);line-height:1.6}
-
-/* PROFILE */
+.card-not-found p{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:8px}
 .profile-wrap{max-width:680px;margin:0 auto;padding:32px 24px}
 .profile-hero{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:24px;margin-bottom:18px;display:flex;align-items:center;gap:20px}
 .profile-avatar{width:68px;height:68px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:26px;color:#fff;flex-shrink:0;cursor:pointer;position:relative;overflow:hidden}
@@ -134,29 +121,50 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .ph-live{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:9px;color:var(--green);letter-spacing:2px;text-transform:uppercase;border:1px solid rgba(46,204,138,.25);padding:4px 10px;border-radius:2px;background:rgba(46,204,138,.06);margin-top:8px}
 .pfield{display:flex;flex-direction:column;gap:6px}
 .pfield.full{grid-column:1/-1}
-.pfield label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:'DM Mono',monospace}
 .pfield label .req{color:var(--orange);margin-left:2px}
-.pinput{background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 12px;outline:none;width:100%;transition:border-color .15s}
-.pinput:focus{border-color:var(--orange)}
-.pinput::placeholder{color:var(--muted)}
 .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-
-/* NOTIFICATIONS */
 .notif-wrap{max-width:640px;margin:0 auto;padding:32px 24px}
 .notif-item{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--teal);border-radius:6px;padding:14px 18px;margin-bottom:10px;display:flex;align-items:center;gap:14px}
 .notif-icon{font-size:20px}
 .notif-body{flex:1}
-.notif-title{font-size:13px;font-weight:600;color:var(--white);margin-bottom:2px}
+.notif-title-sm{font-size:13px;font-weight:600;color:var(--white);margin-bottom:2px}
 .notif-meta{font-size:11px;color:var(--muted)}
-
-/* TOAST */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface);border:1px solid var(--border);color:var(--white);padding:12px 24px;border-radius:6px;font-size:13px;z-index:9998;opacity:0;transition:all .3s;box-shadow:0 8px 32px rgba(0,0,0,.4);white-space:nowrap;max-width:90vw}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface);border:1px solid var(--border);color:var(--white);padding:12px 24px;border-radius:6px;font-size:13px;z-index:9998;opacity:0;transition:all .3s;box-shadow:0 8px 32px rgba(0,0,0,.4);max-width:90vw}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.error{background:rgba(224,80,80,.15);border-color:var(--red);color:#ffb5b5}
+.toast.success{background:rgba(46,204,138,.15);border-color:var(--green);color:#b6f0d0}
+.loading{display:inline-block;width:12px;height:12px;border:2px solid var(--muted);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.db-status{position:fixed;bottom:14px;right:14px;font-family:'DM Mono',monospace;font-size:10px;padding:5px 10px;border-radius:3px;z-index:9999;background:var(--surface);border:1px solid var(--border);color:var(--muted);letter-spacing:1px}
+.db-status.ok{color:var(--green);border-color:rgba(46,204,138,.3)}
+.db-status.err{color:var(--red);border-color:rgba(224,80,80,.3)}
+
+/* Preview modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:9000;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-bg.show{display:flex}
+.modal-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;max-width:420px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.modal-close{float:right;background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1}
+.modal-close:hover{color:var(--white)}
+.pv-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--teal);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px}
+.pv-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:22px;text-align:center}
+.pv-avatar{width:60px;height:60px;border-radius:50%;background:var(--orange);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;overflow:hidden}
+.pv-avatar img{width:100%;height:100%;object-fit:cover}
+.pv-name{font-size:17px;font-weight:700;color:var(--white);margin-bottom:3px}
+.pv-brok{font-size:11px;color:var(--muted);margin-bottom:10px}
+.pv-headline{font-size:13px;color:var(--orange);font-weight:600;margin:10px 0 8px;font-style:italic}
+.pv-phone{font-size:12px;color:var(--teal);font-family:'DM Mono',monospace}
+
+/* Order price display */
+.price-display{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:14px;margin:10px 0 14px;display:flex;justify-content:space-between;align-items:center}
+.price-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+.price-value{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--orange);line-height:1}
+
+/* Admin */
+.admin-pill{display:inline-block;background:var(--gold);color:#000;font-size:10px;font-weight:700;padding:3px 8px;border-radius:3px;letter-spacing:1px;margin-left:8px}
+#view-admin .wrap{max-width:700px}
 
 @media(max-width:768px){
-  nav{padding:0 14px}
-  .nav-tabs{gap:2px}
-  .nav-tab{padding:6px 10px;font-size:11px}
+  nav{padding:0 14px}.nav-tabs{gap:2px}.nav-tab{padding:6px 10px;font-size:11px}
   .wrap,.profile-wrap,.notif-wrap{padding:20px 14px}
   .stats-row{grid-template-columns:1fr 1fr}
   .form-grid,.pgrid{grid-template-columns:1fr}
@@ -193,7 +201,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 
     <div class="panel">
       <div class="panel-title">Set Up a New Showing</div>
-      <div class="panel-sub">Enter buyer info, assign a card, and add the properties you are showing. Takes 60 seconds.</div>
+      <div class="panel-sub">Assign one of your cards to a buyer and add the properties you're showing.</div>
 
       <div class="form-grid">
         <div class="form-group">
@@ -202,16 +210,10 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
         </div>
         <div class="form-group">
           <label>Card Number <span style="color:var(--orange)">*</span></label>
-          <select id="inCardId"></select>
+          <select id="inCardId"><option value="">Loading cards…</option></select>
         </div>
-        <div class="form-group">
-          <label>Showing Date</label>
-          <input type="date" id="inDate">
-        </div>
-        <div class="form-group">
-          <label>Showing Time</label>
-          <input type="time" id="inTime">
-        </div>
+        <div class="form-group"><label>Showing Date</label><input type="date" id="inDate"></div>
+        <div class="form-group"><label>Showing Time</label><input type="time" id="inTime"></div>
       </div>
 
       <div class="props-section">
@@ -222,13 +224,13 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
               <span class="prop-link-icon">🔗</span>
               <input class="prop-input" type="text" placeholder="Paste Zillow / Realtor / Redfin link — or type address">
             </div>
-            <button class="prop-remove" onclick="removeProp(this)" title="Remove">✕</button>
+            <button class="prop-remove" onclick="removeProp(this)">✕</button>
           </div>
         </div>
         <button class="add-prop-btn" onclick="addProp()">+ Add Another Property</button>
       </div>
 
-      <button class="btn full" onclick="createShowing()">Create Showing &amp; Assign Card →</button>
+      <button class="btn full" id="btnCreate" onclick="createShowing()">Create Showing &amp; Assign Card →</button>
     </div>
 
     <div class="log">
@@ -236,9 +238,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
         <div class="log-title">Active Showings — Tap Log</div>
         <div class="log-count" id="logCount">0 showings</div>
       </div>
-      <div id="logRows">
-        <div class="empty-state">No showings yet. Create your first showing above.</div>
-      </div>
+      <div id="logRows"><div class="empty-state"><span class="loading"></span>Loading…</div></div>
     </div>
   </div>
 </div>
@@ -248,9 +248,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
   <div class="notif-wrap">
     <div class="page-title">Agent Notifications</div>
     <div class="page-sub">Every tap on one of your cards shows up here</div>
-    <div id="notifList">
-      <div class="empty-state" style="background:var(--surface);border:1px solid var(--border);border-radius:8px">No notifications yet. When buyers tap your cards, alerts will appear here.</div>
-    </div>
+    <div id="notifList"><div class="empty-state" style="background:var(--surface);border:1px solid var(--border);border-radius:8px">Loading…</div></div>
   </div>
 </div>
 
@@ -267,17 +265,17 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
     </div>
     <div class="stats-row" style="grid-template-columns:repeat(2,1fr)">
       <div class="stat-box"><div class="stat-val" style="color:var(--green)" id="bkAvail">0</div><div class="stat-lbl">Cards Available</div></div>
-      <div class="stat-box"><div class="stat-val" style="color:var(--muted)" id="bkTotal">0</div><div class="stat-lbl">Total Card Inventory</div></div>
+      <div class="stat-box"><div class="stat-val" style="color:var(--muted)" id="bkOrdered">0</div><div class="stat-lbl">Total Cards Ordered</div></div>
     </div>
     <div class="panel">
       <div class="panel-title">Office Activity</div>
       <div class="panel-sub">Snapshot of all showings and tap activity</div>
-      <div id="bkActivity"><div class="empty-state">No activity yet.</div></div>
+      <div id="bkActivity"><div class="empty-state">Loading…</div></div>
     </div>
   </div>
 </div>
 
-<!-- PROFILE -->
+<!-- PROFILE + ORDER CARDS -->
 <div class="view" id="view-profile">
   <div class="profile-wrap">
     <div class="profile-hero">
@@ -294,8 +292,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
     </div>
 
     <div class="panel">
-      <div class="panel-title">Personal Information</div>
-      <div class="panel-sub">Saved locally and used on your buyer tap page.</div>
+      <div class="panel-title">Agent Info</div>
       <div class="pgrid">
         <div class="pfield"><label>First Name <span class="req">*</span></label><input class="pinput" id="pFirstName" type="text" placeholder="First name" oninput="updatePreview()"></div>
         <div class="pfield"><label>Last Name <span class="req">*</span></label><input class="pinput" id="pLastName" type="text" placeholder="Last name" oninput="updatePreview()"></div>
@@ -305,7 +302,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
     </div>
 
     <div class="panel">
-      <div class="panel-title">Brokerage Information</div>
+      <div class="panel-title">Brokerage Info</div>
       <div class="pgrid">
         <div class="pfield full"><label>Brokerage Name <span class="req">*</span></label><input class="pinput" id="pBrokerage" type="text" placeholder="Your brokerage" oninput="updatePreview()"></div>
         <div class="pfield"><label>License Number <span class="req">*</span></label><input class="pinput" id="pLicense" type="text" placeholder="License #" oninput="updatePreview()"></div>
@@ -318,97 +315,281 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
       </div>
     </div>
 
-    <button class="btn full" onclick="saveProfile()">💾 Save Profile</button>
-    <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:10px;font-family:'DM Mono',monospace">Saves to this browser. Buyer tap page updates instantly.</p>
+    <div class="panel">
+      <div class="panel-title">Card Info</div>
+      <div class="panel-sub">What buyers see when they tap your card</div>
+      <div class="pgrid">
+        <div class="pfield full">
+          <label>Headline</label>
+          <input class="pinput" id="pHeadline" type="text" placeholder="Tap to View This Property" oninput="updatePreview()">
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap">
+      <button class="btn" style="flex:1;min-width:180px" id="btnSaveProfile" onclick="saveProfile()">💾 Save Profile</button>
+      <button class="btn ghost" style="flex:1;min-width:160px" onclick="openPreview()">👁 Preview Card</button>
+    </div>
+
+    <!-- ORDER CARDS SECTION -->
+    <div class="panel">
+      <div class="panel-title">Order Cards</div>
+      <div class="panel-sub">Order printed NFC cards with your profile info on them</div>
+
+      <div class="pgrid">
+        <div class="pfield">
+          <label>Quantity <span class="req">*</span></label>
+          <select class="pinput" id="oQty" onchange="updateOrderPrice()">
+            <option value="12">12 cards</option>
+            <option value="24">24 cards</option>
+            <option value="50">50 cards</option>
+            <option value="100">100 cards</option>
+          </select>
+        </div>
+        <div class="pfield">
+          <label>Price</label>
+          <div class="price-display" style="margin:0">
+            <span class="price-label">Total</span>
+            <span class="price-value" id="oPrice">$36</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pgrid" style="margin-top:14px">
+        <div class="pfield full"><label>Shipping Name <span class="req">*</span></label><input class="pinput" id="oShipName" type="text" placeholder="Who receives the package"></div>
+        <div class="pfield full"><label>Street Address</label><input class="pinput" id="oShipAddr" type="text" placeholder="123 Main St"></div>
+        <div class="pfield"><label>City</label><input class="pinput" id="oShipCity" type="text" placeholder="City"></div>
+        <div class="pfield"><label>State</label><input class="pinput" id="oShipState" type="text" placeholder="State" maxlength="2"></div>
+        <div class="pfield full"><label>ZIP</label><input class="pinput" id="oShipZip" type="text" placeholder="ZIP"></div>
+        <div class="pfield full"><label>Notes (optional)</label><input class="pinput" id="oNotes" type="text" placeholder="Rush, special request, etc."></div>
+      </div>
+
+      <button class="btn full" style="margin-top:14px" id="btnOrder" onclick="placeOrder()">
+        <span id="btnOrderLabel">Order 12 Cards — $36</span>
+      </button>
+
+      <div id="orderSuccess" style="display:none;background:rgba(46,204,138,.1);border:1px solid var(--green);color:var(--green);padding:14px;border-radius:6px;margin-top:14px;font-size:13px;line-height:1.5">
+        <strong>✓ Order received.</strong> We'll contact you shortly to confirm.
+        <div id="orderSuccessDetails" style="margin-top:6px;color:var(--muted);font-family:'DM Mono',monospace;font-size:11px"></div>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- BUYER TAP PAGE (hidden unless ?t=FS-xxx loaded) -->
-<div class="view" id="view-tap">
-  <div id="tapContent"></div>
+<!-- ADMIN VIEW (hidden unless /?admin=1 + password) -->
+<div class="view" id="view-admin">
+  <div class="wrap">
+    <div class="page-title">Admin Panel <span class="admin-pill">ADMIN</span></div>
+    <div class="page-sub">Control pricing and card numbering. Not visible to agents.</div>
+
+    <div class="panel">
+      <div class="panel-title">Pricing</div>
+      <div class="pgrid">
+        <div class="pfield">
+          <label>Card Price Per Dozen ($)</label>
+          <input class="pinput" id="aPrice" type="number" min="0" step="1">
+        </div>
+        <div class="pfield">
+          <label>Monthly Price ($)</label>
+          <input class="pinput" id="aMonthly" type="number" min="0" step="1">
+        </div>
+        <div class="pfield full">
+          <label>Pricing Mode</label>
+          <select class="pinput" id="aMode">
+            <option value="per_order">Per Order (card-based)</option>
+            <option value="monthly">Monthly Subscription</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Card Numbering</div>
+      <div class="panel-sub">Controls which card numbers get assigned to the next order</div>
+      <div class="pgrid">
+        <div class="pfield"><label>Card Number Prefix</label><input class="pinput" id="aPrefix" type="text" placeholder="FS"></div>
+        <div class="pfield"><label>Next Card Number</label><input class="pinput" id="aNext" type="number" min="1" step="1"></div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:8px;font-family:'DM Mono',monospace">
+        Next order's card range will start at: <span id="aPreview" style="color:var(--teal)">FS-1</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Recent Orders</div>
+      <div id="aOrders"><div class="empty-state">Loading…</div></div>
+    </div>
+
+    <button class="btn full" id="btnSaveAdmin" onclick="saveAdminSettings()">💾 Save Settings</button>
+  </div>
+</div>
+
+<!-- BUYER TAP PAGE -->
+<div class="view" id="view-tap"><div id="tapContent"></div></div>
+
+<!-- PREVIEW MODAL -->
+<div class="modal-bg" id="previewModal" onclick="if(event.target.id==='previewModal')closePreview()">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closePreview()">✕</button>
+    <div class="pv-label">Card Preview</div>
+    <div class="pv-card">
+      <div class="pv-avatar" id="pvAvatar"><span id="pvInitials">--</span><img id="pvImg" alt=""></div>
+      <div class="pv-name" id="pvName">Your Name</div>
+      <div class="pv-brok" id="pvBrok">Brokerage · License</div>
+      <div class="pv-headline" id="pvHeadline">Tap to View This Property</div>
+      <div class="pv-phone" id="pvPhone">Phone</div>
+    </div>
+    <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:14px;line-height:1.5">
+      This is how your info appears on every NFC card you order.
+    </p>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="db-status" id="dbStatus">DB connecting…</div>
 
 <script>
 // ============================================================
-// ForSaleNFC — Single-File MVP
-// Data stored in localStorage under these keys:
-//   forsalenfc_showings  — array of showing objects
-//   forsalenfc_profile   — agent profile object
+// ForSaleNFC — Final Master Build
+// Supabase-backed. Admin via ?admin=1 + password.
 // ============================================================
 
-const CARD_IDS = (() => {
-  const arr = [];
-  for (let i = 1; i <= 50; i++) arr.push('FS-' + String(i).padStart(3, '0'));
-  return arr;
-})();
+const SUPABASE_URL  = 'https://ufbqscikufkbcpzlplir.supabase.co';
+const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmYnFzY2lrdWZrYmNwemxwbGxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4NjQ0NTcsImV4cCI6MjA4OTQ0MDQ1N30.IxOaF1Un22BrRJNBYJuNj2AdHhUOgqSefoT1ok5gqh4';
+const ADMIN_PASSWORD = 'Lemtad75';
 
-// -------- STORAGE HELPERS --------
-function loadShowings() {
-  try { return JSON.parse(localStorage.getItem('forsalenfc_showings') || '[]'); }
-  catch (e) { return []; }
-}
-function saveShowings(arr) {
-  localStorage.setItem('forsalenfc_showings', JSON.stringify(arr));
-}
-function loadProfile() {
-  try { return JSON.parse(localStorage.getItem('forsalenfc_profile') || '{}'); }
-  catch (e) { return {}; }
-}
-function saveProfileData(p) {
-  localStorage.setItem('forsalenfc_profile', JSON.stringify(p));
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Cached state
+let PROFILE  = {};
+let SETTINGS = { card_price_per_dozen:36, monthly_price:0, pricing_mode:'per_order', card_number_prefix:'FS', card_number_next:1 };
+let ORDERS   = []; // agent's card orders (to compute available card inventory)
+
+// ---- DB STATUS ----
+function setDbStatus(state, msg) {
+  const el = document.getElementById('dbStatus');
+  el.className = 'db-status ' + (state === 'ok' ? 'ok' : state === 'err' ? 'err' : '');
+  el.textContent = msg || state;
 }
 
-// -------- VIEW SWITCHING --------
+// ---- DATA: LOADERS ----
+async function loadShowings() {
+  const { data, error } = await db.from('showings').select('*').order('created_at', {ascending:false});
+  if (error) { console.error('loadShowings:', error); setDbStatus('err','DB error'); return []; }
+  setDbStatus('ok','DB connected');
+  return data || [];
+}
+
+async function loadProfile() {
+  const { data, error } = await db.from('profiles').select('*').order('created_at', {ascending:false}).limit(1).maybeSingle();
+  if (error) { console.error('loadProfile:', error); return {}; }
+  return data || {};
+}
+
+async function loadSettings() {
+  const { data, error } = await db.from('app_settings').select('*').eq('id',1).maybeSingle();
+  if (error) { console.error('loadSettings:', error); return SETTINGS; }
+  return data || SETTINGS;
+}
+
+async function loadOrders(agentId) {
+  let q = db.from('card_orders').select('*').order('created_at', {ascending:false});
+  if (agentId) q = q.eq('agent_id', agentId);
+  const { data, error } = await q;
+  if (error) { console.error('loadOrders:', error); return []; }
+  return data || [];
+}
+
+// ---- DATA: WRITERS ----
+async function createShowingRecord(payload) {
+  const { data, error } = await db.from('showings').insert(payload).select().maybeSingle();
+  return { data, error };
+}
+async function deleteShowingRecord(cardId) {
+  const { error } = await db.from('showings').delete().eq('card_id', cardId);
+  return error;
+}
+async function incrementTap(cardId, currentTaps) {
+  const { error: upErr } = await db.from('showings').update({
+    taps: (currentTaps || 0) + 1,
+    last_tap_at: new Date().toISOString()
+  }).eq('card_id', cardId);
+  if (upErr) console.error(upErr);
+  // Log the tap
+  const ua = (navigator.userAgent || '').slice(0, 200);
+  await db.from('tap_logs').insert({ card_id: cardId, user_agent: ua });
+}
+async function incrementLead(cardId, currentLeads) {
+  const { error } = await db.from('showings').update({ leads: (currentLeads || 0) + 1 }).eq('card_id', cardId);
+  return error;
+}
+async function saveProfileData(profileObj) {
+  if (PROFILE && PROFILE.id) profileObj.id = PROFILE.id;
+  const { data, error } = await db.from('profiles').upsert(profileObj).select().maybeSingle();
+  if (error) { console.error(error); return null; }
+  return data;
+}
+async function saveSettingsData(s) {
+  s.id = 1;
+  s.updated_at = new Date().toISOString();
+  const { data, error } = await db.from('app_settings').upsert(s).select().maybeSingle();
+  if (error) { console.error(error); return null; }
+  return data;
+}
+
+// ---- CARD INVENTORY (from orders) ----
+function getAllOwnedCardIds() {
+  // Flatten all card ranges from orders into a list of IDs
+  const ids = [];
+  for (const o of ORDERS) {
+    if (!o.card_prefix || !o.card_start || !o.card_end) continue;
+    for (let i = o.card_start; i <= o.card_end; i++) {
+      ids.push(o.card_prefix + '-' + String(i).padStart(3, '0'));
+    }
+  }
+  return ids;
+}
+
+async function getAvailableCards() {
+  const all = getAllOwnedCardIds();
+  if (all.length === 0) return [];
+  const showings = await loadShowings();
+  const used = new Set(showings.map(s => s.card_id));
+  return all.filter(id => !used.has(id));
+}
+
+// ---- VIEW SWITCHING ----
 function showView(id, tabEl) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('view-' + id).classList.add('active');
   if (tabEl) tabEl.classList.add('active');
-  window.scrollTo({top: 0, behavior: 'smooth'});
+  window.scrollTo({top:0, behavior:'smooth'});
 }
-
 function goHome() {
-  // Clear the ?t= query and go back to dashboard
-  if (window.location.search) {
-    window.location.href = window.location.pathname;
-  } else {
-    showView('dashboard', document.querySelectorAll('.nav-tab')[0]);
-  }
+  if (window.location.search) window.location.href = window.location.pathname;
+  else showView('dashboard', document.querySelectorAll('.nav-tab')[0]);
 }
 
-// -------- CARD INVENTORY --------
-function getAvailableCards() {
-  const used = new Set(loadShowings().map(s => s.cardId));
-  return CARD_IDS.filter(id => !used.has(id));
-}
-
-function renderCardDropdown() {
+// ---- CARD DROPDOWN ----
+async function renderCardDropdown() {
+  const avail = await getAvailableCards();
   const sel = document.getElementById('inCardId');
   if (!sel) return;
-  const avail = getAvailableCards();
-  sel.innerHTML = '';
   if (avail.length === 0) {
-    const opt = document.createElement('option');
-    opt.value = '';
-    opt.textContent = 'No cards available';
-    sel.appendChild(opt);
+    const ownedCount = getAllOwnedCardIds().length;
+    if (ownedCount === 0) {
+      sel.innerHTML = '<option value="">No cards yet — order cards on Profile page</option>';
+    } else {
+      sel.innerHTML = '<option value="">All your cards are assigned</option>';
+    }
     return;
   }
-  const first = document.createElement('option');
-  first.value = '';
-  first.textContent = 'Select a card...';
-  sel.appendChild(first);
-  avail.forEach(id => {
-    const opt = document.createElement('option');
-    opt.value = id;
-    opt.textContent = id + ' — Available';
-    sel.appendChild(opt);
-  });
+  sel.innerHTML = '<option value="">Select a card...</option>' +
+    avail.map(id => `<option value="${id}">${id} — Available</option>`).join('');
 }
 
-// -------- PROPERTIES FORM --------
+// ---- PROPERTIES FORM ----
 function addProp() {
   const list = document.getElementById('propsList');
   const row = document.createElement('div');
@@ -418,13 +599,13 @@ function addProp() {
       <span class="prop-link-icon">🔗</span>
       <input class="prop-input" type="text" placeholder="Paste Zillow / Realtor / Redfin link — or type address">
     </div>
-    <button class="prop-remove" onclick="removeProp(this)" title="Remove">✕</button>`;
+    <button class="prop-remove" onclick="removeProp(this)">✕</button>`;
   list.appendChild(row);
 }
 function removeProp(btn) {
   const rows = document.querySelectorAll('#propsList .prop-row');
   if (rows.length > 1) btn.closest('.prop-row').remove();
-  else showToast('Must have at least one property');
+  else showToast('Must have at least one property', 'error');
 }
 function resetPropsForm() {
   document.getElementById('propsList').innerHTML = `
@@ -433,193 +614,185 @@ function resetPropsForm() {
         <span class="prop-link-icon">🔗</span>
         <input class="prop-input" type="text" placeholder="Paste Zillow / Realtor / Redfin link — or type address">
       </div>
-      <button class="prop-remove" onclick="removeProp(this)" title="Remove">✕</button>
+      <button class="prop-remove" onclick="removeProp(this)">✕</button>
     </div>`;
 }
 
-// -------- CREATE SHOWING --------
-function createShowing() {
+// ---- CREATE SHOWING ----
+async function createShowing() {
   const buyerName = document.getElementById('inBuyerName').value.trim();
-  const cardId = document.getElementById('inCardId').value;
+  const cardId    = document.getElementById('inCardId').value;
   const showingDate = document.getElementById('inDate').value;
   const showingTime = document.getElementById('inTime').value;
-  const properties = [...document.querySelectorAll('#propsList .prop-input')]
-    .map(i => i.value.trim())
-    .filter(Boolean);
+  const properties  = [...document.querySelectorAll('#propsList .prop-input')].map(i => i.value.trim()).filter(Boolean);
 
-  if (!buyerName) { showToast('Please enter a buyer name'); return; }
-  if (!cardId)    { showToast('Please select a card'); return; }
-  if (properties.length === 0) { showToast('Add at least one property'); return; }
+  if (!buyerName) { showToast('Please enter a buyer name', 'error'); return; }
+  if (!cardId)    { showToast('Please select a card', 'error'); return; }
+  if (properties.length === 0) { showToast('Add at least one property', 'error'); return; }
 
-  const showings = loadShowings();
-  if (showings.some(s => s.cardId === cardId)) {
-    showToast('That card is already assigned'); return;
+  const btn = document.getElementById('btnCreate');
+  btn.disabled = true; btn.textContent = 'Saving…';
+
+  const { error } = await createShowingRecord({
+    card_id: cardId,
+    buyer_name: buyerName,
+    showing_date: showingDate || null,
+    showing_time: showingTime || null,
+    properties_json: properties,
+    taps: 0,
+    leads: 0
+  });
+
+  btn.disabled = false; btn.textContent = 'Create Showing & Assign Card →';
+
+  if (error) {
+    if (error.code === '23505') showToast('That card is already assigned', 'error');
+    else showToast('Error: ' + error.message, 'error');
+    return;
   }
 
-  const obj = {
-    cardId,
-    buyerName,
-    showingDate: showingDate || null,
-    showingTime: showingTime || null,
-    properties,
-    taps: 0,
-    leads: 0,
-    lastTapAt: null,
-    createdAt: new Date().toISOString()
-  };
-  showings.unshift(obj);
-  saveShowings(showings);
-
-  // Reset form
   document.getElementById('inBuyerName').value = '';
   document.getElementById('inDate').value = '';
   document.getElementById('inTime').value = '';
   resetPropsForm();
-
-  renderAll();
-  showToast('✓ Showing created — ' + cardId + ' assigned to ' + buyerName);
+  showToast('✓ ' + cardId + ' assigned to ' + buyerName, 'success');
+  await renderAll();
 }
 
-// -------- DELETE SHOWING --------
-function deleteShowing(cardId) {
+// ---- DELETE SHOWING ----
+async function deleteShowing(cardId) {
   if (!confirm('Delete this showing? Card ' + cardId + ' will be returned to available.')) return;
-  let showings = loadShowings();
-  showings = showings.filter(s => s.cardId !== cardId);
-  saveShowings(showings);
-  renderAll();
-  showToast('Showing deleted · ' + cardId + ' returned to available');
+  const err = await deleteShowingRecord(cardId);
+  if (err) { showToast('Delete failed: ' + err.message, 'error'); return; }
+  showToast('Showing deleted · ' + cardId + ' returned to available', 'success');
+  await renderAll();
 }
 
-// -------- RENDER DASHBOARD --------
-function renderDashboard() {
-  const showings = loadShowings();
-  const totalTaps = showings.reduce((a, s) => a + (s.taps || 0), 0);
-  const totalLeads = showings.reduce((a, s) => a + (s.leads || 0), 0);
-  const avail = getAvailableCards().length;
+// ---- RENDER DASHBOARD ----
+async function renderDashboard() {
+  const showings = await loadShowings();
+  const totalTaps  = showings.reduce((a,s) => a + (s.taps  || 0), 0);
+  const totalLeads = showings.reduce((a,s) => a + (s.leads || 0), 0);
+  const avail = (await getAvailableCards()).length;
 
   document.getElementById('statShowings').textContent = showings.length;
-  document.getElementById('statTaps').textContent = totalTaps;
-  document.getElementById('statLeads').textContent = totalLeads;
-  document.getElementById('statCards').textContent = avail;
+  document.getElementById('statTaps').textContent     = totalTaps;
+  document.getElementById('statLeads').textContent    = totalLeads;
+  document.getElementById('statCards').textContent    = avail;
 
   const rows = document.getElementById('logRows');
   document.getElementById('logCount').textContent = showings.length + (showings.length === 1 ? ' showing' : ' showings');
 
   if (showings.length === 0) {
-    rows.innerHTML = '<div class="empty-state">No showings yet. Create your first showing above.</div>';
+    rows.innerHTML = '<div class="empty-state">No showings yet.</div>';
     return;
   }
-
   rows.innerHTML = showings.map(s => {
-    const dateStr = s.showingDate ? s.showingDate : '';
-    const timeStr = s.showingTime ? ' · ' + s.showingTime : '';
-    const lastTapStr = s.lastTapAt
-      ? new Date(s.lastTapAt).toLocaleString()
-      : 'Not yet tapped';
-    const lastTapLbl = s.lastTapAt ? 'Last tap' : 'Awaiting';
+    const propsCount = (s.properties_json || []).length;
+    const dateStr = s.showing_date || '';
+    const timeStr = s.showing_time ? ' · ' + s.showing_time : '';
+    const lastTapStr = s.last_tap_at ? new Date(s.last_tap_at).toLocaleString() : 'Not yet tapped';
+    const lastTapLbl = s.last_tap_at ? 'Last tap' : 'Awaiting';
     return `
       <div class="log-row">
-        <div class="card-id">${esc(s.cardId)}</div>
+        <div class="card-id">${esc(s.card_id)}</div>
         <div>
-          <div class="buyer-name">${esc(s.buyerName)}</div>
-          <div class="buyer-props">${s.properties.length} ${s.properties.length === 1 ? 'property' : 'properties'}${dateStr ? ' · ' + dateStr + timeStr : ''}</div>
+          <div class="buyer-name">${esc(s.buyer_name)}</div>
+          <div class="buyer-props">${propsCount} ${propsCount === 1 ? 'property' : 'properties'}${dateStr ? ' · ' + esc(dateStr) + timeStr : ''}</div>
         </div>
-        <div class="tap-count">
-          <div class="tc-num">${s.taps || 0}</div>
-          <div class="tc-lbl">Taps</div>
-        </div>
-        <div class="last-tap">
-          <div class="lt-time">${esc(lastTapStr)}</div>
-          <div class="lt-lbl">${lastTapLbl}</div>
-        </div>
-        <button class="btn-del" onclick="deleteShowing('${esc(s.cardId)}')">Delete</button>
+        <div class="tap-count"><div class="tc-num">${s.taps || 0}</div><div class="tc-lbl">Taps</div></div>
+        <div class="last-tap"><div class="lt-time">${esc(lastTapStr)}</div><div class="lt-lbl">${lastTapLbl}</div></div>
+        <button class="btn-del" onclick="deleteShowing('${esc(s.card_id)}')">Delete</button>
       </div>`;
   }).join('');
 }
 
-// -------- RENDER NOTIFICATIONS --------
-function renderNotifications() {
-  const showings = loadShowings().filter(s => (s.taps || 0) > 0);
+// ---- RENDER NOTIFICATIONS ----
+async function renderNotifications() {
+  const all = await loadShowings();
+  const tapped = all.filter(s => (s.taps || 0) > 0);
   const el = document.getElementById('notifList');
-  if (showings.length === 0) {
+  if (tapped.length === 0) {
     el.innerHTML = '<div class="empty-state" style="background:var(--surface);border:1px solid var(--border);border-radius:8px">No notifications yet. When buyers tap your cards, alerts will appear here.</div>';
     return;
   }
-  // Sort by lastTapAt desc
-  showings.sort((a, b) => new Date(b.lastTapAt || 0) - new Date(a.lastTapAt || 0));
-  el.innerHTML = showings.map(s => `
+  tapped.sort((a,b) => new Date(b.last_tap_at || 0) - new Date(a.last_tap_at || 0));
+  el.innerHTML = tapped.map(s => `
     <div class="notif-item">
       <div class="notif-icon">🔔</div>
       <div class="notif-body">
-        <div class="notif-title">${esc(s.cardId)} was tapped by ${esc(s.buyerName)}</div>
-        <div class="notif-meta">${s.taps} total tap${s.taps === 1 ? '' : 's'} · Last tap: ${s.lastTapAt ? new Date(s.lastTapAt).toLocaleString() : '—'}</div>
+        <div class="notif-title-sm">${esc(s.card_id)} was tapped by ${esc(s.buyer_name)}</div>
+        <div class="notif-meta">${s.taps} tap${s.taps === 1 ? '' : 's'} · ${s.leads || 0} lead${(s.leads||0) === 1 ? '' : 's'} · Last tap: ${s.last_tap_at ? new Date(s.last_tap_at).toLocaleString() : '—'}</div>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-// -------- RENDER BROKER VIEW --------
-function renderBroker() {
-  const showings = loadShowings();
-  const totalTaps = showings.reduce((a, s) => a + (s.taps || 0), 0);
-  const totalLeads = showings.reduce((a, s) => a + (s.leads || 0), 0);
-  const avail = getAvailableCards().length;
-  const inUse = showings.length;
-  document.getElementById('bkShowings').textContent = inUse;
-  document.getElementById('bkTaps').textContent = totalTaps;
-  document.getElementById('bkLeads').textContent = totalLeads;
-  document.getElementById('bkInUse').textContent = inUse;
-  document.getElementById('bkAvail').textContent = avail;
-  document.getElementById('bkTotal').textContent = CARD_IDS.length;
+// ---- RENDER BROKER ----
+async function renderBroker() {
+  const showings = await loadShowings();
+  const totalTaps  = showings.reduce((a,s) => a + (s.taps  || 0), 0);
+  const totalLeads = showings.reduce((a,s) => a + (s.leads || 0), 0);
+  const ownedTotal = getAllOwnedCardIds().length;
+  const used = new Set(showings.map(s => s.card_id));
+  const avail = ownedTotal - [...used].filter(u => getAllOwnedCardIds().includes(u)).length;
+
+  document.getElementById('bkShowings').textContent = showings.length;
+  document.getElementById('bkTaps').textContent     = totalTaps;
+  document.getElementById('bkLeads').textContent    = totalLeads;
+  document.getElementById('bkInUse').textContent    = showings.length;
+  document.getElementById('bkAvail').textContent    = Math.max(0, avail);
+  document.getElementById('bkOrdered').textContent  = ownedTotal;
 
   const actEl = document.getElementById('bkActivity');
   if (showings.length === 0) {
     actEl.innerHTML = '<div class="empty-state">No activity yet.</div>';
     return;
   }
-  actEl.innerHTML = showings.map(s => `
-    <div style="padding:12px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px">
-      <div>
-        <div style="font-size:13px;color:var(--white);font-weight:600">${esc(s.buyerName)} <span style="color:var(--teal);font-family:'DM Mono',monospace;font-size:11px">${esc(s.cardId)}</span></div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px">${s.properties.length} ${s.properties.length === 1 ? 'property' : 'properties'} · Created ${new Date(s.createdAt).toLocaleDateString()}</div>
-      </div>
-      <div style="text-align:right">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--orange);line-height:1">${s.taps || 0}</div>
-        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Taps</div>
-      </div>
-    </div>
-  `).join('');
+  actEl.innerHTML = showings.map(s => {
+    const propsCount = (s.properties_json || []).length;
+    return `
+      <div style="padding:12px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <div>
+          <div style="font-size:13px;color:var(--white);font-weight:600">${esc(s.buyer_name)} <span style="color:var(--teal);font-family:'DM Mono',monospace;font-size:11px">${esc(s.card_id)}</span></div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">${propsCount} ${propsCount === 1 ? 'property' : 'properties'} · ${new Date(s.created_at).toLocaleDateString()}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--orange);line-height:1">${s.taps || 0}</div>
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Taps</div>
+        </div>
+      </div>`;
+  }).join('');
 }
 
-// -------- PROFILE --------
+// ---- PROFILE ----
 function loadProfileIntoForm() {
-  const p = loadProfile();
-  if (!p || !Object.keys(p).length) { updatePreview(); return; }
-  if (p.firstName) document.getElementById('pFirstName').value = p.firstName;
-  if (p.lastName) document.getElementById('pLastName').value = p.lastName;
-  if (p.phone) document.getElementById('pPhone').value = p.phone;
-  if (p.email) document.getElementById('pEmail').value = p.email;
-  if (p.brokerage) document.getElementById('pBrokerage').value = p.brokerage;
-  if (p.license) document.getElementById('pLicense').value = p.license;
-  if (p.state) document.getElementById('pState').value = p.state;
-  if (p.photo) {
-    document.getElementById('pAvatarImg').src = p.photo;
+  const p = PROFILE || {};
+  if (p.first_name)     document.getElementById('pFirstName').value = p.first_name;
+  if (p.last_name)      document.getElementById('pLastName').value  = p.last_name;
+  if (p.phone)          document.getElementById('pPhone').value     = p.phone;
+  if (p.email)          document.getElementById('pEmail').value     = p.email;
+  if (p.brokerage_name) document.getElementById('pBrokerage').value = p.brokerage_name;
+  if (p.license_number) document.getElementById('pLicense').value   = p.license_number;
+  if (p.license_state)  document.getElementById('pState').value     = p.license_state;
+  if (p.headline)       document.getElementById('pHeadline').value  = p.headline;
+  if (p.photo_data) {
+    document.getElementById('pAvatarImg').src = p.photo_data;
     document.getElementById('pAvatarImg').style.display = 'block';
     document.getElementById('pAvatarInitials').style.display = 'none';
   }
   updatePreview();
-  // Dashboard subtitle
-  const full = ((p.firstName || '') + ' ' + (p.lastName || '')).trim();
-  if (full || p.brokerage) {
-    document.getElementById('dashSub').textContent = [full, p.brokerage, 'Card manager and showing log'].filter(Boolean).join(' · ');
+  const full = ((p.first_name || '') + ' ' + (p.last_name || '')).trim();
+  if (full || p.brokerage_name) {
+    document.getElementById('dashSub').textContent =
+      [full, p.brokerage_name, 'Card manager and showing log'].filter(Boolean).join(' · ');
   }
 }
 
 function updatePreview() {
-  const fn = document.getElementById('pFirstName').value.trim();
-  const ln = document.getElementById('pLastName').value.trim();
+  const fn   = document.getElementById('pFirstName').value.trim();
+  const ln   = document.getElementById('pLastName').value.trim();
   const brok = document.getElementById('pBrokerage').value.trim();
-  const lic = document.getElementById('pLicense').value.trim();
+  const lic  = document.getElementById('pLicense').value.trim();
   const full = (fn + ' ' + ln).trim() || 'Your Name';
   const init = ((fn[0] || '') + (ln[0] || '')).toUpperCase() || '--';
   document.getElementById('pAvatarInitials').textContent = init;
@@ -630,92 +803,230 @@ function updatePreview() {
 function handleProfilePhoto(e) {
   const file = e.target.files[0];
   if (!file) return;
+  if (file.size > 500 * 1024) { showToast('Photo too large (max 500 KB)', 'error'); return; }
   const reader = new FileReader();
-  reader.onload = ev => {
-    const img = document.getElementById('pAvatarImg');
-    img.src = ev.target.result;
-    img.style.display = 'block';
+  reader.onload = async ev => {
+    document.getElementById('pAvatarImg').src = ev.target.result;
+    document.getElementById('pAvatarImg').style.display = 'block';
     document.getElementById('pAvatarInitials').style.display = 'none';
-    // Save immediately to profile
-    const p = loadProfile();
-    p.photo = ev.target.result;
-    saveProfileData(p);
-    showToast('Photo saved');
+    const current = { ...PROFILE, photo_data: ev.target.result };
+    const saved = await saveProfileData(current);
+    if (saved) { PROFILE = saved; showToast('Photo saved', 'success'); }
+    else showToast('Photo save failed', 'error');
   };
   reader.readAsDataURL(file);
 }
 
-function saveProfile() {
-  const p = {
-    firstName: document.getElementById('pFirstName').value.trim(),
-    lastName: document.getElementById('pLastName').value.trim(),
-    phone: document.getElementById('pPhone').value.trim(),
-    email: document.getElementById('pEmail').value.trim(),
-    brokerage: document.getElementById('pBrokerage').value.trim(),
-    license: document.getElementById('pLicense').value.trim(),
-    state: document.getElementById('pState').value,
-    photo: loadProfile().photo || ''
+function readProfileForm() {
+  return {
+    first_name:     document.getElementById('pFirstName').value.trim(),
+    last_name:      document.getElementById('pLastName').value.trim(),
+    phone:          document.getElementById('pPhone').value.trim(),
+    email:          document.getElementById('pEmail').value.trim(),
+    brokerage_name: document.getElementById('pBrokerage').value.trim(),
+    license_number: document.getElementById('pLicense').value.trim(),
+    license_state:  document.getElementById('pState').value,
+    headline:       document.getElementById('pHeadline').value.trim() || 'Tap to View This Property',
+    photo_data:     PROFILE.photo_data || null
   };
-  if (!p.firstName) { showToast('Please enter your first name'); return; }
-  if (!p.phone)     { showToast('Please enter your cell phone'); return; }
-  if (!p.email)     { showToast('Please enter your email'); return; }
-  if (!p.brokerage) { showToast('Please enter your brokerage'); return; }
-  if (!p.license)   { showToast('Please enter your license number'); return; }
-  saveProfileData(p);
-  // Update dashboard subtitle
-  const full = (p.firstName + ' ' + p.lastName).trim();
-  document.getElementById('dashSub').textContent = [full, p.brokerage, 'Card manager and showing log'].filter(Boolean).join(' · ');
-  showToast('✓ Profile saved — buyer cards updated');
 }
 
-// -------- BUYER TAP PAGE --------
-function loadTapPageFromQuery() {
+function validateProfile(p) {
+  if (!p.first_name)     return 'Please enter your first name';
+  if (!p.phone)          return 'Please enter your cell phone';
+  if (!p.email)          return 'Please enter your email';
+  if (!p.brokerage_name) return 'Please enter your brokerage';
+  if (!p.license_number) return 'Please enter your license number';
+  return null;
+}
+
+async function saveProfile() {
+  const p = readProfileForm();
+  const err = validateProfile(p);
+  if (err) { showToast(err, 'error'); return; }
+
+  const btn = document.getElementById('btnSaveProfile');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  const saved = await saveProfileData(p);
+  btn.disabled = false; btn.textContent = '💾 Save Profile';
+
+  if (!saved) { showToast('Save failed', 'error'); return; }
+  PROFILE = saved;
+  const full = (p.first_name + ' ' + p.last_name).trim();
+  document.getElementById('dashSub').textContent = [full, p.brokerage_name, 'Card manager and showing log'].filter(Boolean).join(' · ');
+  showToast('✓ Profile saved', 'success');
+}
+
+// ---- PREVIEW MODAL ----
+function openPreview() {
+  const fn = document.getElementById('pFirstName').value.trim();
+  const ln = document.getElementById('pLastName').value.trim();
+  const full = (fn + ' ' + ln).trim() || 'Your Name';
+  const brok = document.getElementById('pBrokerage').value.trim() || 'Brokerage';
+  const lic = document.getElementById('pLicense').value.trim();
+  const phone = document.getElementById('pPhone').value.trim() || 'Phone';
+  const headline = document.getElementById('pHeadline').value.trim() || 'Tap to View This Property';
+  const init = ((fn[0]||'')+(ln[0]||'')).toUpperCase() || '--';
+
+  document.getElementById('pvInitials').textContent = init;
+  document.getElementById('pvName').textContent = full;
+  document.getElementById('pvBrok').textContent = brok + (lic ? ' · License #' + lic : '');
+  document.getElementById('pvHeadline').textContent = '"' + headline + '"';
+  document.getElementById('pvPhone').textContent = phone;
+  if (PROFILE.photo_data) {
+    document.getElementById('pvImg').src = PROFILE.photo_data;
+    document.getElementById('pvImg').style.display = 'block';
+    document.getElementById('pvInitials').style.display = 'none';
+  }
+  document.getElementById('previewModal').classList.add('show');
+}
+function closePreview() { document.getElementById('previewModal').classList.remove('show'); }
+
+// ---- ORDER CARDS ----
+function computePrice(qty) {
+  const perDozen = SETTINGS.card_price_per_dozen || 36;
+  return Math.round((qty / 12) * perDozen);
+}
+function updateOrderPrice() {
+  const qty = parseInt(document.getElementById('oQty').value) || 12;
+  const price = computePrice(qty);
+  document.getElementById('oPrice').textContent = '$' + price;
+  document.getElementById('btnOrderLabel').textContent = `Order ${qty} Cards — $${price}`;
+}
+
+async function placeOrder() {
+  // Ensure profile is saved first
+  const p = readProfileForm();
+  const pErr = validateProfile(p);
+  if (pErr) { showToast(pErr, 'error'); showView('profile', document.querySelectorAll('.nav-tab')[3]); return; }
+
+  const shipName = document.getElementById('oShipName').value.trim();
+  if (!shipName) { showToast('Please enter shipping name', 'error'); return; }
+
+  const qty = parseInt(document.getElementById('oQty').value) || 12;
+  const price = computePrice(qty);
+
+  const btn = document.getElementById('btnOrder');
+  btn.disabled = true;
+  const origLabel = document.getElementById('btnOrderLabel').textContent;
+  document.getElementById('btnOrderLabel').textContent = 'Placing order…';
+
+  // Save/refresh profile first
+  const saved = await saveProfileData(p);
+  if (!saved) {
+    btn.disabled = false;
+    document.getElementById('btnOrderLabel').textContent = origLabel;
+    showToast('Could not save profile — order not placed', 'error');
+    return;
+  }
+  PROFILE = saved;
+
+  // Re-read settings to get latest card_number_next (avoid stale block assignment)
+  const latest = await loadSettings();
+  SETTINGS = latest;
+  const prefix = SETTINGS.card_number_prefix || 'FS';
+  const start  = SETTINGS.card_number_next || 1;
+  const end    = start + qty - 1;
+
+  // Insert order
+  const order = {
+    agent_id: PROFILE.id,
+    quantity: qty,
+    price: price,
+    shipping_name: shipName,
+    shipping_address: document.getElementById('oShipAddr').value.trim() || null,
+    shipping_city:   document.getElementById('oShipCity').value.trim() || null,
+    shipping_state:  document.getElementById('oShipState').value.trim() || null,
+    shipping_zip:    document.getElementById('oShipZip').value.trim() || null,
+    notes:           document.getElementById('oNotes').value.trim() || null,
+    status: 'new',
+    card_prefix: prefix,
+    card_start: start,
+    card_end: end
+  };
+  const { data: orderRow, error: orderErr } = await db.from('card_orders').insert(order).select().maybeSingle();
+
+  if (orderErr) {
+    console.error(orderErr);
+    btn.disabled = false;
+    document.getElementById('btnOrderLabel').textContent = origLabel;
+    showToast('Order failed: ' + orderErr.message, 'error');
+    return;
+  }
+
+  // Advance the next-card-number counter
+  await saveSettingsData({ ...SETTINGS, card_number_next: end + 1 });
+  SETTINGS.card_number_next = end + 1;
+
+  // Success UI
+  const rangeStr = `${prefix}-${String(start).padStart(3,'0')} through ${prefix}-${String(end).padStart(3,'0')}`;
+  document.getElementById('orderSuccess').style.display = 'block';
+  document.getElementById('orderSuccessDetails').innerHTML =
+    `Order ID: ${esc(orderRow.id.slice(0,8))} · ${qty} cards · ${rangeStr} · ${new Date(orderRow.created_at).toLocaleString()}`;
+
+  // Reset form fields (keep shipping info; clear quantity? leave at 12)
+  document.getElementById('oNotes').value = '';
+
+  btn.disabled = false;
+  document.getElementById('btnOrderLabel').textContent = origLabel;
+  showToast(`✓ Order placed — ${qty} cards assigned`, 'success');
+
+  // Refresh orders + inventory
+  ORDERS = await loadOrders(PROFILE.id);
+  await renderAll();
+}
+
+// ---- BUYER TAP PAGE ----
+async function loadTapPageFromQuery() {
   const params = new URLSearchParams(window.location.search);
   const cardId = params.get('t');
   if (!cardId) return false;
 
-  // Hide nav tabs + normal views, show only tap view
   document.querySelectorAll('.nav-tab').forEach(t => t.style.display = 'none');
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-tap').classList.add('active');
 
-  const showings = loadShowings();
-  const showing = showings.find(s => s.cardId === cardId);
   const tc = document.getElementById('tapContent');
+  tc.innerHTML = '<div class="card-not-found"><p><span class="loading"></span>Loading card…</p></div>';
+
+  const [showingRes, profileRes] = await Promise.all([
+    db.from('showings').select('*').eq('card_id', cardId).maybeSingle(),
+    db.from('profiles').select('*').order('created_at',{ascending:false}).limit(1).maybeSingle()
+  ]);
+
+  const showing = showingRes.data;
+  const profile = profileRes.data || {};
 
   if (!showing) {
     tc.innerHTML = `
       <div class="card-not-found">
         <h2>Card Not Found</h2>
-        <p>Card <strong style="color:var(--teal);font-family:'DM Mono',monospace">${esc(cardId)}</strong> hasn't been assigned to a showing yet, or the showing was deleted.</p>
+        <p>Card <strong style="color:var(--teal);font-family:'DM Mono',monospace">${esc(cardId)}</strong> hasn't been assigned to a showing yet.</p>
         <p style="margin-top:12px"><a onclick="goHome()" style="color:var(--orange);cursor:pointer;text-decoration:underline">Go to dashboard</a></p>
       </div>`;
     return true;
   }
 
-  // Increment tap count
-  incrementTap(cardId);
-  // Re-read after increment
-  const updated = loadShowings().find(s => s.cardId === cardId);
+  await incrementTap(cardId, showing.taps || 0);
+  renderTapPage(showing, profile, cardId);
+  return true;
+}
 
-  const p = loadProfile();
-  const agentName = ((p.firstName || '') + ' ' + (p.lastName || '')).trim() || 'Your Agent';
-  const agentTitle = [p.brokerage || 'Brokerage', p.license ? 'License #' + p.license : ''].filter(Boolean).join(' · ');
-  const rawPhone = (p.phone || '').replace(/\D/g, '');
-  const photoHtml = p.photo
-    ? `<img src="${esc(p.photo)}" style="display:block" alt="">`
-    : '👤';
+function renderTapPage(showing, profile, cardId) {
+  const tc = document.getElementById('tapContent');
+  const agentName = ((profile.first_name || '') + ' ' + (profile.last_name || '')).trim() || 'Your Agent';
+  const agentTitle = [profile.brokerage_name || 'Brokerage', profile.license_number ? 'License #' + profile.license_number : ''].filter(Boolean).join(' · ');
+  const rawPhone = (profile.phone || '').replace(/\D/g, '');
+  const photoHtml = profile.photo_data ? `<img src="${esc(profile.photo_data)}" alt="">` : '👤';
+  const headline = profile.headline || 'Tap to View This Property';
 
-  const propsHtml = updated.properties.map(prop => {
+  const properties = showing.properties_json || [];
+  const propsHtml = properties.map(prop => {
     const isUrl = /^https?:\/\//i.test(prop) || /^www\./i.test(prop);
     const content = isUrl
       ? `<a class="prop-card-link" href="${esc(prop.startsWith('http') ? prop : 'https://' + prop)}" target="_blank" rel="noopener">${esc(prop)}</a>`
       : esc(prop);
-    return `
-      <div class="prop-card">
-        <div class="prop-card-label">Property</div>
-        <div class="prop-card-text">${content}</div>
-      </div>`;
+    return `<div class="prop-card"><div class="prop-card-label">Property</div><div class="prop-card-text">${content}</div></div>`;
   }).join('');
 
   tc.innerHTML = `
@@ -730,66 +1041,49 @@ function loadTapPageFromQuery() {
           <button class="tbtn tbtn-save" onclick="saveContact()">Save</button>
         </div>
       </div>
-
       <div class="buyer-greeting">
         <div class="bg-icon">🏠</div>
         <div>
-          <div class="bg-hi">Hi ${esc(updated.buyerName)} — here are your properties</div>
-          <div class="bg-sub">Shown by ${esc(agentName)}${updated.showingDate ? ' · ' + updated.showingDate : ''}${updated.showingTime ? ' ' + updated.showingTime : ''}</div>
+          <div class="bg-hi">Hi ${esc(showing.buyer_name)} — ${esc(headline)}</div>
+          <div class="bg-sub">Shown by ${esc(agentName)}${showing.showing_date ? ' · ' + esc(showing.showing_date) : ''}${showing.showing_time ? ' ' + esc(showing.showing_time) : ''}</div>
         </div>
       </div>
-
       <div class="tap-listings">
         <div class="tl-label">Properties Shown</div>
         ${propsHtml}
       </div>
-
       <div class="interest-section">
         <div class="is-title">Ready to move forward?</div>
         <div class="is-sub">Let ${esc(agentName)} know which property you're interested in.</div>
         <div class="if-group"><input type="text" id="iName" placeholder="Your name"></div>
         <div class="if-group"><input type="tel" id="iPhone" placeholder="Best phone number"></div>
         <div class="if-group"><input type="text" id="iProp" placeholder="Which property?"></div>
-        <button class="btn full" onclick="submitInterest('${esc(cardId)}')">Send to Agent</button>
+        <button class="btn full" id="btnInterest" onclick="submitInterest('${esc(cardId)}',${showing.leads || 0})">Send to Agent</button>
         <div class="if-success" id="ifSuccess">✓ Agent has been notified.</div>
       </div>
-
-      <div class="powered-by">Powered by <a href="#" onclick="goHome();return false;">ForSaleNFC</a></div>
+      <div class="powered-by">Powered by <a onclick="goHome()">ForSaleNFC</a></div>
     </div>`;
-  return true;
+  window.__tapProfile = profile;
 }
 
-function incrementTap(cardId) {
-  const showings = loadShowings();
-  const s = showings.find(x => x.cardId === cardId);
-  if (!s) return;
-  s.taps = (s.taps || 0) + 1;
-  s.lastTapAt = new Date().toISOString();
-  saveShowings(showings);
-}
-
-function submitInterest(cardId) {
+async function submitInterest(cardId, currentLeads) {
   const name = document.getElementById('iName').value.trim();
-  if (!name) { showToast('Please enter your name'); return; }
-  const showings = loadShowings();
-  const s = showings.find(x => x.cardId === cardId);
-  if (s) {
-    s.leads = (s.leads || 0) + 1;
-    saveShowings(showings);
-  }
+  if (!name) { showToast('Please enter your name', 'error'); return; }
+  const btn = document.getElementById('btnInterest');
+  btn.disabled = true; btn.textContent = 'Sending…';
+  const err = await incrementLead(cardId, currentLeads);
+  btn.disabled = false; btn.textContent = 'Send to Agent';
+  if (err) { showToast('Error sending', 'error'); return; }
   document.getElementById('ifSuccess').style.display = 'block';
-  showToast('✓ Message sent to agent');
+  showToast('✓ Message sent to agent', 'success');
 }
 
 function saveContact() {
-  const p = loadProfile();
-  if (!p.firstName && !p.phone) { showToast('Agent has not set up profile'); return; }
-  const fn = p.firstName || '';
-  const ln = p.lastName || '';
+  const p = window.__tapProfile || PROFILE || {};
+  if (!p.first_name && !p.phone) { showToast('Agent has not set up profile', 'error'); return; }
+  const fn = p.first_name || '', ln = p.last_name || '';
   const ph = (p.phone || '').replace(/\D/g, '');
-  const em = p.email || '';
-  const brok = p.brokerage || '';
-  const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN:${fn} ${ln}\nTEL:${ph}\nEMAIL:${em}\nORG:${brok}\nEND:VCARD`;
+  const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN:${fn} ${ln}\nTEL:${ph}\nEMAIL:${p.email || ''}\nORG:${p.brokerage_name || ''}\nEND:VCARD`;
   const blob = new Blob([vcard], {type: 'text/vcard'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -797,37 +1091,115 @@ function saveContact() {
   a.click();
 }
 
-// -------- TOAST --------
-function showToast(msg) {
+// ---- ADMIN ----
+function loadAdminForm() {
+  document.getElementById('aPrice').value  = SETTINGS.card_price_per_dozen ?? 36;
+  document.getElementById('aMonthly').value = SETTINGS.monthly_price ?? 0;
+  document.getElementById('aMode').value   = SETTINGS.pricing_mode || 'per_order';
+  document.getElementById('aPrefix').value = SETTINGS.card_number_prefix || 'FS';
+  document.getElementById('aNext').value   = SETTINGS.card_number_next || 1;
+  updateAdminPreview();
+  renderAdminOrders();
+  ['aPrefix','aNext'].forEach(id => document.getElementById(id).oninput = updateAdminPreview);
+}
+function updateAdminPreview() {
+  const pref = document.getElementById('aPrefix').value.trim() || 'FS';
+  const next = parseInt(document.getElementById('aNext').value) || 1;
+  document.getElementById('aPreview').textContent = pref + '-' + String(next).padStart(3,'0');
+}
+async function saveAdminSettings() {
+  const s = {
+    card_price_per_dozen: parseInt(document.getElementById('aPrice').value)   || 0,
+    monthly_price:        parseInt(document.getElementById('aMonthly').value) || 0,
+    pricing_mode:         document.getElementById('aMode').value,
+    card_number_prefix:   document.getElementById('aPrefix').value.trim()     || 'FS',
+    card_number_next:     parseInt(document.getElementById('aNext').value)    || 1
+  };
+  const btn = document.getElementById('btnSaveAdmin');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  const saved = await saveSettingsData(s);
+  btn.disabled = false; btn.textContent = '💾 Save Settings';
+  if (!saved) { showToast('Settings save failed', 'error'); return; }
+  SETTINGS = saved;
+  showToast('✓ Settings saved', 'success');
+  updateOrderPrice();
+}
+async function renderAdminOrders() {
+  const { data } = await db.from('card_orders').select('*').order('created_at', {ascending:false}).limit(20);
+  const el = document.getElementById('aOrders');
+  if (!data || data.length === 0) { el.innerHTML = '<div class="empty-state">No orders yet.</div>'; return; }
+  el.innerHTML = data.map(o => {
+    const range = (o.card_prefix && o.card_start && o.card_end)
+      ? `${o.card_prefix}-${String(o.card_start).padStart(3,'0')} → ${o.card_prefix}-${String(o.card_end).padStart(3,'0')}`
+      : '—';
+    return `
+      <div style="padding:12px 14px;border-bottom:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <div style="font-size:13px;color:var(--white);font-weight:600">${esc(o.shipping_name || 'Unknown')} · ${o.quantity} cards · $${o.price}</div>
+          <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace">${new Date(o.created_at).toLocaleString()}</div>
+        </div>
+        <div style="font-size:11px;color:var(--teal);margin-top:4px;font-family:'DM Mono',monospace">${esc(range)}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px">Status: ${esc(o.status)} ${o.notes ? '· ' + esc(o.notes) : ''}</div>
+      </div>`;
+  }).join('');
+}
+
+// ---- TOAST / ESC / RENDER ALL ----
+function showToast(msg, variant) {
   const t = document.getElementById('toast');
   t.textContent = msg;
-  t.classList.add('show');
+  t.className = 'toast' + (variant ? ' ' + variant : '') + ' show';
   clearTimeout(t._timer);
   t._timer = setTimeout(() => t.classList.remove('show'), 2800);
 }
-
-// -------- ESCAPE HTML --------
 function esc(s) {
   if (s === null || s === undefined) return '';
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
-
-// -------- RENDER EVERYTHING --------
-function renderAll() {
-  renderCardDropdown();
-  renderDashboard();
-  renderNotifications();
-  renderBroker();
+async function renderAll() {
+  ORDERS = await loadOrders(PROFILE.id);
+  await Promise.all([ renderCardDropdown(), renderDashboard(), renderNotifications(), renderBroker() ]);
 }
 
-// -------- INIT --------
-(function init() {
-  // If ?t=FS-xxx is present, show tap page and stop
-  const isTapPage = loadTapPageFromQuery();
-  if (isTapPage) return;
+// ---- ADMIN ACCESS (password prompt when ?admin=1) ----
+function tryAdminAccess() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('admin') !== '1') return false;
+  const pw = prompt('Admin password:');
+  if (pw !== ADMIN_PASSWORD) {
+    alert('Access denied.');
+    window.location.href = window.location.pathname;
+    return false;
+  }
+  // Add Admin tab to nav
+  const nav = document.getElementById('navTabs');
+  const tab = document.createElement('button');
+  tab.className = 'nav-tab';
+  tab.textContent = '🔒 Admin';
+  tab.onclick = function() { showView('admin', this); loadAdminForm(); };
+  nav.appendChild(tab);
+  // Jump to admin view
+  showView('admin', tab);
+  loadAdminForm();
+  return true;
+}
 
+// ---- INIT ----
+(async function init() {
+  setDbStatus('','DB connecting…');
+
+  // Tap page has priority
+  const isTap = await loadTapPageFromQuery();
+  if (isTap) return;
+
+  // Load core data
+  [PROFILE, SETTINGS] = await Promise.all([ loadProfile(), loadSettings() ]);
   loadProfileIntoForm();
-  renderAll();
+  updateOrderPrice();
+  await renderAll();
+
+  // If admin URL, prompt for password & reveal
+  tryAdminAccess();
 })();
 </script>
 </body>
