@@ -519,7 +519,10 @@ async function afterLogin(){
     PROFILE = await loadProfile();
   }
   document.getElementById('navUser').textContent = USER.email;
-  if(PROFILE && PROFILE.is_admin) addAdminTab();
+  console.log('[ForSaleNFC] Loaded profile:', PROFILE);
+  console.log('[ForSaleNFC] is_admin flag:', PROFILE?.is_admin);
+  // Show admin tab for admins. (If your profile's is_admin is true, you see it.)
+  if(PROFILE && PROFILE.is_admin === true) addAdminTab();
   document.getElementById('mainNav').style.display='flex';
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-dashboard').classList.add('active');
@@ -542,6 +545,9 @@ function addAdminTab(){
   const userSpan = document.getElementById('navUser');
   tabs.insertBefore(btn, userSpan);
 }
+
+// Expose a manual unlock for edge cases — type unlockAdmin() in console
+window.unlockAdmin = function(){ addAdminTab(); console.log('Admin tab added.'); };
 
 /* ============================================================
    DATA LOADERS
