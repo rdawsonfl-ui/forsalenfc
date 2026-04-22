@@ -4,78 +4,99 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ForSaleNFC</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#0C0F1A;--surface:#131828;--card:#1A2238;--border:rgba(255,255,255,0.07);--white:#FFFFFF;--offwhite:#E8E6F0;--muted:#7A7F9A;--orange:#E06030;--orange2:#FF7040;--teal:#00C4A7;--green:#2ECC8A;--blue:#4A90D9;--red:#E05050;--gold:#F0A500}
+:root{--bg:#0C0F1A;--surface:#131828;--card:#1A2238;--border:rgba(255,255,255,0.08);--white:#FFFFFF;--offwhite:#E8E6F0;--muted:#7A7F9A;--muted2:#9CA0B8;--orange:#E06030;--orange2:#FF7040;--teal:#00C4A7;--green:#2ECC8A;--blue:#4A90D9;--red:#E05050;--gold:#F0A500}
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--offwhite);font-family:'DM Sans',sans-serif;overflow-x:hidden;min-height:100vh}
+body{background:var(--bg);color:var(--offwhite);font-family:'DM Sans',sans-serif;overflow-x:hidden;min-height:100vh;-webkit-font-smoothing:antialiased}
 body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:9999}
+a{color:var(--orange);text-decoration:none;cursor:pointer}
+a:hover{color:var(--orange2)}
+
+/* NAV */
 nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:var(--white);text-decoration:none;cursor:pointer}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:var(--white);cursor:pointer}
 .nav-logo span{color:var(--orange)}
-.nav-tabs{display:flex;gap:4px;flex-wrap:wrap}
-.nav-tab{padding:7px 14px;border-radius:4px;font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .15s;letter-spacing:.3px}
+.nav-tabs{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+.nav-tab{padding:7px 14px;border-radius:4px;font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .15s;letter-spacing:.3px;background:transparent;color:var(--muted)}
 .nav-tab.active{background:var(--orange);color:var(--white)}
-.nav-tab:not(.active){background:var(--card);color:var(--muted)}
-.nav-tab:not(.active):hover{color:var(--white)}
+.nav-tab:hover{color:var(--white)}
+.nav-user{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted2);padding-left:10px;border-left:1px solid var(--border);margin-left:6px}
+.nav-user-email{max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.logout-btn{padding:5px 10px;border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:4px;cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif}
+.logout-btn:hover{color:var(--red);border-color:var(--red)}
+
+/* VIEW SYSTEM */
 .view{display:none}.view.active{display:block}
 .wrap{max-width:1000px;margin:0 auto;padding:32px 24px}
+.wrap-narrow{max-width:680px;margin:0 auto;padding:32px 24px}
 .page-title{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--white);letter-spacing:1px}
 .page-sub{font-size:13px;color:var(--muted);margin-top:4px;margin-bottom:24px}
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
-.stat-box{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:18px}
-.stat-val{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--orange);line-height:1}
-.stat-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
-.panel{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:24px;margin-bottom:24px}
-.panel-title{font-size:16px;font-weight:600;color:var(--white);margin-bottom:4px}
-.panel-sub{font-size:12px;color:var(--muted);margin-bottom:20px}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
-.form-group{display:flex;flex-direction:column;gap:6px}
-.form-group label,.pfield label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:'DM Mono',monospace}
-.form-group input,.form-group select,.form-group textarea,.pinput{background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 12px;outline:none;transition:border-color .15s;width:100%}
-.form-group input:focus,.form-group select:focus,.pinput:focus{border-color:var(--orange)}
-.form-group input::placeholder,.pinput::placeholder{color:var(--muted)}
-.form-group select option,.pinput option{background:var(--card)}
-.props-section{margin-bottom:16px}
-.props-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:10px}
-.prop-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px 10px}
-.prop-row:focus-within{border-color:rgba(224,96,48,.4)}
-.prop-link-wrap{flex:1;position:relative}
-.prop-link-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;pointer-events:none;color:var(--muted)}
-.prop-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:12px;padding:9px 10px 9px 30px;outline:none;transition:border-color .15s}
-.prop-input:focus{border-color:var(--orange)}
-.prop-input::placeholder{color:var(--muted);font-size:11px}
-.prop-remove{width:32px;height:36px;background:rgba(224,80,80,.1);border:1px solid rgba(224,80,80,.2);border-radius:4px;color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;flex-shrink:0}
-.prop-remove:hover{background:rgba(224,80,80,.2)}
-.add-prop-btn{background:transparent;border:1px dashed var(--border);color:var(--muted);padding:9px 16px;border-radius:4px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;width:100%}
-.add-prop-btn:hover{border-color:var(--orange);color:var(--orange)}
-.btn{padding:12px 22px;background:var(--orange);color:var(--white);border:none;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s;letter-spacing:.3px}
+
+/* AUTH PAGES */
+.auth-wrap{min-height:calc(100vh - 58px);display:flex;align-items:flex-start;justify-content:center;padding:60px 20px 40px}
+.auth-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:36px 32px;max-width:440px;width:100%}
+.auth-brand{text-align:center;margin-bottom:24px}
+.auth-brand .logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1.5px;color:var(--white)}
+.auth-brand .logo span{color:var(--orange)}
+.auth-brand .tagline{font-size:11px;color:var(--muted);margin-top:4px;font-family:'DM Mono',monospace;letter-spacing:2px;text-transform:uppercase}
+.auth-title{font-size:20px;font-weight:700;color:var(--white);text-align:center;margin-bottom:6px}
+.auth-desc{font-size:13px;color:var(--muted);text-align:center;margin-bottom:22px;line-height:1.5}
+.auth-switch{text-align:center;font-size:12px;color:var(--muted);margin-top:18px}
+
+/* FORM ELEMENTS */
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.field label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:'DM Mono',monospace}
+.field label .req{color:var(--orange);margin-left:2px}
+.input,.select,.textarea{width:100%;background:var(--card);border:1px solid var(--border);border-radius:5px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;padding:11px 13px;outline:none;transition:border-color .15s}
+.input:focus,.select:focus,.textarea:focus{border-color:var(--orange)}
+.input::placeholder,.textarea::placeholder{color:var(--muted)}
+.select option{background:var(--card)}
+.textarea{min-height:70px;resize:vertical;font-family:inherit}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid2 .full{grid-column:1/-1}
+
+/* BUTTONS */
+.btn{padding:12px 22px;background:var(--orange);color:var(--white);border:none;border-radius:5px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s;letter-spacing:.3px}
 .btn:hover{background:var(--orange2)}
 .btn:disabled{opacity:.5;cursor:not-allowed}
-.btn.full{width:100%;padding:14px}
+.btn.full{width:100%;padding:13px}
 .btn.ghost{background:var(--card);color:var(--white);border:1px solid var(--border)}
-.btn.ghost:hover{background:var(--surface)}
+.btn.ghost:hover{background:var(--surface);border-color:var(--muted)}
 .btn.teal{background:var(--teal);color:#0C0F1A}
-.log{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden}
-.log-header{background:var(--card);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
-.log-title{font-size:14px;font-weight:600;color:var(--white)}
-.log-count{font-size:11px;color:var(--muted)}
-.log-row{padding:16px 20px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:auto 1fr auto auto auto;gap:16px;align-items:center}
-.log-row:last-child{border-bottom:none}
-.card-id{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:6px 10px;font-family:'DM Mono',monospace;font-size:12px;color:var(--teal);font-weight:600;white-space:nowrap}
-.buyer-name{font-size:14px;font-weight:600;color:var(--white);margin-bottom:3px}
-.buyer-props{font-size:11px;color:var(--muted)}
-.tap-count{text-align:center}
-.tc-num{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--orange);line-height:1}
-.tc-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
-.last-tap{text-align:right}
-.lt-time{font-size:12px;color:var(--white);font-weight:500}
-.lt-lbl{font-size:10px;color:var(--muted);margin-top:2px}
-.btn-del{background:rgba(224,80,80,.1);border:1px solid rgba(224,80,80,.2);border-radius:4px;color:var(--red);padding:6px 10px;cursor:pointer;font-size:11px;font-weight:600;font-family:'DM Sans',sans-serif;white-space:nowrap}
-.btn-del:hover{background:rgba(224,80,80,.2)}
-.empty-state{padding:40px 20px;text-align:center;color:var(--muted);font-style:italic;font-size:13px}
+.btn.small{padding:7px 12px;font-size:11px}
+.btn.danger{background:rgba(224,80,80,.1);color:var(--red);border:1px solid rgba(224,80,80,.3)}
+.btn.danger:hover{background:rgba(224,80,80,.2)}
+
+/* PANELS */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:24px;margin-bottom:22px}
+.panel-title{font-size:16px;font-weight:600;color:var(--white);margin-bottom:4px}
+.panel-sub{font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.5}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:18px}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--orange);line-height:1}
+.stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-top:4px}
+
+/* LISTS */
+.list{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.list-header{background:var(--card);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.list-header h3{font-size:13px;font-weight:600;color:var(--white)}
+.list-header .count{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace}
+.list-row{padding:14px 20px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:auto 1fr auto auto;gap:16px;align-items:center}
+.list-row:last-child{border-bottom:none}
+.card-code{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:6px 10px;font-family:'DM Mono',monospace;font-size:12px;color:var(--teal);font-weight:600;white-space:nowrap}
+.status-badge{display:inline-block;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase}
+.status-available{background:rgba(46,204,138,.12);color:var(--green);border:1px solid rgba(46,204,138,.3)}
+.status-assigned{background:rgba(224,96,48,.12);color:var(--orange);border:1px solid rgba(224,96,48,.3)}
+.status-disabled{background:rgba(122,127,154,.12);color:var(--muted);border:1px solid var(--border)}
+.empty-state{padding:40px 20px;text-align:center;color:var(--muted);font-size:13px}
+.empty-state .hint{font-size:12px;margin-top:8px;line-height:1.5}
+
+/* BUYER TAP PAGE */
 .tap-wrap{max-width:480px;margin:0 auto;padding-bottom:40px}
 .tap-header{background:var(--surface);border-bottom:1px solid var(--border);padding:22px 20px;text-align:center}
 .tap-photo{width:68px;height:68px;border-radius:50%;background:var(--card);border:3px solid var(--orange);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:30px;overflow:hidden}
@@ -83,7 +104,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .tap-agent-name{font-size:18px;font-weight:700;color:var(--white);margin-bottom:2px}
 .tap-agent-title{font-size:11px;color:var(--muted);margin-bottom:14px}
 .tap-btns{display:flex;gap:8px;justify-content:center}
-.tbtn{flex:1;max-width:120px;padding:10px 6px;border-radius:4px;font-size:11px;font-weight:600;text-align:center;text-decoration:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.tbtn{flex:1;max-width:120px;padding:10px 6px;border-radius:4px;font-size:11px;font-weight:600;text-align:center;text-decoration:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif}
 .tbtn-call{background:var(--orange);color:var(--white)}
 .tbtn-text{background:var(--card);color:var(--white);border:1px solid var(--border)}
 .tbtn-save{background:var(--teal);color:#0C0F1A;font-weight:700}
@@ -101,48 +122,31 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .interest-section{margin:12px 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px}
 .is-title{font-size:14px;font-weight:600;color:var(--white);margin-bottom:4px}
 .is-sub{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6}
-.if-group{margin-bottom:10px}
-.if-group input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 12px;outline:none}
-.if-group input:focus{border-color:var(--orange)}
-.if-group input::placeholder{color:var(--muted)}
 .if-success{background:rgba(46,204,138,.1);border:1px solid var(--green);color:var(--green);padding:12px;border-radius:4px;font-size:13px;text-align:center;display:none;margin-top:10px}
 .powered-by{text-align:center;padding:24px 16px;font-size:11px;color:var(--muted)}
-.powered-by a{color:var(--orange);text-decoration:none;cursor:pointer}
 .card-not-found{max-width:480px;margin:60px auto;padding:40px 24px;text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:8px}
 .card-not-found h2{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--white);margin-bottom:8px}
 .card-not-found p{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:8px}
-.profile-wrap{max-width:680px;margin:0 auto;padding:32px 24px}
-.profile-hero{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:24px;margin-bottom:18px;display:flex;align-items:center;gap:20px}
-.profile-avatar{width:68px;height:68px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:26px;color:#fff;flex-shrink:0;cursor:pointer;position:relative;overflow:hidden}
+
+/* PROFILE HERO */
+.profile-hero{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:22px;margin-bottom:18px;display:flex;align-items:center;gap:20px}
+.profile-avatar{width:64px;height:64px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:24px;color:#fff;flex-shrink:0;cursor:pointer;overflow:hidden}
 .profile-avatar:hover{opacity:.85}
 .profile-avatar img{width:100%;height:100%;object-fit:cover;display:none}
-.ph-text h2{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--white);letter-spacing:.5px;line-height:1}
+.ph-text h2{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--white);letter-spacing:.5px;line-height:1}
 .ph-text p{font-size:12px;color:var(--muted);margin-top:4px}
 .ph-live{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:9px;color:var(--green);letter-spacing:2px;text-transform:uppercase;border:1px solid rgba(46,204,138,.25);padding:4px 10px;border-radius:2px;background:rgba(46,204,138,.06);margin-top:8px}
-.pfield{display:flex;flex-direction:column;gap:6px}
-.pfield.full{grid-column:1/-1}
-.pfield label .req{color:var(--orange);margin-left:2px}
-.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.notif-wrap{max-width:640px;margin:0 auto;padding:32px 24px}
-.notif-item{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--teal);border-radius:6px;padding:14px 18px;margin-bottom:10px;display:flex;align-items:center;gap:14px}
-.notif-icon{font-size:20px}
-.notif-body{flex:1}
-.notif-title-sm{font-size:13px;font-weight:600;color:var(--white);margin-bottom:2px}
-.notif-meta{font-size:11px;color:var(--muted)}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface);border:1px solid var(--border);color:var(--white);padding:12px 24px;border-radius:6px;font-size:13px;z-index:9998;opacity:0;transition:all .3s;box-shadow:0 8px 32px rgba(0,0,0,.4);max-width:90vw}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.toast.error{background:rgba(224,80,80,.15);border-color:var(--red);color:#ffb5b5}
-.toast.success{background:rgba(46,204,138,.15);border-color:var(--green);color:#b6f0d0}
-.loading{display:inline-block;width:12px;height:12px;border:2px solid var(--muted);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:6px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.db-status{position:fixed;bottom:14px;right:14px;font-family:'DM Mono',monospace;font-size:10px;padding:5px 10px;border-radius:3px;z-index:9999;background:var(--surface);border:1px solid var(--border);color:var(--muted);letter-spacing:1px}
-.db-status.ok{color:var(--green);border-color:rgba(46,204,138,.3)}
-.db-status.err{color:var(--red);border-color:rgba(224,80,80,.3)}
+.ph-live span.dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block}
 
-/* Preview modal */
+/* ORDER SUCCESS */
+.order-success{display:none;background:rgba(46,204,138,.08);border:1px solid var(--green);color:var(--green);padding:16px;border-radius:6px;margin-top:14px;font-size:13px;line-height:1.5}
+.order-success .card-range{margin-top:8px;color:var(--muted2);font-family:'DM Mono',monospace;font-size:12px}
+.order-success.show{display:block}
+
+/* MODAL */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:9000;display:none;align-items:center;justify-content:center;padding:20px}
 .modal-bg.show{display:flex}
-.modal-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;max-width:420px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.modal-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;max-width:440px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.5)}
 .modal-close{float:right;background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1}
 .modal-close:hover{color:var(--white)}
 .pv-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--teal);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px}
@@ -154,130 +158,279 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .pv-headline{font-size:13px;color:var(--orange);font-weight:600;margin:10px 0 8px;font-style:italic}
 .pv-phone{font-size:12px;color:var(--teal);font-family:'DM Mono',monospace}
 
-/* Order price display */
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface);border:1px solid var(--border);color:var(--white);padding:12px 24px;border-radius:6px;font-size:13px;z-index:9998;opacity:0;transition:all .3s;box-shadow:0 8px 32px rgba(0,0,0,.4);max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.error{background:rgba(224,80,80,.15);border-color:var(--red);color:#ffb5b5}
+.toast.success{background:rgba(46,204,138,.15);border-color:var(--green);color:#b6f0d0}
+
+/* LOADING */
+.loading{display:inline-block;width:12px;height:12px;border:2px solid var(--muted);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.db-status{position:fixed;bottom:14px;right:14px;font-family:'DM Mono',monospace;font-size:10px;padding:5px 10px;border-radius:3px;z-index:9999;background:var(--surface);border:1px solid var(--border);color:var(--muted);letter-spacing:1px}
+.db-status.ok{color:var(--green);border-color:rgba(46,204,138,.3)}
+.db-status.err{color:var(--red);border-color:rgba(224,80,80,.3)}
+
+/* PRICE DISPLAY */
 .price-display{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:14px;margin:10px 0 14px;display:flex;justify-content:space-between;align-items:center}
 .price-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
 .price-value{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--orange);line-height:1}
 
-/* Admin */
+/* CARDS GRID */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:12px}
+.card-tile{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:14px;text-align:center}
+.card-tile .code{font-family:'DM Mono',monospace;font-size:13px;color:var(--teal);font-weight:600;margin-bottom:6px}
+.card-tile .meta{font-size:10px;color:var(--muted);margin-top:4px}
+.card-tile .listing-name{font-size:11px;color:var(--white);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* FILTER TABS */
+.filters{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.filter{padding:6px 12px;border:1px solid var(--border);border-radius:4px;background:transparent;color:var(--muted);font-size:11px;font-family:'DM Mono',monospace;cursor:pointer;letter-spacing:1px}
+.filter.active{background:var(--orange);color:var(--white);border-color:var(--orange)}
+
+/* ADMIN */
 .admin-pill{display:inline-block;background:var(--gold);color:#000;font-size:10px;font-weight:700;padding:3px 8px;border-radius:3px;letter-spacing:1px;margin-left:8px}
-#view-admin .wrap{max-width:700px}
+
+/* PROPERTIES LIST (in create listing) */
+.prop-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px 10px}
+.prop-link-wrap{flex:1;position:relative}
+.prop-link-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;pointer-events:none;color:var(--muted)}
+.prop-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:12px;padding:9px 10px 9px 30px;outline:none}
+.prop-input:focus{border-color:var(--orange)}
+.prop-remove{width:32px;height:36px;background:rgba(224,80,80,.1);border:1px solid rgba(224,80,80,.2);border-radius:4px;color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.add-prop-btn{background:transparent;border:1px dashed var(--border);color:var(--muted);padding:9px 16px;border-radius:4px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;margin-bottom:14px}
+.add-prop-btn:hover{border-color:var(--orange);color:var(--orange)}
+
+/* ORDER CONFIRMATION CARD LIST */
+.order-cards-list{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:12px;margin-top:10px;font-family:'DM Mono',monospace;font-size:12px;color:var(--teal);max-height:180px;overflow-y:auto;line-height:1.8}
 
 @media(max-width:768px){
-  nav{padding:0 14px}.nav-tabs{gap:2px}.nav-tab{padding:6px 10px;font-size:11px}
-  .wrap,.profile-wrap,.notif-wrap{padding:20px 14px}
-  .stats-row{grid-template-columns:1fr 1fr}
-  .form-grid,.pgrid{grid-template-columns:1fr}
-  .log-row{grid-template-columns:auto 1fr auto auto}
-  .last-tap{display:none}
+  nav{padding:0 14px}
+  .nav-tabs{gap:2px}
+  .nav-tab{padding:6px 10px;font-size:11px}
+  .nav-user-email{display:none}
+  .wrap,.wrap-narrow{padding:20px 14px}
+  .stats{grid-template-columns:1fr 1fr}
+  .grid2{grid-template-columns:1fr}
+  .list-row{grid-template-columns:auto 1fr auto;gap:12px}
   .profile-hero{flex-direction:column;text-align:center}
+  .auth-card{padding:28px 22px}
 }
 </style>
 </head>
 <body>
 
-<nav>
-  <a class="nav-logo" onclick="goHome()">For<span>Sale</span>NFC</a>
+<!-- NAV (hidden when logged out or on tap page) -->
+<nav id="mainNav" style="display:none">
+  <div class="nav-logo" onclick="goHome()">For<span>Sale</span>NFC</div>
   <div class="nav-tabs" id="navTabs">
-    <button class="nav-tab active" onclick="showView('dashboard',this)">Agent Dashboard</button>
-    <button class="nav-tab" onclick="showView('notifications',this)">Notifications</button>
-    <button class="nav-tab" onclick="showView('broker',this)">Broker View</button>
-    <button class="nav-tab" onclick="showView('profile',this)">⚙ My Profile</button>
+    <button class="nav-tab active" data-view="dashboard" onclick="showView('dashboard')">Dashboard</button>
+    <button class="nav-tab" data-view="mycards" onclick="showView('mycards')">My Cards</button>
+    <button class="nav-tab" data-view="create-listing" onclick="showView('create-listing')">New Listing</button>
+    <button class="nav-tab" data-view="orders" onclick="showView('orders')">Orders</button>
+    <button class="nav-tab" data-view="profile" onclick="showView('profile')">⚙ Profile</button>
+    <div class="nav-user">
+      <span class="nav-user-email" id="navUserEmail"></span>
+      <button class="logout-btn" onclick="signOut()">Sign out</button>
+    </div>
   </div>
 </nav>
 
-<!-- AGENT DASHBOARD -->
-<div class="view active" id="view-dashboard">
-  <div class="wrap">
-    <div class="page-title">Agent Dashboard</div>
-    <div class="page-sub" id="dashSub">Card manager and showing log</div>
+<!-- ═══ LOGIN ═══ -->
+<div class="view" id="view-login">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <div class="logo">For<span>Sale</span>NFC</div>
+        <div class="tagline">Agent Portal</div>
+      </div>
+      <div class="auth-title">Welcome back</div>
+      <div class="auth-desc">Sign in to manage your cards and listings.</div>
+      <div class="field"><label>Email <span class="req">*</span></label><input class="input" type="email" id="loginEmail" autocomplete="email" placeholder="you@example.com"></div>
+      <div class="field"><label>Password <span class="req">*</span></label><input class="input" type="password" id="loginPassword" autocomplete="current-password" placeholder="Your password"></div>
+      <button class="btn full" id="btnLogin" onclick="doLogin()">Sign In</button>
+      <div style="text-align:center;margin-top:12px;font-size:12px"><a onclick="doResetPassword()">Forgot password?</a></div>
+      <div class="auth-switch">Don't have an account? <a onclick="showView('signup')">Sign up</a></div>
+    </div>
+  </div>
+</div>
 
-    <div class="stats-row">
-      <div class="stat-box"><div class="stat-val" id="statShowings">0</div><div class="stat-lbl">Active Showings</div></div>
-      <div class="stat-box"><div class="stat-val" id="statTaps">0</div><div class="stat-lbl">Total Taps</div></div>
-      <div class="stat-box"><div class="stat-val" id="statLeads">0</div><div class="stat-lbl">Leads Captured</div></div>
-      <div class="stat-box"><div class="stat-val" id="statCards">0</div><div class="stat-lbl">Cards Available</div></div>
+<!-- ═══ SIGNUP ═══ -->
+<div class="view" id="view-signup">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <div class="logo">For<span>Sale</span>NFC</div>
+        <div class="tagline">Agent Portal</div>
+      </div>
+      <div class="auth-title">Create your account</div>
+      <div class="auth-desc">It's free to sign up. You only pay when you order NFC cards.</div>
+      <div class="field"><label>Full Name <span class="req">*</span></label><input class="input" type="text" id="signupName" autocomplete="name" placeholder="Jane Smith"></div>
+      <div class="field"><label>Email <span class="req">*</span></label><input class="input" type="email" id="signupEmail" autocomplete="email" placeholder="you@example.com"></div>
+      <div class="field"><label>Phone</label><input class="input" type="tel" id="signupPhone" autocomplete="tel" placeholder="555-555-5555"></div>
+      <div class="field"><label>Brokerage</label><input class="input" type="text" id="signupBrokerage" placeholder="Your brokerage (optional)"></div>
+      <div class="field"><label>Password <span class="req">*</span></label><input class="input" type="password" id="signupPassword" autocomplete="new-password" placeholder="At least 8 characters"></div>
+      <button class="btn full" id="btnSignup" onclick="doSignup()">Create Account</button>
+      <div class="auth-switch">Already have an account? <a onclick="showView('login')">Sign in</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SIGNUP SUCCESS ═══ -->
+<div class="view" id="view-signup-done">
+  <div class="auth-wrap">
+    <div class="auth-card" style="text-align:center">
+      <div class="auth-brand">
+        <div class="logo">For<span>Sale</span>NFC</div>
+      </div>
+      <div style="font-size:48px;margin:20px 0">✉️</div>
+      <div class="auth-title">Check your email</div>
+      <div class="auth-desc" id="signupDoneEmail">We sent a confirmation link. Click it to activate your account, then come back and sign in.</div>
+      <button class="btn full" onclick="showView('login')">Back to Sign In</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DASHBOARD ═══ -->
+<div class="view" id="view-dashboard">
+  <div class="wrap">
+    <div class="page-title">Dashboard</div>
+    <div class="page-sub" id="dashSub">Your activity at a glance</div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-val" id="statCards">0</div><div class="stat-lbl">Cards Owned</div></div>
+      <div class="stat"><div class="stat-val" id="statAvail">0</div><div class="stat-lbl">Available</div></div>
+      <div class="stat"><div class="stat-val" id="statListings">0</div><div class="stat-lbl">Active Listings</div></div>
+      <div class="stat"><div class="stat-val" id="statTaps">0</div><div class="stat-lbl">Total Taps</div></div>
     </div>
 
     <div class="panel">
-      <div class="panel-title">Set Up a New Showing</div>
-      <div class="panel-sub">Assign one of your cards to a buyer and add the properties you're showing.</div>
-
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Buyer Name <span style="color:var(--orange)">*</span></label>
-          <input type="text" id="inBuyerName" placeholder="Buyer name">
-        </div>
-        <div class="form-group">
-          <label>Card Number <span style="color:var(--orange)">*</span></label>
-          <select id="inCardId"><option value="">Loading cards…</option></select>
-        </div>
-        <div class="form-group"><label>Showing Date</label><input type="date" id="inDate"></div>
-        <div class="form-group"><label>Showing Time</label><input type="time" id="inTime"></div>
+      <div class="panel-title">Quick Actions</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:12px">
+        <button class="btn" onclick="showView('create-listing')">+ Create Listing</button>
+        <button class="btn ghost" onclick="showView('mycards')">View My Cards</button>
+        <button class="btn ghost" onclick="showView('orders')">Order More Cards</button>
       </div>
+    </div>
 
-      <div class="props-section">
-        <div class="props-label">Properties Being Shown <span style="color:var(--orange)">*</span></div>
-        <div id="propsList">
-          <div class="prop-row">
-            <div class="prop-link-wrap">
-              <span class="prop-link-icon">🔗</span>
-              <input class="prop-input" type="text" placeholder="Paste Zillow / Realtor / Redfin link — or type address">
-            </div>
-            <button class="prop-remove" onclick="removeProp(this)">✕</button>
+    <div class="list">
+      <div class="list-header">
+        <h3>Active Listings</h3>
+        <div class="count" id="dashListCount">0 listings</div>
+      </div>
+      <div id="dashListings"><div class="empty-state"><span class="loading"></span>Loading…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MY CARDS ═══ -->
+<div class="view" id="view-mycards">
+  <div class="wrap">
+    <div class="page-title">My Cards</div>
+    <div class="page-sub">Your physical NFC card inventory — each number matches a printed card.</div>
+
+    <div class="filters">
+      <button class="filter active" data-filter="all" onclick="filterMyCards('all')">All</button>
+      <button class="filter" data-filter="available" onclick="filterMyCards('available')">Available</button>
+      <button class="filter" data-filter="assigned" onclick="filterMyCards('assigned')">Assigned</button>
+    </div>
+
+    <div id="myCardsGrid"><div class="empty-state"><span class="loading"></span>Loading…</div></div>
+  </div>
+</div>
+
+<!-- ═══ CREATE LISTING ═══ -->
+<div class="view" id="view-create-listing">
+  <div class="wrap-narrow">
+    <div class="page-title">Create Listing</div>
+    <div class="page-sub">Assign one of your available cards to a buyer.</div>
+
+    <div class="panel">
+      <div class="panel-title">Buyer & Card</div>
+      <div class="grid2">
+        <div class="field"><label>Buyer Name <span class="req">*</span></label><input class="input" id="lBuyerName" type="text" placeholder="Buyer name"></div>
+        <div class="field">
+          <label>Card <span class="req">*</span></label>
+          <select class="select" id="lCardId"><option value="">Loading…</option></select>
+        </div>
+        <div class="field"><label>Showing Date</label><input class="input" id="lDate" type="date"></div>
+        <div class="field"><label>Showing Time</label><input class="input" id="lTime" type="time"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Properties Being Shown <span style="color:var(--orange)">*</span></div>
+      <div class="panel-sub">Paste listing links (Zillow, Realtor, Redfin) or addresses.</div>
+      <div id="lPropsList">
+        <div class="prop-row">
+          <div class="prop-link-wrap">
+            <span class="prop-link-icon">🔗</span>
+            <input class="prop-input" type="text" placeholder="Paste listing link or address">
+          </div>
+          <button class="prop-remove" onclick="removeProp(this)">✕</button>
+        </div>
+      </div>
+      <button class="add-prop-btn" onclick="addProp()">+ Add Another Property</button>
+    </div>
+
+    <button class="btn full" id="btnCreateListing" onclick="doCreateListing()">Create Listing & Assign Card →</button>
+  </div>
+</div>
+
+<!-- ═══ ORDERS ═══ -->
+<div class="view" id="view-orders">
+  <div class="wrap-narrow">
+    <div class="page-title">Order Cards</div>
+    <div class="page-sub">Order printed NFC cards with your profile info.</div>
+
+    <div class="panel">
+      <div class="panel-title">New Order</div>
+      <div class="grid2">
+        <div class="field">
+          <label>Quantity <span class="req">*</span></label>
+          <select class="select" id="oQty" onchange="updateOrderPrice()">
+            <option value="12">12 cards</option>
+            <option value="24">24 cards</option>
+            <option value="50">50 cards</option>
+            <option value="100">100 cards</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Price</label>
+          <div class="price-display" style="margin:0">
+            <span class="price-label">Total</span>
+            <span class="price-value" id="oPrice">$36</span>
           </div>
         </div>
-        <button class="add-prop-btn" onclick="addProp()">+ Add Another Property</button>
       </div>
-
-      <button class="btn full" id="btnCreate" onclick="createShowing()">Create Showing &amp; Assign Card →</button>
-    </div>
-
-    <div class="log">
-      <div class="log-header">
-        <div class="log-title">Active Showings — Tap Log</div>
-        <div class="log-count" id="logCount">0 showings</div>
+      <div class="grid2" style="margin-top:14px">
+        <div class="field full"><label>Shipping Name <span class="req">*</span></label><input class="input" id="oShipName" type="text" placeholder="Who receives the package"></div>
+        <div class="field full"><label>Street Address</label><input class="input" id="oShipAddr" type="text" placeholder="123 Main St"></div>
+        <div class="field"><label>City</label><input class="input" id="oShipCity" type="text" placeholder="City"></div>
+        <div class="field"><label>State</label><input class="input" id="oShipState" type="text" placeholder="State" maxlength="2"></div>
+        <div class="field full"><label>ZIP</label><input class="input" id="oShipZip" type="text" placeholder="ZIP"></div>
+        <div class="field full"><label>Notes (optional)</label><input class="input" id="oNotes" type="text" placeholder="Rush, special request, etc."></div>
       </div>
-      <div id="logRows"><div class="empty-state"><span class="loading"></span>Loading…</div></div>
+      <button class="btn full" style="margin-top:14px" id="btnOrder" onclick="placeOrder()">
+        <span id="btnOrderLabel">Order 12 Cards — $36</span>
+      </button>
+      <div id="orderSuccess" class="order-success">
+        <strong>✓ Order placed.</strong> <span id="orderSuccessMsg">These cards are now in your My Cards inventory.</span>
+        <div class="card-range" id="orderRange"></div>
+        <div class="order-cards-list" id="orderCardsList" style="display:none"></div>
+      </div>
     </div>
-  </div>
-</div>
 
-<!-- NOTIFICATIONS -->
-<div class="view" id="view-notifications">
-  <div class="notif-wrap">
-    <div class="page-title">Agent Notifications</div>
-    <div class="page-sub">Every tap on one of your cards shows up here</div>
-    <div id="notifList"><div class="empty-state" style="background:var(--surface);border:1px solid var(--border);border-radius:8px">Loading…</div></div>
-  </div>
-</div>
-
-<!-- BROKER VIEW -->
-<div class="view" id="view-broker">
-  <div class="wrap">
-    <div class="page-title">Broker View</div>
-    <div class="page-sub">Office-wide performance based on live data</div>
-    <div class="stats-row">
-      <div class="stat-box"><div class="stat-val" style="color:var(--teal)" id="bkShowings">0</div><div class="stat-lbl">Active Showings</div></div>
-      <div class="stat-box"><div class="stat-val" id="bkTaps">0</div><div class="stat-lbl">Total Taps</div></div>
-      <div class="stat-box"><div class="stat-val" style="color:var(--green)" id="bkLeads">0</div><div class="stat-lbl">Leads Captured</div></div>
-      <div class="stat-box"><div class="stat-val" id="bkInUse">0</div><div class="stat-lbl">Cards In Use</div></div>
-    </div>
-    <div class="stats-row" style="grid-template-columns:repeat(2,1fr)">
-      <div class="stat-box"><div class="stat-val" style="color:var(--green)" id="bkAvail">0</div><div class="stat-lbl">Cards Available</div></div>
-      <div class="stat-box"><div class="stat-val" style="color:var(--muted)" id="bkOrdered">0</div><div class="stat-lbl">Total Cards Ordered</div></div>
-    </div>
     <div class="panel">
-      <div class="panel-title">Office Activity</div>
-      <div class="panel-sub">Snapshot of all showings and tap activity</div>
-      <div id="bkActivity"><div class="empty-state">Loading…</div></div>
+      <div class="panel-title">Order History</div>
+      <div id="ordersList"><div class="empty-state">Loading…</div></div>
     </div>
   </div>
 </div>
 
-<!-- PROFILE + ORDER CARDS -->
+<!-- ═══ PROFILE ═══ -->
 <div class="view" id="view-profile">
-  <div class="profile-wrap">
+  <div class="wrap-narrow">
     <div class="profile-hero">
       <div class="profile-avatar" id="pAvatarCircle" onclick="document.getElementById('pAvatarFile').click()" title="Click to upload photo">
         <span id="pAvatarInitials">--</span>
@@ -286,43 +439,20 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
       <input type="file" id="pAvatarFile" accept="image/*" style="display:none" onchange="handleProfilePhoto(event)">
       <div class="ph-text">
         <h2 id="pHeroName">Your Name</h2>
-        <p id="pHeroTitle">Brokerage · License</p>
-        <div class="ph-live"><span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block"></span>Profile live on all buyer cards</div>
+        <p id="pHeroTitle">Brokerage</p>
+        <div class="ph-live"><span class="dot"></span>Profile live on all buyer cards</div>
       </div>
     </div>
 
     <div class="panel">
-      <div class="panel-title">Agent Info</div>
-      <div class="pgrid">
-        <div class="pfield"><label>First Name <span class="req">*</span></label><input class="pinput" id="pFirstName" type="text" placeholder="First name" oninput="updatePreview()"></div>
-        <div class="pfield"><label>Last Name <span class="req">*</span></label><input class="pinput" id="pLastName" type="text" placeholder="Last name" oninput="updatePreview()"></div>
-        <div class="pfield"><label>Cell Phone <span class="req">*</span></label><input class="pinput" id="pPhone" type="tel" placeholder="Cell phone number" oninput="updatePreview()"></div>
-        <div class="pfield"><label>Email <span class="req">*</span></label><input class="pinput" id="pEmail" type="email" placeholder="Email address" oninput="updatePreview()"></div>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title">Brokerage Info</div>
-      <div class="pgrid">
-        <div class="pfield full"><label>Brokerage Name <span class="req">*</span></label><input class="pinput" id="pBrokerage" type="text" placeholder="Your brokerage" oninput="updatePreview()"></div>
-        <div class="pfield"><label>License Number <span class="req">*</span></label><input class="pinput" id="pLicense" type="text" placeholder="License #" oninput="updatePreview()"></div>
-        <div class="pfield"><label>License State</label>
-          <select class="pinput" id="pState" onchange="updatePreview()">
-            <option value="">Select state</option>
-            <option>FL</option><option>TX</option><option>CA</option><option>NY</option><option>AZ</option><option>NC</option><option>GA</option><option>CO</option><option>WA</option><option>NV</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title">Card Info</div>
-      <div class="panel-sub">What buyers see when they tap your card</div>
-      <div class="pgrid">
-        <div class="pfield full">
-          <label>Headline</label>
-          <input class="pinput" id="pHeadline" type="text" placeholder="Tap to View This Property" oninput="updatePreview()">
-        </div>
+      <div class="panel-title">Your Profile</div>
+      <div class="panel-sub">This info appears on every card you hand out.</div>
+      <div class="grid2">
+        <div class="field full"><label>Full Name <span class="req">*</span></label><input class="input" id="pName" type="text" placeholder="First Last" oninput="updatePreview()"></div>
+        <div class="field"><label>Phone <span class="req">*</span></label><input class="input" id="pPhone" type="tel" placeholder="Cell phone" oninput="updatePreview()"></div>
+        <div class="field"><label>Email</label><input class="input" id="pEmail" type="email" readonly></div>
+        <div class="field full"><label>Brokerage</label><input class="input" id="pBrokerage" type="text" placeholder="Your brokerage" oninput="updatePreview()"></div>
+        <div class="field full"><label>Headline</label><input class="input" id="pHeadline" type="text" placeholder="Tap to View This Property" oninput="updatePreview()"></div>
       </div>
     </div>
 
@@ -330,72 +460,23 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
       <button class="btn" style="flex:1;min-width:180px" id="btnSaveProfile" onclick="saveProfile()">💾 Save Profile</button>
       <button class="btn ghost" style="flex:1;min-width:160px" onclick="openPreview()">👁 Preview Card</button>
     </div>
-
-    <!-- ORDER CARDS SECTION -->
-    <div class="panel">
-      <div class="panel-title">Order Cards</div>
-      <div class="panel-sub">Order printed NFC cards with your profile info on them</div>
-
-      <div class="pgrid">
-        <div class="pfield">
-          <label>Quantity <span class="req">*</span></label>
-          <select class="pinput" id="oQty" onchange="updateOrderPrice()">
-            <option value="12">12 cards</option>
-            <option value="24">24 cards</option>
-            <option value="50">50 cards</option>
-            <option value="100">100 cards</option>
-          </select>
-        </div>
-        <div class="pfield">
-          <label>Price</label>
-          <div class="price-display" style="margin:0">
-            <span class="price-label">Total</span>
-            <span class="price-value" id="oPrice">$36</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="pgrid" style="margin-top:14px">
-        <div class="pfield full"><label>Shipping Name <span class="req">*</span></label><input class="pinput" id="oShipName" type="text" placeholder="Who receives the package"></div>
-        <div class="pfield full"><label>Street Address</label><input class="pinput" id="oShipAddr" type="text" placeholder="123 Main St"></div>
-        <div class="pfield"><label>City</label><input class="pinput" id="oShipCity" type="text" placeholder="City"></div>
-        <div class="pfield"><label>State</label><input class="pinput" id="oShipState" type="text" placeholder="State" maxlength="2"></div>
-        <div class="pfield full"><label>ZIP</label><input class="pinput" id="oShipZip" type="text" placeholder="ZIP"></div>
-        <div class="pfield full"><label>Notes (optional)</label><input class="pinput" id="oNotes" type="text" placeholder="Rush, special request, etc."></div>
-      </div>
-
-      <button class="btn full" style="margin-top:14px" id="btnOrder" onclick="placeOrder()">
-        <span id="btnOrderLabel">Order 12 Cards — $36</span>
-      </button>
-
-      <div id="orderSuccess" style="display:none;background:rgba(46,204,138,.1);border:1px solid var(--green);color:var(--green);padding:14px;border-radius:6px;margin-top:14px;font-size:13px;line-height:1.5">
-        <strong>✓ Order received.</strong> We'll contact you shortly to confirm.
-        <div id="orderSuccessDetails" style="margin-top:6px;color:var(--muted);font-family:'DM Mono',monospace;font-size:11px"></div>
-      </div>
-    </div>
   </div>
 </div>
 
-<!-- ADMIN VIEW (hidden unless /?admin=1 + password) -->
+<!-- ═══ ADMIN (hidden unless ?admin=1 + password) ═══ -->
 <div class="view" id="view-admin">
   <div class="wrap">
     <div class="page-title">Admin Panel <span class="admin-pill">ADMIN</span></div>
-    <div class="page-sub">Control pricing and card numbering. Not visible to agents.</div>
+    <div class="page-sub">Pricing, card numbering, and order overview.</div>
 
     <div class="panel">
       <div class="panel-title">Pricing</div>
-      <div class="pgrid">
-        <div class="pfield">
-          <label>Card Price Per Dozen ($)</label>
-          <input class="pinput" id="aPrice" type="number" min="0" step="1">
-        </div>
-        <div class="pfield">
-          <label>Monthly Price ($)</label>
-          <input class="pinput" id="aMonthly" type="number" min="0" step="1">
-        </div>
-        <div class="pfield full">
+      <div class="grid2">
+        <div class="field"><label>Card Price Per Dozen ($)</label><input class="input" id="aPrice" type="number" min="0" step="1"></div>
+        <div class="field"><label>Monthly Price ($)</label><input class="input" id="aMonthly" type="number" min="0" step="1"></div>
+        <div class="field full">
           <label>Pricing Mode</label>
-          <select class="pinput" id="aMode">
+          <select class="select" id="aMode">
             <option value="per_order">Per Order (card-based)</option>
             <option value="monthly">Monthly Subscription</option>
           </select>
@@ -405,26 +486,31 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 
     <div class="panel">
       <div class="panel-title">Card Numbering</div>
-      <div class="panel-sub">Controls which card numbers get assigned to the next order</div>
-      <div class="pgrid">
-        <div class="pfield"><label>Card Number Prefix</label><input class="pinput" id="aPrefix" type="text" placeholder="FS"></div>
-        <div class="pfield"><label>Next Card Number</label><input class="pinput" id="aNext" type="number" min="1" step="1"></div>
+      <div class="panel-sub">Controls which card numbers get assigned to the next order.</div>
+      <div class="grid2">
+        <div class="field"><label>Prefix</label><input class="input" id="aPrefix" type="text" placeholder="FS"></div>
+        <div class="field"><label>Next Number</label><input class="input" id="aNext" type="number" min="1" step="1"></div>
       </div>
       <div style="font-size:11px;color:var(--muted);margin-top:8px;font-family:'DM Mono',monospace">
-        Next order's card range will start at: <span id="aPreview" style="color:var(--teal)">FS-1</span>
+        Next order starts at: <span id="aPreview" style="color:var(--teal)">FS-0101</span>
       </div>
     </div>
 
     <div class="panel">
-      <div class="panel-title">Recent Orders</div>
-      <div id="aOrders"><div class="empty-state">Loading…</div></div>
+      <div class="panel-title">Notifications</div>
+      <div class="field full"><label>Notification Email (future)</label><input class="input" id="aNotifEmail" type="email" placeholder="rdawsonfl@gmail.com"></div>
     </div>
 
     <button class="btn full" id="btnSaveAdmin" onclick="saveAdminSettings()">💾 Save Settings</button>
+
+    <div class="panel" style="margin-top:22px">
+      <div class="panel-title">Recent Orders (all agents)</div>
+      <div id="aOrders"><div class="empty-state">Loading…</div></div>
+    </div>
   </div>
 </div>
 
-<!-- BUYER TAP PAGE -->
+<!-- ═══ BUYER TAP PAGE ═══ -->
 <div class="view" id="view-tap"><div id="tapContent"></div></div>
 
 <!-- PREVIEW MODAL -->
@@ -435,13 +521,11 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
     <div class="pv-card">
       <div class="pv-avatar" id="pvAvatar"><span id="pvInitials">--</span><img id="pvImg" alt=""></div>
       <div class="pv-name" id="pvName">Your Name</div>
-      <div class="pv-brok" id="pvBrok">Brokerage · License</div>
+      <div class="pv-brok" id="pvBrok">Brokerage</div>
       <div class="pv-headline" id="pvHeadline">Tap to View This Property</div>
       <div class="pv-phone" id="pvPhone">Phone</div>
     </div>
-    <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:14px;line-height:1.5">
-      This is how your info appears on every NFC card you order.
-    </p>
+    <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:14px;line-height:1.5">This is how your info appears on every NFC card you order.</p>
   </div>
 </div>
 
@@ -450,358 +534,243 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 
 <script>
 // ============================================================
-// ForSaleNFC — Final Master Build
-// Supabase-backed. Admin via ?admin=1 + password.
+// ForSaleNFC — Auth + Inventory Build (v2)
 // ============================================================
 
-const SUPABASE_URL  = 'https://ufbqscikufkbcpzlpllr.supabase.co';
-const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmYnFzY2lrdWZrYmNwemxwbGxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4NjQ0NTcsImV4cCI6MjA4OTQ0MDQ1N30.IxOaF1Un22BrRJNBYJuNj2AdHhUOgqSefoT1ok5gqh4';
+const SUPABASE_URL   = 'https://ufbqscikufkbcpzlpllr.supabase.co';
+const SUPABASE_KEY   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmYnFzY2lrdWZrYmNwemxwbGxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4NjQ0NTcsImV4cCI6MjA4OTQ0MDQ1N30.IxOaF1Un22BrRJNBYJuNj2AdHhUOgqSefoT1ok5gqh4';
 const ADMIN_PASSWORD = 'Lemtad75';
 
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+});
 
-// Cached state
-let PROFILE  = {};
-let SETTINGS = { card_price_per_dozen:36, monthly_price:0, pricing_mode:'per_order', card_number_prefix:'FS', card_number_next:1 };
-let ORDERS   = []; // agent's card orders (to compute available card inventory)
+// State
+let SESSION = null;
+let PROFILE = null;
+let SETTINGS = { card_price_per_dozen: 36, monthly_price: 0, pricing_mode: 'per_order', card_number_prefix: 'FS', card_number_next: 101, notification_email: '' };
+let CARDS = [];
+let LISTINGS = [];
+let ORDERS = [];
+let MY_CARDS_FILTER = 'all';
 
-// ---- DB STATUS ----
+// ============================================================
+// UTILITIES
+// ============================================================
+function esc(s) { if (s === null || s === undefined) return ''; return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function showToast(msg, variant) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (variant ? ' ' + variant : '') + ' show';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
 function setDbStatus(state, msg) {
   const el = document.getElementById('dbStatus');
+  if (!el) return;
   el.className = 'db-status ' + (state === 'ok' ? 'ok' : state === 'err' ? 'err' : '');
   el.textContent = msg || state;
 }
 
-// ---- DATA: LOADERS ----
-async function loadShowings() {
-  const { data, error } = await db.from('showings').select('*').order('created_at', {ascending:false});
-  if (error) { console.error('loadShowings:', error); setDbStatus('err','DB error'); return []; }
-  setDbStatus('ok','DB connected');
-  return data || [];
+function formatCardCode(prefix, num) {
+  return `${prefix}-${String(num).padStart(4, '0')}`;
 }
 
+// ============================================================
+// AUTH
+// ============================================================
+async function loadSession() {
+  const { data: { session } } = await db.auth.getSession();
+  SESSION = session;
+  return session;
+}
+
+db.auth.onAuthStateChange((event, session) => {
+  SESSION = session;
+  if (event === 'SIGNED_OUT') {
+    PROFILE = null; CARDS = []; LISTINGS = []; ORDERS = [];
+    showAuthUI();
+  }
+});
+
+async function doSignup() {
+  const name      = document.getElementById('signupName').value.trim();
+  const email     = document.getElementById('signupEmail').value.trim();
+  const phone     = document.getElementById('signupPhone').value.trim();
+  const brokerage = document.getElementById('signupBrokerage').value.trim();
+  const password  = document.getElementById('signupPassword').value;
+
+  if (!name)              { showToast('Please enter your name', 'error'); return; }
+  if (!email)             { showToast('Please enter your email', 'error'); return; }
+  if (password.length < 8){ showToast('Password must be at least 8 characters', 'error'); return; }
+
+  const btn = document.getElementById('btnSignup');
+  btn.disabled = true; btn.textContent = 'Creating account…';
+
+  try {
+    const { data, error } = await db.auth.signUp({
+      email, password,
+      options: {
+        data: { name, phone, brokerage },
+        emailRedirectTo: window.location.origin
+      }
+    });
+
+    if (error) { showToast(error.message, 'error'); btn.disabled = false; btn.textContent = 'Create Account'; return; }
+
+    // If email confirmations are disabled, user is signed in immediately
+    if (data.session) {
+      // Update profile row with name/phone/brokerage (trigger created base row)
+      await db.from('profiles').update({ name, phone, brokerage }).eq('id', data.user.id);
+      SESSION = data.session;
+      showToast('Welcome! Setting up your account…', 'success');
+      await bootAfterAuth();
+      return;
+    }
+
+    // Otherwise show the "check your email" view
+    document.getElementById('signupDoneEmail').textContent =
+      `We sent a confirmation link to ${email}. Click it to activate your account, then sign in.`;
+    btn.disabled = false; btn.textContent = 'Create Account';
+    showView('signup-done');
+  } catch (e) {
+    console.error(e);
+    showToast('Signup failed. Please try again.', 'error');
+    btn.disabled = false; btn.textContent = 'Create Account';
+  }
+}
+
+async function doLogin() {
+  const email    = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  if (!email || !password) { showToast('Please enter email and password', 'error'); return; }
+
+  const btn = document.getElementById('btnLogin');
+  btn.disabled = true; btn.textContent = 'Signing in…';
+
+  const { data, error } = await db.auth.signInWithPassword({ email, password });
+  btn.disabled = false; btn.textContent = 'Sign In';
+
+  if (error) { showToast(error.message || 'Invalid email or password', 'error'); return; }
+  SESSION = data.session;
+  showToast('Welcome back', 'success');
+  await bootAfterAuth();
+}
+
+async function doResetPassword() {
+  const email = document.getElementById('loginEmail').value.trim();
+  if (!email) { showToast('Enter your email above first', 'error'); return; }
+  const { error } = await db.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin });
+  if (error) showToast(error.message, 'error');
+  else showToast('Password reset email sent', 'success');
+}
+
+async function signOut() {
+  await db.auth.signOut();
+  PROFILE = null;
+  SESSION = null;
+  window.location.href = window.location.pathname;
+}
+
+// ============================================================
+// DATA LOADERS
+// ============================================================
 async function loadProfile() {
-  const { data, error } = await db.from('profiles').select('*').order('created_at', {ascending:false}).limit(1).maybeSingle();
-  if (error) { console.error('loadProfile:', error); return {}; }
-  return data || {};
+  if (!SESSION) return null;
+  const { data, error } = await db.from('profiles').select('*').eq('id', SESSION.user.id).maybeSingle();
+  if (error) { console.error('loadProfile:', error); setDbStatus('err','DB error'); return null; }
+  setDbStatus('ok','DB connected');
+  return data;
 }
 
 async function loadSettings() {
-  const { data, error } = await db.from('app_settings').select('*').eq('id',1).maybeSingle();
+  const { data, error } = await db.from('app_settings').select('*').eq('id', 1).maybeSingle();
   if (error) { console.error('loadSettings:', error); return SETTINGS; }
   return data || SETTINGS;
 }
 
-async function loadOrders(agentId) {
-  let q = db.from('card_orders').select('*').order('created_at', {ascending:false});
-  if (agentId) q = q.eq('agent_id', agentId);
-  const { data, error } = await q;
+async function loadCards() {
+  if (!SESSION) return [];
+  const { data, error } = await db.from('cards').select('*').eq('agent_id', SESSION.user.id).order('card_code');
+  if (error) { console.error('loadCards:', error); return []; }
+  return data || [];
+}
+
+async function loadListings() {
+  if (!SESSION) return [];
+  const { data, error } = await db.from('listings').select('*').eq('agent_id', SESSION.user.id).order('created_at', { ascending: false });
+  if (error) { console.error('loadListings:', error); return []; }
+  return data || [];
+}
+
+async function loadOrders() {
+  if (!SESSION) return [];
+  const { data, error } = await db.from('orders').select('*').eq('agent_id', SESSION.user.id).order('created_at', { ascending: false });
   if (error) { console.error('loadOrders:', error); return []; }
   return data || [];
 }
 
-// ---- DATA: WRITERS ----
-async function createShowingRecord(payload) {
-  const { data, error } = await db.from('showings').insert(payload).select().maybeSingle();
-  return { data, error };
-}
-async function deleteShowingRecord(cardId) {
-  const { error } = await db.from('showings').delete().eq('card_id', cardId);
-  return error;
-}
-async function incrementTap(cardId, currentTaps) {
-  const { error: upErr } = await db.from('showings').update({
-    taps: (currentTaps || 0) + 1,
-    last_tap_at: new Date().toISOString()
-  }).eq('card_id', cardId);
-  if (upErr) console.error(upErr);
-  // Log the tap
-  const ua = (navigator.userAgent || '').slice(0, 200);
-  await db.from('tap_logs').insert({ card_id: cardId, user_agent: ua });
-}
-async function incrementLead(cardId, currentLeads) {
-  const { error } = await db.from('showings').update({ leads: (currentLeads || 0) + 1 }).eq('card_id', cardId);
-  return error;
-}
-async function saveProfileData(profileObj) {
-  if (PROFILE && PROFILE.id) profileObj.id = PROFILE.id;
-  const { data, error } = await db.from('profiles').upsert(profileObj).select().maybeSingle();
-  if (error) {
-    console.error('saveProfileData error:', error);
-    window.__lastSaveError = (error.message || error.code || JSON.stringify(error)).slice(0, 300);
-    return null;
-  }
-  return data;
-}
-async function saveSettingsData(s) {
-  s.id = 1;
-  s.updated_at = new Date().toISOString();
-  const { data, error } = await db.from('app_settings').upsert(s).select().maybeSingle();
-  if (error) { console.error(error); return null; }
-  return data;
-}
+// ============================================================
+// PROFILE
+// ============================================================
+async function saveProfile() {
+  if (!SESSION) return;
+  const name      = document.getElementById('pName').value.trim();
+  const phone     = document.getElementById('pPhone').value.trim();
+  const brokerage = document.getElementById('pBrokerage').value.trim();
+  const headline  = document.getElementById('pHeadline').value.trim() || 'Tap to View This Property';
 
-// ---- CARD INVENTORY (from orders) ----
-function getAllOwnedCardIds() {
-  // Flatten all card ranges from orders into a list of IDs
-  const ids = [];
-  for (const o of ORDERS) {
-    if (!o.card_prefix || !o.card_start || !o.card_end) continue;
-    for (let i = o.card_start; i <= o.card_end; i++) {
-      ids.push(o.card_prefix + '-' + String(i).padStart(3, '0'));
-    }
-  }
-  return ids;
-}
+  if (!name)  { showToast('Please enter your name', 'error');  return; }
+  if (!phone) { showToast('Please enter your phone', 'error'); return; }
 
-async function getAvailableCards() {
-  const all = getAllOwnedCardIds();
-  if (all.length === 0) return [];
-  const showings = await loadShowings();
-  const used = new Set(showings.map(s => s.card_id));
-  return all.filter(id => !used.has(id));
-}
-
-// ---- VIEW SWITCHING ----
-function showView(id, tabEl) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('view-' + id).classList.add('active');
-  if (tabEl) tabEl.classList.add('active');
-  window.scrollTo({top:0, behavior:'smooth'});
-}
-function goHome() {
-  if (window.location.search) window.location.href = window.location.pathname;
-  else showView('dashboard', document.querySelectorAll('.nav-tab')[0]);
-}
-
-// ---- CARD DROPDOWN ----
-async function renderCardDropdown() {
-  const avail = await getAvailableCards();
-  const sel = document.getElementById('inCardId');
-  if (!sel) return;
-  if (avail.length === 0) {
-    const ownedCount = getAllOwnedCardIds().length;
-    if (ownedCount === 0) {
-      sel.innerHTML = '<option value="">No cards yet — order cards on Profile page</option>';
-    } else {
-      sel.innerHTML = '<option value="">All your cards are assigned</option>';
-    }
-    return;
-  }
-  sel.innerHTML = '<option value="">Select a card...</option>' +
-    avail.map(id => `<option value="${id}">${id} — Available</option>`).join('');
-}
-
-// ---- PROPERTIES FORM ----
-function addProp() {
-  const list = document.getElementById('propsList');
-  const row = document.createElement('div');
-  row.className = 'prop-row';
-  row.innerHTML = `
-    <div class="prop-link-wrap">
-      <span class="prop-link-icon">🔗</span>
-      <input class="prop-input" type="text" placeholder="Paste Zillow / Realtor / Redfin link — or type address">
-    </div>
-    <button class="prop-remove" onclick="removeProp(this)">✕</button>`;
-  list.appendChild(row);
-}
-function removeProp(btn) {
-  const rows = document.querySelectorAll('#propsList .prop-row');
-  if (rows.length > 1) btn.closest('.prop-row').remove();
-  else showToast('Must have at least one property', 'error');
-}
-function resetPropsForm() {
-  document.getElementById('propsList').innerHTML = `
-    <div class="prop-row">
-      <div class="prop-link-wrap">
-        <span class="prop-link-icon">🔗</span>
-        <input class="prop-input" type="text" placeholder="Paste Zillow / Realtor / Redfin link — or type address">
-      </div>
-      <button class="prop-remove" onclick="removeProp(this)">✕</button>
-    </div>`;
-}
-
-// ---- CREATE SHOWING ----
-async function createShowing() {
-  const buyerName = document.getElementById('inBuyerName').value.trim();
-  const cardId    = document.getElementById('inCardId').value;
-  const showingDate = document.getElementById('inDate').value;
-  const showingTime = document.getElementById('inTime').value;
-  const properties  = [...document.querySelectorAll('#propsList .prop-input')].map(i => i.value.trim()).filter(Boolean);
-
-  if (!buyerName) { showToast('Please enter a buyer name', 'error'); return; }
-  if (!cardId)    { showToast('Please select a card', 'error'); return; }
-  if (properties.length === 0) { showToast('Add at least one property', 'error'); return; }
-
-  const btn = document.getElementById('btnCreate');
+  const btn = document.getElementById('btnSaveProfile');
   btn.disabled = true; btn.textContent = 'Saving…';
 
-  const { error } = await createShowingRecord({
-    card_id: cardId,
-    buyer_name: buyerName,
-    showing_date: showingDate || null,
-    showing_time: showingTime || null,
-    properties_json: properties,
-    taps: 0,
-    leads: 0
-  });
+  const { data, error } = await db.from('profiles')
+    .update({ name, phone, brokerage, headline, photo_data: PROFILE?.photo_data || null })
+    .eq('id', SESSION.user.id)
+    .select()
+    .maybeSingle();
 
-  btn.disabled = false; btn.textContent = 'Create Showing & Assign Card →';
+  btn.disabled = false; btn.textContent = '💾 Save Profile';
 
-  if (error) {
-    if (error.code === '23505') showToast('That card is already assigned', 'error');
-    else showToast('Error: ' + error.message, 'error');
-    return;
-  }
-
-  document.getElementById('inBuyerName').value = '';
-  document.getElementById('inDate').value = '';
-  document.getElementById('inTime').value = '';
-  resetPropsForm();
-  showToast('✓ ' + cardId + ' assigned to ' + buyerName, 'success');
-  await renderAll();
+  if (error) { console.error(error); showToast('Save failed: ' + error.message, 'error'); return; }
+  PROFILE = data;
+  showToast('✓ Profile saved', 'success');
+  renderProfileHero();
 }
 
-// ---- DELETE SHOWING ----
-async function deleteShowing(cardId) {
-  if (!confirm('Delete this showing? Card ' + cardId + ' will be returned to available.')) return;
-  const err = await deleteShowingRecord(cardId);
-  if (err) { showToast('Delete failed: ' + err.message, 'error'); return; }
-  showToast('Showing deleted · ' + cardId + ' returned to available', 'success');
-  await renderAll();
-}
-
-// ---- RENDER DASHBOARD ----
-async function renderDashboard() {
-  const showings = await loadShowings();
-  const totalTaps  = showings.reduce((a,s) => a + (s.taps  || 0), 0);
-  const totalLeads = showings.reduce((a,s) => a + (s.leads || 0), 0);
-  const avail = (await getAvailableCards()).length;
-
-  document.getElementById('statShowings').textContent = showings.length;
-  document.getElementById('statTaps').textContent     = totalTaps;
-  document.getElementById('statLeads').textContent    = totalLeads;
-  document.getElementById('statCards').textContent    = avail;
-
-  const rows = document.getElementById('logRows');
-  document.getElementById('logCount').textContent = showings.length + (showings.length === 1 ? ' showing' : ' showings');
-
-  if (showings.length === 0) {
-    rows.innerHTML = '<div class="empty-state">No showings yet.</div>';
-    return;
-  }
-  rows.innerHTML = showings.map(s => {
-    const propsCount = (s.properties_json || []).length;
-    const dateStr = s.showing_date || '';
-    const timeStr = s.showing_time ? ' · ' + s.showing_time : '';
-    const lastTapStr = s.last_tap_at ? new Date(s.last_tap_at).toLocaleString() : 'Not yet tapped';
-    const lastTapLbl = s.last_tap_at ? 'Last tap' : 'Awaiting';
-    return `
-      <div class="log-row">
-        <div class="card-id">${esc(s.card_id)}</div>
-        <div>
-          <div class="buyer-name">${esc(s.buyer_name)}</div>
-          <div class="buyer-props">${propsCount} ${propsCount === 1 ? 'property' : 'properties'}${dateStr ? ' · ' + esc(dateStr) + timeStr : ''}</div>
-        </div>
-        <div class="tap-count"><div class="tc-num">${s.taps || 0}</div><div class="tc-lbl">Taps</div></div>
-        <div class="last-tap"><div class="lt-time">${esc(lastTapStr)}</div><div class="lt-lbl">${lastTapLbl}</div></div>
-        <button class="btn-del" onclick="deleteShowing('${esc(s.card_id)}')">Delete</button>
-      </div>`;
-  }).join('');
-}
-
-// ---- RENDER NOTIFICATIONS ----
-async function renderNotifications() {
-  const all = await loadShowings();
-  const tapped = all.filter(s => (s.taps || 0) > 0);
-  const el = document.getElementById('notifList');
-  if (tapped.length === 0) {
-    el.innerHTML = '<div class="empty-state" style="background:var(--surface);border:1px solid var(--border);border-radius:8px">No notifications yet. When buyers tap your cards, alerts will appear here.</div>';
-    return;
-  }
-  tapped.sort((a,b) => new Date(b.last_tap_at || 0) - new Date(a.last_tap_at || 0));
-  el.innerHTML = tapped.map(s => `
-    <div class="notif-item">
-      <div class="notif-icon">🔔</div>
-      <div class="notif-body">
-        <div class="notif-title-sm">${esc(s.card_id)} was tapped by ${esc(s.buyer_name)}</div>
-        <div class="notif-meta">${s.taps} tap${s.taps === 1 ? '' : 's'} · ${s.leads || 0} lead${(s.leads||0) === 1 ? '' : 's'} · Last tap: ${s.last_tap_at ? new Date(s.last_tap_at).toLocaleString() : '—'}</div>
-      </div>
-    </div>`).join('');
-}
-
-// ---- RENDER BROKER ----
-async function renderBroker() {
-  const showings = await loadShowings();
-  const totalTaps  = showings.reduce((a,s) => a + (s.taps  || 0), 0);
-  const totalLeads = showings.reduce((a,s) => a + (s.leads || 0), 0);
-  const ownedTotal = getAllOwnedCardIds().length;
-  const used = new Set(showings.map(s => s.card_id));
-  const avail = ownedTotal - [...used].filter(u => getAllOwnedCardIds().includes(u)).length;
-
-  document.getElementById('bkShowings').textContent = showings.length;
-  document.getElementById('bkTaps').textContent     = totalTaps;
-  document.getElementById('bkLeads').textContent    = totalLeads;
-  document.getElementById('bkInUse').textContent    = showings.length;
-  document.getElementById('bkAvail').textContent    = Math.max(0, avail);
-  document.getElementById('bkOrdered').textContent  = ownedTotal;
-
-  const actEl = document.getElementById('bkActivity');
-  if (showings.length === 0) {
-    actEl.innerHTML = '<div class="empty-state">No activity yet.</div>';
-    return;
-  }
-  actEl.innerHTML = showings.map(s => {
-    const propsCount = (s.properties_json || []).length;
-    return `
-      <div style="padding:12px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px">
-        <div>
-          <div style="font-size:13px;color:var(--white);font-weight:600">${esc(s.buyer_name)} <span style="color:var(--teal);font-family:'DM Mono',monospace;font-size:11px">${esc(s.card_id)}</span></div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px">${propsCount} ${propsCount === 1 ? 'property' : 'properties'} · ${new Date(s.created_at).toLocaleDateString()}</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--orange);line-height:1">${s.taps || 0}</div>
-          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Taps</div>
-        </div>
-      </div>`;
-  }).join('');
-}
-
-// ---- PROFILE ----
 function loadProfileIntoForm() {
   const p = PROFILE || {};
-  if (p.first_name)     document.getElementById('pFirstName').value = p.first_name;
-  if (p.last_name)      document.getElementById('pLastName').value  = p.last_name;
-  if (p.phone)          document.getElementById('pPhone').value     = p.phone;
-  if (p.email)          document.getElementById('pEmail').value     = p.email;
-  if (p.brokerage_name) document.getElementById('pBrokerage').value = p.brokerage_name;
-  if (p.license_number) document.getElementById('pLicense').value   = p.license_number;
-  if (p.license_state)  document.getElementById('pState').value     = p.license_state;
-  if (p.headline)       document.getElementById('pHeadline').value  = p.headline;
+  document.getElementById('pName').value      = p.name      || '';
+  document.getElementById('pPhone').value     = p.phone     || '';
+  document.getElementById('pEmail').value     = p.email     || SESSION?.user?.email || '';
+  document.getElementById('pBrokerage').value = p.brokerage || '';
+  document.getElementById('pHeadline').value  = p.headline  || '';
   if (p.photo_data) {
     document.getElementById('pAvatarImg').src = p.photo_data;
     document.getElementById('pAvatarImg').style.display = 'block';
     document.getElementById('pAvatarInitials').style.display = 'none';
   }
   updatePreview();
-  const full = ((p.first_name || '') + ' ' + (p.last_name || '')).trim();
-  if (full || p.brokerage_name) {
-    document.getElementById('dashSub').textContent =
-      [full, p.brokerage_name, 'Card manager and showing log'].filter(Boolean).join(' · ');
-  }
 }
 
 function updatePreview() {
-  const fn   = document.getElementById('pFirstName').value.trim();
-  const ln   = document.getElementById('pLastName').value.trim();
-  const brok = document.getElementById('pBrokerage').value.trim();
-  const lic  = document.getElementById('pLicense').value.trim();
-  const full = (fn + ' ' + ln).trim() || 'Your Name';
-  const init = ((fn[0] || '') + (ln[0] || '')).toUpperCase() || '--';
+  const name = document.getElementById('pName').value.trim() || 'Your Name';
+  const brok = document.getElementById('pBrokerage').value.trim() || 'Brokerage';
+  const parts = name.split(/\s+/);
+  const init = ((parts[0]?.[0] || '') + (parts[1]?.[0] || '')).toUpperCase() || '--';
   document.getElementById('pAvatarInitials').textContent = init;
-  document.getElementById('pHeroName').textContent = full;
-  document.getElementById('pHeroTitle').textContent = (brok || 'Brokerage') + (lic ? ' · License #' + lic : '');
+  renderProfileHero();
+}
+
+function renderProfileHero() {
+  const name = document.getElementById('pName')?.value?.trim() || PROFILE?.name || 'Your Name';
+  const brok = document.getElementById('pBrokerage')?.value?.trim() || PROFILE?.brokerage || 'Brokerage';
+  document.getElementById('pHeroName').textContent = name;
+  document.getElementById('pHeroTitle').textContent = brok;
 }
 
 function handleProfilePhoto(e) {
@@ -810,80 +779,35 @@ function handleProfilePhoto(e) {
   if (file.size > 500 * 1024) { showToast('Photo too large (max 500 KB)', 'error'); return; }
   const reader = new FileReader();
   reader.onload = async ev => {
-    document.getElementById('pAvatarImg').src = ev.target.result;
+    const dataUrl = ev.target.result;
+    document.getElementById('pAvatarImg').src = dataUrl;
     document.getElementById('pAvatarImg').style.display = 'block';
     document.getElementById('pAvatarInitials').style.display = 'none';
-    const current = { ...PROFILE, photo_data: ev.target.result };
-    const saved = await saveProfileData(current);
-    if (saved) { PROFILE = saved; showToast('Photo saved', 'success'); }
-    else showToast('Photo save failed', 'error');
+    const { data, error } = await db.from('profiles').update({ photo_data: dataUrl }).eq('id', SESSION.user.id).select().maybeSingle();
+    if (error) { showToast('Photo save failed', 'error'); return; }
+    PROFILE = data;
+    showToast('Photo saved', 'success');
   };
   reader.readAsDataURL(file);
 }
 
-function readProfileForm() {
-  return {
-    first_name:     document.getElementById('pFirstName').value.trim(),
-    last_name:      document.getElementById('pLastName').value.trim(),
-    phone:          document.getElementById('pPhone').value.trim(),
-    email:          document.getElementById('pEmail').value.trim(),
-    brokerage_name: document.getElementById('pBrokerage').value.trim(),
-    license_number: document.getElementById('pLicense').value.trim(),
-    license_state:  document.getElementById('pState').value,
-    headline:       document.getElementById('pHeadline').value.trim() || 'Tap to View This Property',
-    photo_data:     PROFILE.photo_data || null
-  };
-}
-
-function validateProfile(p) {
-  if (!p.first_name)     return 'Please enter your first name';
-  if (!p.phone)          return 'Please enter your cell phone';
-  if (!p.email)          return 'Please enter your email';
-  if (!p.brokerage_name) return 'Please enter your brokerage';
-  if (!p.license_number) return 'Please enter your license number';
-  return null;
-}
-
-async function saveProfile() {
-  const p = readProfileForm();
-  const err = validateProfile(p);
-  if (err) { showToast(err, 'error'); return; }
-
-  const btn = document.getElementById('btnSaveProfile');
-  btn.disabled = true; btn.textContent = 'Saving…';
-  const saved = await saveProfileData(p);
-  btn.disabled = false; btn.textContent = '💾 Save Profile';
-
-  if (!saved) {
-    // Show the actual error so we can diagnose
-    const errMsg = window.__lastSaveError || 'unknown error';
-    showToast('Save failed: ' + errMsg, 'error');
-    alert('SAVE FAILED — error details:\n\n' + errMsg);
-    return;
-  }
-  PROFILE = saved;
-  const full = (p.first_name + ' ' + p.last_name).trim();
-  document.getElementById('dashSub').textContent = [full, p.brokerage_name, 'Card manager and showing log'].filter(Boolean).join(' · ');
-  showToast('✓ Profile saved', 'success');
-}
-
-// ---- PREVIEW MODAL ----
+// ============================================================
+// PREVIEW MODAL
+// ============================================================
 function openPreview() {
-  const fn = document.getElementById('pFirstName').value.trim();
-  const ln = document.getElementById('pLastName').value.trim();
-  const full = (fn + ' ' + ln).trim() || 'Your Name';
+  const name = document.getElementById('pName').value.trim() || 'Your Name';
   const brok = document.getElementById('pBrokerage').value.trim() || 'Brokerage';
-  const lic = document.getElementById('pLicense').value.trim();
   const phone = document.getElementById('pPhone').value.trim() || 'Phone';
   const headline = document.getElementById('pHeadline').value.trim() || 'Tap to View This Property';
-  const init = ((fn[0]||'')+(ln[0]||'')).toUpperCase() || '--';
+  const parts = name.split(/\s+/);
+  const init = ((parts[0]?.[0] || '') + (parts[1]?.[0] || '')).toUpperCase() || '--';
 
   document.getElementById('pvInitials').textContent = init;
-  document.getElementById('pvName').textContent = full;
-  document.getElementById('pvBrok').textContent = brok + (lic ? ' · License #' + lic : '');
+  document.getElementById('pvName').textContent = name;
+  document.getElementById('pvBrok').textContent = brok;
   document.getElementById('pvHeadline').textContent = '"' + headline + '"';
   document.getElementById('pvPhone').textContent = phone;
-  if (PROFILE.photo_data) {
+  if (PROFILE?.photo_data) {
     document.getElementById('pvImg').src = PROFILE.photo_data;
     document.getElementById('pvImg').style.display = 'block';
     document.getElementById('pvInitials').style.display = 'none';
@@ -892,7 +816,9 @@ function openPreview() {
 }
 function closePreview() { document.getElementById('previewModal').classList.remove('show'); }
 
-// ---- ORDER CARDS ----
+// ============================================================
+// ORDER CARDS
+// ============================================================
 function computePrice(qty) {
   const perDozen = SETTINGS.card_price_per_dozen || 36;
   return Math.round((qty / 12) * perDozen);
@@ -905,10 +831,13 @@ function updateOrderPrice() {
 }
 
 async function placeOrder() {
-  // Ensure profile is saved first
-  const p = readProfileForm();
-  const pErr = validateProfile(p);
-  if (pErr) { showToast(pErr, 'error'); showView('profile', document.querySelectorAll('.nav-tab')[3]); return; }
+  if (!SESSION) { showToast('Please sign in first', 'error'); return; }
+
+  // Profile must have a name at minimum
+  if (!PROFILE?.name) {
+    showToast('Please fill out your profile first', 'error');
+    showView('profile'); return;
+  }
 
   const shipName = document.getElementById('oShipName').value.trim();
   if (!shipName) { showToast('Please enter shipping name', 'error'); return; }
@@ -921,116 +850,415 @@ async function placeOrder() {
   const origLabel = document.getElementById('btnOrderLabel').textContent;
   document.getElementById('btnOrderLabel').textContent = 'Placing order…';
 
-  // Save/refresh profile first
-  const saved = await saveProfileData(p);
-  if (!saved) {
-    btn.disabled = false;
-    document.getElementById('btnOrderLabel').textContent = origLabel;
-    showToast('Could not save profile — order not placed', 'error');
-    return;
-  }
-  PROFILE = saved;
-
-  // Re-read settings to get latest card_number_next (avoid stale block assignment)
+  // Refresh settings to get latest counter (avoid stale numbering if admin changed it)
   const latest = await loadSettings();
   SETTINGS = latest;
   const prefix = SETTINGS.card_number_prefix || 'FS';
-  const start  = SETTINGS.card_number_next || 1;
+  const start  = SETTINGS.card_number_next || 101;
   const end    = start + qty - 1;
 
-  // Insert order
-  const order = {
-    agent_id: PROFILE.id,
-    quantity: qty,
-    price: price,
-    shipping_name: shipName,
-    shipping_address: document.getElementById('oShipAddr').value.trim() || null,
+  // 1) Insert order
+  const orderPayload = {
+    agent_id:        SESSION.user.id,
+    quantity:        qty,
+    total_price:     price,
+    shipping_name:   shipName,
+    shipping_address:document.getElementById('oShipAddr').value.trim() || null,
     shipping_city:   document.getElementById('oShipCity').value.trim() || null,
     shipping_state:  document.getElementById('oShipState').value.trim() || null,
     shipping_zip:    document.getElementById('oShipZip').value.trim() || null,
     notes:           document.getElementById('oNotes').value.trim() || null,
-    status: 'new',
-    card_prefix: prefix,
-    card_start: start,
-    card_end: end
+    status:          'paid'
   };
-  const { data: orderRow, error: orderErr } = await db.from('card_orders').insert(order).select().maybeSingle();
-
+  const { data: orderRow, error: orderErr } = await db.from('orders').insert(orderPayload).select().maybeSingle();
   if (orderErr) {
     console.error(orderErr);
-    btn.disabled = false;
-    document.getElementById('btnOrderLabel').textContent = origLabel;
+    btn.disabled = false; document.getElementById('btnOrderLabel').textContent = origLabel;
     showToast('Order failed: ' + orderErr.message, 'error');
     return;
   }
 
-  // Advance the next-card-number counter
-  await saveSettingsData({ ...SETTINGS, card_number_next: end + 1 });
+  // 2) Generate card rows (one per physical card)
+  const cardRows = [];
+  for (let n = start; n <= end; n++) {
+    cardRows.push({
+      order_id:   orderRow.id,
+      agent_id:   SESSION.user.id,
+      card_code:  formatCardCode(prefix, n),
+      status:     'available'
+    });
+  }
+  const { data: insertedCards, error: cardsErr } = await db.from('cards').insert(cardRows).select();
+  if (cardsErr) {
+    console.error(cardsErr);
+    btn.disabled = false; document.getElementById('btnOrderLabel').textContent = origLabel;
+    showToast('Card creation failed: ' + cardsErr.message, 'error');
+    return;
+  }
+
+  // 3) Advance the counter
+  await db.from('app_settings').update({ card_number_next: end + 1, updated_at: new Date().toISOString() }).eq('id', 1);
   SETTINGS.card_number_next = end + 1;
 
-  // Success UI
-  const rangeStr = `${prefix}-${String(start).padStart(3,'0')} through ${prefix}-${String(end).padStart(3,'0')}`;
-  document.getElementById('orderSuccess').style.display = 'block';
-  document.getElementById('orderSuccessDetails').innerHTML =
-    `Order ID: ${esc(orderRow.id.slice(0,8))} · ${qty} cards · ${rangeStr} · ${new Date(orderRow.created_at).toLocaleString()}`;
+  // 4) Success UI
+  const firstCode = formatCardCode(prefix, start);
+  const lastCode  = formatCardCode(prefix, end);
+  document.getElementById('orderSuccess').classList.add('show');
+  document.getElementById('orderSuccessMsg').textContent = `${qty} cards are now in your My Cards inventory.`;
+  document.getElementById('orderRange').textContent = `Card numbers: ${firstCode} through ${lastCode}`;
+  const listEl = document.getElementById('orderCardsList');
+  listEl.style.display = 'block';
+  listEl.innerHTML = (insertedCards || []).map(c => esc(c.card_code)).join(' · ');
 
-  // Reset form fields (keep shipping info; clear quantity? leave at 12)
+  // Reset notes
   document.getElementById('oNotes').value = '';
 
   btn.disabled = false;
   document.getElementById('btnOrderLabel').textContent = origLabel;
-  showToast(`✓ Order placed — ${qty} cards assigned`, 'success');
+  showToast(`✓ ${qty} cards ordered · ${firstCode}–${lastCode}`, 'success');
 
-  // Refresh orders + inventory
-  ORDERS = await loadOrders(PROFILE.id);
-  await renderAll();
+  // Refresh state
+  CARDS = await loadCards();
+  ORDERS = await loadOrders();
+  renderAll();
 }
 
-// ---- BUYER TAP PAGE ----
+// ============================================================
+// LISTINGS — CREATE
+// ============================================================
+function addProp() {
+  const list = document.getElementById('lPropsList');
+  const row = document.createElement('div');
+  row.className = 'prop-row';
+  row.innerHTML = `
+    <div class="prop-link-wrap">
+      <span class="prop-link-icon">🔗</span>
+      <input class="prop-input" type="text" placeholder="Paste listing link or address">
+    </div>
+    <button class="prop-remove" onclick="removeProp(this)">✕</button>`;
+  list.appendChild(row);
+}
+function removeProp(btn) {
+  const rows = document.querySelectorAll('#lPropsList .prop-row');
+  if (rows.length > 1) btn.closest('.prop-row').remove();
+  else showToast('Must have at least one property', 'error');
+}
+function resetListingForm() {
+  document.getElementById('lBuyerName').value = '';
+  document.getElementById('lDate').value = '';
+  document.getElementById('lTime').value = '';
+  document.getElementById('lCardId').value = '';
+  document.getElementById('lPropsList').innerHTML = `
+    <div class="prop-row">
+      <div class="prop-link-wrap">
+        <span class="prop-link-icon">🔗</span>
+        <input class="prop-input" type="text" placeholder="Paste listing link or address">
+      </div>
+      <button class="prop-remove" onclick="removeProp(this)">✕</button>
+    </div>`;
+}
+
+function renderCreateListingDropdown() {
+  const sel = document.getElementById('lCardId');
+  const available = CARDS.filter(c => c.status === 'available');
+  if (available.length === 0) {
+    sel.innerHTML = '<option value="">No available cards — order more in Orders</option>';
+    return;
+  }
+  sel.innerHTML = '<option value="">Select a card…</option>' +
+    available.map(c => `<option value="${esc(c.id)}">${esc(c.card_code)}</option>`).join('');
+}
+
+async function doCreateListing() {
+  if (!SESSION) return;
+  const buyerName = document.getElementById('lBuyerName').value.trim();
+  const cardId    = document.getElementById('lCardId').value;
+  const dateStr   = document.getElementById('lDate').value;
+  const timeStr   = document.getElementById('lTime').value;
+  const properties = [...document.querySelectorAll('#lPropsList .prop-input')].map(i => i.value.trim()).filter(Boolean);
+
+  if (!buyerName)           { showToast('Please enter a buyer name', 'error'); return; }
+  if (!cardId)              { showToast('Please select a card', 'error'); return; }
+  if (properties.length === 0) { showToast('Add at least one property', 'error'); return; }
+
+  const btn = document.getElementById('btnCreateListing');
+  btn.disabled = true; btn.textContent = 'Saving…';
+
+  const card = CARDS.find(c => c.id === cardId);
+  if (!card || card.status !== 'available') {
+    btn.disabled = false; btn.textContent = 'Create Listing & Assign Card →';
+    showToast('That card is no longer available', 'error'); return;
+  }
+
+  // 1) Insert listing
+  const listingPayload = {
+    agent_id:        SESSION.user.id,
+    card_id:         cardId,
+    buyer_name:      buyerName,
+    showing_date:    dateStr || null,
+    showing_time:    timeStr || null,
+    properties_json: properties,
+    property_address:properties[0] || null
+  };
+  const { data: listingRow, error: listingErr } = await db.from('listings').insert(listingPayload).select().maybeSingle();
+  if (listingErr) {
+    console.error(listingErr);
+    btn.disabled = false; btn.textContent = 'Create Listing & Assign Card →';
+    showToast('Error: ' + listingErr.message, 'error');
+    return;
+  }
+
+  // 2) Mark card as assigned
+  const { error: cardErr } = await db.from('cards').update({
+    status: 'assigned',
+    listing_id: listingRow.id,
+    assigned_at: new Date().toISOString()
+  }).eq('id', cardId);
+  if (cardErr) {
+    console.error(cardErr);
+    showToast('Listing saved, but card status update failed', 'error');
+  }
+
+  btn.disabled = false; btn.textContent = 'Create Listing & Assign Card →';
+  showToast(`✓ ${card.card_code} assigned to ${buyerName}`, 'success');
+  resetListingForm();
+
+  // Refresh
+  CARDS = await loadCards();
+  LISTINGS = await loadListings();
+  renderAll();
+  showView('mycards');
+}
+
+// ============================================================
+// DELETE LISTING
+// ============================================================
+async function deleteListing(listingId, cardId) {
+  if (!confirm('Delete this listing? The card will return to available.')) return;
+  const { error: delErr } = await db.from('listings').delete().eq('id', listingId);
+  if (delErr) { showToast('Delete failed: ' + delErr.message, 'error'); return; }
+  if (cardId) {
+    await db.from('cards').update({ status: 'available', listing_id: null, assigned_at: null }).eq('id', cardId);
+  }
+  showToast('Listing deleted', 'success');
+  CARDS = await loadCards();
+  LISTINGS = await loadListings();
+  renderAll();
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function showView(viewId) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const el = document.getElementById('view-' + viewId);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.view === viewId);
+  });
+  if (viewId === 'create-listing') renderCreateListingDropdown();
+  if (viewId === 'mycards')        renderMyCards();
+  if (viewId === 'orders')         renderOrdersList();
+  if (viewId === 'profile')        loadProfileIntoForm();
+  if (viewId === 'dashboard')      renderDashboard();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goHome() {
+  if (window.location.search) window.location.href = window.location.pathname;
+  else if (SESSION) showView('dashboard');
+  else showView('login');
+}
+
+function showAuthUI() {
+  document.getElementById('mainNav').style.display = 'none';
+  showView('login');
+}
+function showMainUI() {
+  document.getElementById('mainNav').style.display = 'flex';
+  document.getElementById('navUserEmail').textContent = SESSION?.user?.email || '';
+}
+
+function renderDashboard() {
+  const owned = CARDS.length;
+  const avail = CARDS.filter(c => c.status === 'available').length;
+  const listingsActive = LISTINGS.length;
+  const totalTaps = LISTINGS.reduce((a,l) => a + (l.taps || 0), 0);
+
+  document.getElementById('statCards').textContent    = owned;
+  document.getElementById('statAvail').textContent    = avail;
+  document.getElementById('statListings').textContent = listingsActive;
+  document.getElementById('statTaps').textContent     = totalTaps;
+
+  const el = document.getElementById('dashListings');
+  document.getElementById('dashListCount').textContent =
+    LISTINGS.length + (LISTINGS.length === 1 ? ' listing' : ' listings');
+
+  if (LISTINGS.length === 0) {
+    el.innerHTML = `
+      <div class="empty-state">
+        No listings yet.
+        <div class="hint">Order cards, then create your first listing.</div>
+      </div>`;
+    return;
+  }
+
+  el.innerHTML = LISTINGS.map(l => {
+    const card = CARDS.find(c => c.id === l.card_id);
+    const code = card?.card_code || '—';
+    const propsCount = (l.properties_json || []).length;
+    const lastTap = l.last_tap_at ? new Date(l.last_tap_at).toLocaleString() : 'Awaiting';
+    return `
+      <div class="list-row">
+        <div class="card-code">${esc(code)}</div>
+        <div>
+          <div style="font-size:14px;font-weight:600;color:var(--white);margin-bottom:3px">${esc(l.buyer_name || '—')}</div>
+          <div style="font-size:11px;color:var(--muted)">${propsCount} ${propsCount === 1 ? 'property' : 'properties'}${l.showing_date ? ' · ' + esc(l.showing_date) : ''} · ${l.taps || 0} taps</div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);text-align:right">${esc(lastTap)}</div>
+        <button class="btn danger small" onclick="deleteListing('${esc(l.id)}','${esc(l.card_id||'')}')">Delete</button>
+      </div>`;
+  }).join('');
+}
+
+function filterMyCards(filter) {
+  MY_CARDS_FILTER = filter;
+  document.querySelectorAll('#view-mycards .filter').forEach(f => {
+    f.classList.toggle('active', f.dataset.filter === filter);
+  });
+  renderMyCards();
+}
+
+function renderMyCards() {
+  const el = document.getElementById('myCardsGrid');
+  let cards = CARDS;
+  if (MY_CARDS_FILTER !== 'all') cards = cards.filter(c => c.status === MY_CARDS_FILTER);
+
+  if (cards.length === 0) {
+    const hint = CARDS.length === 0
+      ? `<div class="hint"><a onclick="showView('orders')">Order your first dozen cards</a> to get started.</div>`
+      : `<div class="hint">No cards match this filter.</div>`;
+    el.innerHTML = `<div class="empty-state">No cards here.${hint}</div>`;
+    return;
+  }
+
+  el.innerHTML = `
+    <div class="cards-grid">
+      ${cards.map(c => {
+        const listing = LISTINGS.find(l => l.id === c.listing_id);
+        const listingName = listing ? esc(listing.buyer_name || '') : '';
+        return `
+          <div class="card-tile">
+            <div class="code">${esc(c.card_code)}</div>
+            <div class="status-badge status-${esc(c.status)}">${esc(c.status)}</div>
+            ${listingName ? `<div class="listing-name">→ ${listingName}</div>` : ''}
+          </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function renderOrdersList() {
+  const el = document.getElementById('ordersList');
+  if (ORDERS.length === 0) {
+    el.innerHTML = '<div class="empty-state">No orders yet.</div>';
+    return;
+  }
+  el.innerHTML = ORDERS.map(o => {
+    const orderCards = CARDS.filter(c => c.order_id === o.id).sort((a,b) => a.card_code.localeCompare(b.card_code));
+    const firstCode = orderCards[0]?.card_code || '—';
+    const lastCode  = orderCards[orderCards.length-1]?.card_code || '—';
+    const range     = orderCards.length > 0 ? `${firstCode} → ${lastCode}` : '—';
+    return `
+      <div style="padding:14px 16px;border-bottom:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <div style="font-size:13px;font-weight:600;color:var(--white)">${o.quantity} cards · $${o.total_price}</div>
+          <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace">${new Date(o.created_at).toLocaleString()}</div>
+        </div>
+        <div style="font-size:11px;color:var(--teal);margin-top:4px;font-family:'DM Mono',monospace">${esc(range)}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px">Status: ${esc(o.status)} · Shipping: ${esc(o.shipping_name || '—')}</div>
+      </div>`;
+  }).join('');
+}
+
+function renderAll() {
+  renderDashboard();
+  const activeView = document.querySelector('.view.active')?.id?.replace('view-','');
+  if (activeView === 'mycards')        renderMyCards();
+  if (activeView === 'orders')         renderOrdersList();
+  if (activeView === 'create-listing') renderCreateListingDropdown();
+}
+
+// ============================================================
+// BUYER TAP PAGE
+// ============================================================
 async function loadTapPageFromQuery() {
   const params = new URLSearchParams(window.location.search);
-  const cardId = params.get('t');
-  if (!cardId) return false;
+  const cardCode = params.get('t');
+  if (!cardCode) return false;
 
-  document.querySelectorAll('.nav-tab').forEach(t => t.style.display = 'none');
+  document.getElementById('mainNav').style.display = 'none';
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-tap').classList.add('active');
 
   const tc = document.getElementById('tapContent');
   tc.innerHTML = '<div class="card-not-found"><p><span class="loading"></span>Loading card…</p></div>';
 
-  const [showingRes, profileRes] = await Promise.all([
-    db.from('showings').select('*').eq('card_id', cardId).maybeSingle(),
-    db.from('profiles').select('*').order('created_at',{ascending:false}).limit(1).maybeSingle()
-  ]);
-
-  const showing = showingRes.data;
-  const profile = profileRes.data || {};
-
-  if (!showing) {
+  const { data: card, error: cardErr } = await db.from('cards').select('*').eq('card_code', cardCode).maybeSingle();
+  if (cardErr || !card) {
     tc.innerHTML = `
       <div class="card-not-found">
         <h2>Card Not Found</h2>
-        <p>Card <strong style="color:var(--teal);font-family:'DM Mono',monospace">${esc(cardId)}</strong> hasn't been assigned to a showing yet.</p>
-        <p style="margin-top:12px"><a onclick="goHome()" style="color:var(--orange);cursor:pointer;text-decoration:underline">Go to dashboard</a></p>
+        <p>Card <strong style="color:var(--teal);font-family:'DM Mono',monospace">${esc(cardCode)}</strong> hasn't been set up yet.</p>
       </div>`;
     return true;
   }
 
-  await incrementTap(cardId, showing.taps || 0);
-  renderTapPage(showing, profile, cardId);
+  if (!card.listing_id) {
+    tc.innerHTML = `
+      <div class="card-not-found">
+        <h2>Card Ready</h2>
+        <p>Card <strong style="color:var(--teal);font-family:'DM Mono',monospace">${esc(cardCode)}</strong> is ready, but no listing has been assigned yet.</p>
+        <p>Ask your agent to assign a listing to this card.</p>
+      </div>`;
+    return true;
+  }
+
+  const [listingRes, profileRes] = await Promise.all([
+    db.from('listings').select('*').eq('id', card.listing_id).maybeSingle(),
+    db.from('profiles').select('*').eq('id', card.agent_id).maybeSingle()
+  ]);
+
+  const listing = listingRes.data;
+  const profile = profileRes.data || {};
+
+  if (!listing) {
+    tc.innerHTML = `<div class="card-not-found"><h2>Listing Not Found</h2></div>`;
+    return true;
+  }
+
+  // Log tap + increment
+  try {
+    const ua = (navigator.userAgent || '').slice(0, 200);
+    await db.from('tap_logs').insert({ card_id: card.id, listing_id: listing.id, user_agent: ua });
+    await db.from('listings').update({
+      taps: (listing.taps || 0) + 1,
+      last_tap_at: new Date().toISOString()
+    }).eq('id', listing.id);
+  } catch (e) { console.error('tap log error:', e); }
+
+  renderTapPage(listing, profile, card);
   return true;
 }
 
-function renderTapPage(showing, profile, cardId) {
+function renderTapPage(listing, profile, card) {
   const tc = document.getElementById('tapContent');
-  const agentName = ((profile.first_name || '') + ' ' + (profile.last_name || '')).trim() || 'Your Agent';
-  const agentTitle = [profile.brokerage_name || 'Brokerage', profile.license_number ? 'License #' + profile.license_number : ''].filter(Boolean).join(' · ');
+  const name = profile.name || 'Your Agent';
+  const brok = [profile.brokerage || '', ''].filter(Boolean).join(' · ') || 'Realtor';
   const rawPhone = (profile.phone || '').replace(/\D/g, '');
   const photoHtml = profile.photo_data ? `<img src="${esc(profile.photo_data)}" alt="">` : '👤';
   const headline = profile.headline || 'Tap to View This Property';
 
-  const properties = showing.properties_json || [];
+  const properties = listing.properties_json || [];
   const propsHtml = properties.map(prop => {
     const isUrl = /^https?:\/\//i.test(prop) || /^www\./i.test(prop);
     const content = isUrl
@@ -1043,8 +1271,8 @@ function renderTapPage(showing, profile, cardId) {
     <div class="tap-wrap">
       <div class="tap-header">
         <div class="tap-photo">${photoHtml}</div>
-        <div class="tap-agent-name">${esc(agentName)}</div>
-        <div class="tap-agent-title">${esc(agentTitle) || 'Realtor'}</div>
+        <div class="tap-agent-name">${esc(name)}</div>
+        <div class="tap-agent-title">${esc(brok)}</div>
         <div class="tap-btns">
           <a href="tel:${esc(rawPhone)}" class="tbtn tbtn-call">📞 Call</a>
           <a href="sms:${esc(rawPhone)}" class="tbtn tbtn-text">💬 Text</a>
@@ -1054,8 +1282,8 @@ function renderTapPage(showing, profile, cardId) {
       <div class="buyer-greeting">
         <div class="bg-icon">🏠</div>
         <div>
-          <div class="bg-hi">Hi ${esc(showing.buyer_name)} — ${esc(headline)}</div>
-          <div class="bg-sub">Shown by ${esc(agentName)}${showing.showing_date ? ' · ' + esc(showing.showing_date) : ''}${showing.showing_time ? ' ' + esc(showing.showing_time) : ''}</div>
+          <div class="bg-hi">Hi ${esc(listing.buyer_name || 'there')} — ${esc(headline)}</div>
+          <div class="bg-sub">Shown by ${esc(name)}${listing.showing_date ? ' · ' + esc(listing.showing_date) : ''}${listing.showing_time ? ' ' + esc(listing.showing_time) : ''}</div>
         </div>
       </div>
       <div class="tap-listings">
@@ -1064,11 +1292,11 @@ function renderTapPage(showing, profile, cardId) {
       </div>
       <div class="interest-section">
         <div class="is-title">Ready to move forward?</div>
-        <div class="is-sub">Let ${esc(agentName)} know which property you're interested in.</div>
-        <div class="if-group"><input type="text" id="iName" placeholder="Your name"></div>
-        <div class="if-group"><input type="tel" id="iPhone" placeholder="Best phone number"></div>
-        <div class="if-group"><input type="text" id="iProp" placeholder="Which property?"></div>
-        <button class="btn full" id="btnInterest" onclick="submitInterest('${esc(cardId)}',${showing.leads || 0})">Send to Agent</button>
+        <div class="is-sub">Let ${esc(name)} know which property you're interested in.</div>
+        <div class="field"><input class="input" type="text" id="iName" placeholder="Your name"></div>
+        <div class="field"><input class="input" type="tel" id="iPhone" placeholder="Best phone number"></div>
+        <div class="field"><input class="input" type="text" id="iProp" placeholder="Which property?"></div>
+        <button class="btn full" id="btnInterest" onclick="submitInterest('${esc(listing.id)}',${listing.leads || 0})">Send to Agent</button>
         <div class="if-success" id="ifSuccess">✓ Agent has been notified.</div>
       </div>
       <div class="powered-by">Powered by <a onclick="goHome()">ForSaleNFC</a></div>
@@ -1076,140 +1304,136 @@ function renderTapPage(showing, profile, cardId) {
   window.__tapProfile = profile;
 }
 
-async function submitInterest(cardId, currentLeads) {
+async function submitInterest(listingId, currentLeads) {
   const name = document.getElementById('iName').value.trim();
   if (!name) { showToast('Please enter your name', 'error'); return; }
   const btn = document.getElementById('btnInterest');
   btn.disabled = true; btn.textContent = 'Sending…';
-  const err = await incrementLead(cardId, currentLeads);
+  const { error } = await db.from('listings').update({ leads: (currentLeads || 0) + 1 }).eq('id', listingId);
   btn.disabled = false; btn.textContent = 'Send to Agent';
-  if (err) { showToast('Error sending', 'error'); return; }
+  if (error) { showToast('Error sending', 'error'); return; }
   document.getElementById('ifSuccess').style.display = 'block';
   showToast('✓ Message sent to agent', 'success');
 }
 
 function saveContact() {
   const p = window.__tapProfile || PROFILE || {};
-  if (!p.first_name && !p.phone) { showToast('Agent has not set up profile', 'error'); return; }
-  const fn = p.first_name || '', ln = p.last_name || '';
+  if (!p.name && !p.phone) { showToast('Agent has not set up profile', 'error'); return; }
+  const name = p.name || '';
   const ph = (p.phone || '').replace(/\D/g, '');
-  const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN:${fn} ${ln}\nTEL:${ph}\nEMAIL:${p.email || ''}\nORG:${p.brokerage_name || ''}\nEND:VCARD`;
-  const blob = new Blob([vcard], {type: 'text/vcard'});
+  const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\nTEL:${ph}\nEMAIL:${p.email || ''}\nORG:${p.brokerage || ''}\nEND:VCARD`;
+  const blob = new Blob([vcard], { type: 'text/vcard' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = ((fn + '_' + ln).trim() || 'agent') + '.vcf';
+  a.download = (name.replace(/\s+/g,'_') || 'agent') + '.vcf';
   a.click();
 }
 
-// ---- ADMIN ----
+// ============================================================
+// ADMIN
+// ============================================================
 function loadAdminForm() {
-  document.getElementById('aPrice').value  = SETTINGS.card_price_per_dozen ?? 36;
-  document.getElementById('aMonthly').value = SETTINGS.monthly_price ?? 0;
-  document.getElementById('aMode').value   = SETTINGS.pricing_mode || 'per_order';
-  document.getElementById('aPrefix').value = SETTINGS.card_number_prefix || 'FS';
-  document.getElementById('aNext').value   = SETTINGS.card_number_next || 1;
+  document.getElementById('aPrice').value     = SETTINGS.card_price_per_dozen ?? 36;
+  document.getElementById('aMonthly').value   = SETTINGS.monthly_price ?? 0;
+  document.getElementById('aMode').value      = SETTINGS.pricing_mode || 'per_order';
+  document.getElementById('aPrefix').value    = SETTINGS.card_number_prefix || 'FS';
+  document.getElementById('aNext').value      = SETTINGS.card_number_next || 101;
+  document.getElementById('aNotifEmail').value = SETTINGS.notification_email || '';
   updateAdminPreview();
   renderAdminOrders();
   ['aPrefix','aNext'].forEach(id => document.getElementById(id).oninput = updateAdminPreview);
 }
 function updateAdminPreview() {
   const pref = document.getElementById('aPrefix').value.trim() || 'FS';
-  const next = parseInt(document.getElementById('aNext').value) || 1;
-  document.getElementById('aPreview').textContent = pref + '-' + String(next).padStart(3,'0');
+  const next = parseInt(document.getElementById('aNext').value) || 101;
+  document.getElementById('aPreview').textContent = formatCardCode(pref, next);
 }
 async function saveAdminSettings() {
-  const s = {
+  const payload = {
     card_price_per_dozen: parseInt(document.getElementById('aPrice').value)   || 0,
     monthly_price:        parseInt(document.getElementById('aMonthly').value) || 0,
     pricing_mode:         document.getElementById('aMode').value,
-    card_number_prefix:   document.getElementById('aPrefix').value.trim()     || 'FS',
-    card_number_next:     parseInt(document.getElementById('aNext').value)    || 1
+    card_number_prefix:   document.getElementById('aPrefix').value.trim() || 'FS',
+    card_number_next:     parseInt(document.getElementById('aNext').value) || 101,
+    notification_email:   document.getElementById('aNotifEmail').value.trim() || null,
+    updated_at:           new Date().toISOString()
   };
   const btn = document.getElementById('btnSaveAdmin');
   btn.disabled = true; btn.textContent = 'Saving…';
-  const saved = await saveSettingsData(s);
+  const { data, error } = await db.from('app_settings').update(payload).eq('id', 1).select().maybeSingle();
   btn.disabled = false; btn.textContent = '💾 Save Settings';
-  if (!saved) { showToast('Settings save failed', 'error'); return; }
-  SETTINGS = saved;
+  if (error) { console.error(error); showToast('Save failed: ' + error.message, 'error'); return; }
+  SETTINGS = data || { ...SETTINGS, ...payload };
   showToast('✓ Settings saved', 'success');
   updateOrderPrice();
 }
 async function renderAdminOrders() {
-  const { data } = await db.from('card_orders').select('*').order('created_at', {ascending:false}).limit(20);
+  const { data } = await db.from('orders').select('*').order('created_at', { ascending: false }).limit(30);
   const el = document.getElementById('aOrders');
   if (!data || data.length === 0) { el.innerHTML = '<div class="empty-state">No orders yet.</div>'; return; }
-  el.innerHTML = data.map(o => {
-    const range = (o.card_prefix && o.card_start && o.card_end)
-      ? `${o.card_prefix}-${String(o.card_start).padStart(3,'0')} → ${o.card_prefix}-${String(o.card_end).padStart(3,'0')}`
-      : '—';
-    return `
-      <div style="padding:12px 14px;border-bottom:1px solid var(--border)">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-          <div style="font-size:13px;color:var(--white);font-weight:600">${esc(o.shipping_name || 'Unknown')} · ${o.quantity} cards · $${o.price}</div>
-          <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace">${new Date(o.created_at).toLocaleString()}</div>
-        </div>
-        <div style="font-size:11px;color:var(--teal);margin-top:4px;font-family:'DM Mono',monospace">${esc(range)}</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:3px">Status: ${esc(o.status)} ${o.notes ? '· ' + esc(o.notes) : ''}</div>
-      </div>`;
-  }).join('');
+  el.innerHTML = data.map(o => `
+    <div style="padding:12px 14px;border-bottom:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div style="font-size:13px;color:var(--white);font-weight:600">${esc(o.shipping_name || '—')} · ${o.quantity} cards · $${o.total_price}</div>
+        <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace">${new Date(o.created_at).toLocaleString()}</div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:3px">Status: ${esc(o.status)} ${o.notes ? '· ' + esc(o.notes) : ''}</div>
+    </div>`).join('');
 }
 
-// ---- TOAST / ESC / RENDER ALL ----
-function showToast(msg, variant) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast' + (variant ? ' ' + variant : '') + ' show';
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.classList.remove('show'), 2800);
-}
-function esc(s) {
-  if (s === null || s === undefined) return '';
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-async function renderAll() {
-  ORDERS = await loadOrders(PROFILE.id);
-  await Promise.all([ renderCardDropdown(), renderDashboard(), renderNotifications(), renderBroker() ]);
-}
-
-// ---- ADMIN ACCESS (password prompt when ?admin=1) ----
 function tryAdminAccess() {
   const params = new URLSearchParams(window.location.search);
   if (params.get('admin') !== '1') return false;
   const pw = prompt('Admin password:');
-  if (pw !== ADMIN_PASSWORD) {
-    alert('Access denied.');
-    window.location.href = window.location.pathname;
-    return false;
-  }
-  // Add Admin tab to nav
+  if (pw !== ADMIN_PASSWORD) { alert('Access denied.'); window.location.href = window.location.pathname; return false; }
   const nav = document.getElementById('navTabs');
   const tab = document.createElement('button');
-  tab.className = 'nav-tab';
+  tab.className = 'nav-tab'; tab.dataset.view = 'admin';
   tab.textContent = '🔒 Admin';
-  tab.onclick = function() { showView('admin', this); loadAdminForm(); };
-  nav.appendChild(tab);
-  // Jump to admin view
-  showView('admin', tab);
+  tab.onclick = function() { showView('admin'); loadAdminForm(); };
+  nav.insertBefore(tab, document.querySelector('.nav-user'));
+  showView('admin');
   loadAdminForm();
   return true;
 }
 
-// ---- INIT ----
-(async function init() {
-  setDbStatus('','DB connecting…');
+// ============================================================
+// INIT
+// ============================================================
+async function bootAfterAuth() {
+  PROFILE = await loadProfile();
+  if (!PROFILE) {
+    // Trigger should have created it — try once more
+    await new Promise(r => setTimeout(r, 500));
+    PROFILE = await loadProfile();
+  }
+  [SETTINGS, CARDS, LISTINGS, ORDERS] = await Promise.all([
+    loadSettings(), loadCards(), loadListings(), loadOrders()
+  ]);
+  showMainUI();
+  showView('dashboard');
+  updateOrderPrice();
+  renderAll();
+  tryAdminAccess();
+}
 
-  // Tap page has priority
+(async function init() {
+  setDbStatus('', 'DB connecting…');
+
+  // Tap page takes priority
   const isTap = await loadTapPageFromQuery();
   if (isTap) return;
 
-  // Load core data
-  [PROFILE, SETTINGS] = await Promise.all([ loadProfile(), loadSettings() ]);
-  loadProfileIntoForm();
-  updateOrderPrice();
-  await renderAll();
+  // Settings is public — load for pricing display on signup page ornot
+  SETTINGS = await loadSettings();
 
-  // If admin URL, prompt for password & reveal
-  tryAdminAccess();
+  // Session?
+  SESSION = await loadSession();
+  if (SESSION) {
+    await bootAfterAuth();
+  } else {
+    showAuthUI();
+  }
 })();
 </script>
 </body>
