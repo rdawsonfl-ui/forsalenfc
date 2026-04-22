@@ -848,76 +848,113 @@ function updateOrderPrice(){
 }
 
 async function placeOrder(){
-  // Profile must be valid
-  const p = readProfileForm();
-  const pErr = validateProfile(p);
-  if(pErr){showToast('Complete your profile first: '+pErr,'error');showView('profile');return;}
+  try {
+    console.log('[ForSaleNFC] placeOrder() clicked');
 
-  const shipName = document.getElementById('oShipName').value.trim();
-  if(!shipName){showToast('Please enter shipping name','error');return;}
+    if(!USER || !USER.id){
+      alert('You are not logged in. Please refresh and sign in again.');
+      return;
+    }
 
-  const qty = parseInt(document.getElementById('oQty').value)||12;
-  const price = computePrice(qty);
+    // Read profile from form OR fall back to DB profile
+    const p = readProfileForm();
+    const pErr = validateProfile(p);
+    if(pErr){
+      alert('Complete your profile first:\n\n' + pErr + '\n\nTaking you to the Profile tab.');
+      showView('profile');
+      return;
+    }
 
-  const btn=document.getElementById('btnOrder');
-  btn.disabled=true;
-  const origLabel = document.getElementById('btnOrderLabel').textContent;
-  document.getElementById('btnOrderLabel').textContent='Placing order…';
+    // Shipping name — if empty, use agent's name as default
+    let shipName = document.getElementById('oShipName').value.trim();
+    if(!shipName) shipName = (p.first_name + ' ' + p.last_name).trim();
+    if(!shipName){
+      alert('Please enter a shipping name (who receives the cards).');
+      document.getElementById('oShipName').focus();
+      return;
+    }
 
-  // Save profile first (writes latest values)
-  await db.from('profiles').update(p).eq('id', USER.id);
-  PROFILE = { ...PROFILE, ...p };
+    const qty = parseInt(document.getElementById('oQty').value)||12;
+    const price = computePrice(qty);
 
-  // Insert order
-  const { data: order, error: orderErr } = await db.from('orders').insert({
-    agent_id: USER.id,
-    quantity: qty,
-    total_price: price,
-    status: 'paid',
-    shipping_name: shipName,
-    shipping_address: document.getElementById('oShipAddr').value.trim() || null,
-    shipping_city:   document.getElementById('oShipCity').value.trim() || null,
-    shipping_state:  document.getElementById('oShipState').value.trim() || null,
-    shipping_zip:    document.getElementById('oShipZip').value.trim() || null,
-    notes:           document.getElementById('oNotes').value.trim() || null
-  }).select().maybeSingle();
+    const btn=document.getElementById('btnOrder');
+    btn.disabled=true;
+    const origLabel = document.getElementById('btnOrderLabel').textContent;
+    document.getElementById('btnOrderLabel').textContent='Placing order…';
 
-  if(orderErr || !order){
+    console.log('[ForSaleNFC] Saving profile then ordering...', { qty, price, shipName });
+
+    // Save profile first
+    const { error: profErr } = await db.from('profiles').update(p).eq('id', USER.id);
+    if(profErr){
+      btn.disabled=false;
+      document.getElementById('btnOrderLabel').textContent=origLabel;
+      alert('PROFILE SAVE FAILED before order:\n\n' + (profErr.message||JSON.stringify(profErr)));
+      return;
+    }
+    PROFILE = { ...PROFILE, ...p };
+
+    // Insert order
+    const { data: order, error: orderErr } = await db.from('orders').insert({
+      agent_id: USER.id,
+      quantity: qty,
+      total_price: price,
+      status: 'paid',
+      shipping_name: shipName,
+      shipping_address: document.getElementById('oShipAddr').value.trim() || null,
+      shipping_city:   document.getElementById('oShipCity').value.trim() || null,
+      shipping_state:  document.getElementById('oShipState').value.trim() || null,
+      shipping_zip:    document.getElementById('oShipZip').value.trim() || null,
+      notes:           document.getElementById('oNotes').value.trim() || null
+    }).select().maybeSingle();
+
+    console.log('[ForSaleNFC] Order insert result:', { order, orderErr });
+
+    if(orderErr || !order){
+      btn.disabled=false;
+      document.getElementById('btnOrderLabel').textContent=origLabel;
+      const msg = orderErr ? (orderErr.message||orderErr.code||JSON.stringify(orderErr)) : 'insert returned no row';
+      alert('ORDER INSERT FAILED\n\n' + msg);
+      return;
+    }
+
+    // Generate cards server-side
+    const { data: genResult, error: genErr } = await db.rpc('generate_cards_for_order', {
+      p_order_id: order.id,
+      p_agent_id: USER.id,
+      p_quantity: qty
+    });
+
+    console.log('[ForSaleNFC] Card gen result:', { genResult, genErr });
+
+    if(genErr){
+      btn.disabled=false;
+      document.getElementById('btnOrderLabel').textContent=origLabel;
+      const msg = genErr.message||genErr.code||JSON.stringify(genErr);
+      alert('CARD GENERATION FAILED\n(Order was saved but cards were not created)\n\n' + msg);
+      return;
+    }
+
+    SETTINGS = await loadSettings();
+
     btn.disabled=false;
     document.getElementById('btnOrderLabel').textContent=origLabel;
-    const msg = orderErr ? (orderErr.message||orderErr.code||JSON.stringify(orderErr)) : 'insert failed';
-    showToast('Order failed: '+msg,'error');
-    alert('ORDER FAILED (step: insert order)\n\n' + msg);
-    return;
+    document.getElementById('orderSuccess').style.display='block';
+    document.getElementById('orderSuccessDetails').innerHTML =
+      `Order ${order.id.slice(0,8)} · ${qty} cards · ${esc(genResult.range||'')} · ${new Date(order.created_at).toLocaleString()}`;
+    document.getElementById('oNotes').value='';
+    alert('✓ ORDER PLACED\n\n' + qty + ' cards · ' + (genResult.range||'') + '\n\nCheck the My Cards tab.');
+    showToast(`✓ Order placed — ${qty} cards assigned`,'success');
+    await refreshAll();
+
+  } catch(err){
+    console.error('[ForSaleNFC] placeOrder exception:', err);
+    const btn=document.getElementById('btnOrder');
+    if(btn){btn.disabled=false;}
+    const lbl=document.getElementById('btnOrderLabel');
+    if(lbl){lbl.textContent='Order 12 Cards — $36';}
+    alert('UNEXPECTED ERROR in placeOrder:\n\n' + (err?.message || String(err)));
   }
-
-  // Generate cards server-side
-  const { data: genResult, error: genErr } = await db.rpc('generate_cards_for_order', {
-    p_order_id: order.id,
-    p_agent_id: USER.id,
-    p_quantity: qty
-  });
-
-  if(genErr){
-    btn.disabled=false;
-    document.getElementById('btnOrderLabel').textContent=origLabel;
-    const msg = genErr.message||genErr.code||JSON.stringify(genErr);
-    showToast('Card generation failed: '+msg,'error');
-    alert('CARD GENERATION FAILED (step: generate cards)\n\n' + msg);
-    return;
-  }
-
-  // Reload settings to get updated counter
-  SETTINGS = await loadSettings();
-
-  btn.disabled=false;
-  document.getElementById('btnOrderLabel').textContent=origLabel;
-  document.getElementById('orderSuccess').style.display='block';
-  document.getElementById('orderSuccessDetails').innerHTML =
-    `Order ${order.id.slice(0,8)} · ${qty} cards · ${esc(genResult.range)} · ${new Date(order.created_at).toLocaleString()}`;
-  document.getElementById('oNotes').value='';
-  showToast(`✓ Order placed — ${qty} cards assigned`,'success');
-  await refreshAll();
 }
 
 function renderOrders(){
