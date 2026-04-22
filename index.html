@@ -879,7 +879,9 @@ async function placeOrder(){
   if(orderErr || !order){
     btn.disabled=false;
     document.getElementById('btnOrderLabel').textContent=origLabel;
-    showToast('Order failed: '+(orderErr?.message||'insert failed'),'error');
+    const msg = orderErr ? (orderErr.message||orderErr.code||JSON.stringify(orderErr)) : 'insert failed';
+    showToast('Order failed: '+msg,'error');
+    alert('ORDER FAILED (step: insert order)\n\n' + msg);
     return;
   }
 
@@ -893,7 +895,9 @@ async function placeOrder(){
   if(genErr){
     btn.disabled=false;
     document.getElementById('btnOrderLabel').textContent=origLabel;
-    showToast('Card generation failed: '+genErr.message,'error');
+    const msg = genErr.message||genErr.code||JSON.stringify(genErr);
+    showToast('Card generation failed: '+msg,'error');
+    alert('CARD GENERATION FAILED (step: generate cards)\n\n' + msg);
     return;
   }
 
