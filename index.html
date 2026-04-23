@@ -1625,6 +1625,21 @@ async function loadTapPageFromQuery(){
 
   db.rpc('record_tap', { p_card_code: cardCode, p_user_agent: (navigator.userAgent||'').slice(0,200) });
 
+  // AUTO-REDIRECT: if the card has exactly one property with a listing URL,
+  // skip the branded page and send the buyer directly to the listing.
+  const rawProps = Array.isArray(listing.properties_json) ? listing.properties_json : [];
+  const validProps = rawProps
+    .map(p => (typeof p === 'string') ? { image_url:'', listing_url:p } : p)
+    .filter(p => p && p.listing_url && String(p.listing_url).trim());
+  if(validProps.length === 1){
+    const target = normalizeUrl(validProps[0].listing_url);
+    // Briefly show a loading state so the user knows something is happening
+    tc.innerHTML = `<div class="card-not-found"><p><span class="loading"></span>Opening listing…</p></div>`;
+    // Give record_tap a moment to fire before navigating away
+    setTimeout(()=>{ window.location.replace(target); }, 150);
+    return true;
+  }
+
   renderTapPage(listing, profile, cardCode);
   return true;
 }
