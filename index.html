@@ -26,88 +26,26 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .wrap{max-width:1000px;margin:0 auto;padding:32px 24px}
 .page-title{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--white);letter-spacing:1px}
 .page-sub{font-size:13px;color:var(--muted);margin-top:4px;margin-bottom:24px}
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
-.stat-box{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:18px}
-.stat-val{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--orange);line-height:1}
-.stat-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
 .panel{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:24px;margin-bottom:24px}
 .panel-title{font-size:16px;font-weight:600;color:var(--white);margin-bottom:4px}
 .panel-sub{font-size:12px;color:var(--muted);margin-bottom:20px}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
 .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .pfield{display:flex;flex-direction:column;gap:6px}
 .pfield.full{grid-column:1/-1}
-.pfield label,.form-group label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:'DM Mono',monospace}
-.pfield label .req,.form-group label .req{color:var(--orange);margin-left:2px}
-.form-group{display:flex;flex-direction:column;gap:6px}
-.pinput,.form-group input,.form-group select,.form-group textarea{background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 12px;outline:none;transition:border-color .15s;width:100%}
-.pinput:focus,.form-group input:focus,.form-group select:focus{border-color:var(--orange)}
-.pinput::placeholder,.form-group input::placeholder{color:var(--muted)}
-.props-section{margin-bottom:16px}
-.props-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:10px}
-.prop-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px 10px}
-.prop-link-wrap{flex:1;position:relative}
-.prop-link-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;pointer-events:none;color:var(--muted)}
-.prop-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:12px;padding:9px 10px 9px 30px;outline:none}
-.prop-input:focus{border-color:var(--orange)}
-.prop-remove{width:32px;height:36px;background:rgba(224,80,80,.1);border:1px solid rgba(224,80,80,.2);border-radius:4px;color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
-.add-prop-btn{background:transparent;border:1px dashed var(--border);color:var(--muted);padding:9px 16px;border-radius:4px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%}
-.add-prop-btn:hover{border-color:var(--orange);color:var(--orange)}
+.pfield label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:'DM Mono',monospace}
+.pfield label .req{color:var(--orange);margin-left:2px}
+.pinput{background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 12px;outline:none;transition:border-color .15s;width:100%}
+.pinput:focus{border-color:var(--orange)}
+.pinput::placeholder{color:var(--muted)}
 .btn{padding:12px 22px;background:var(--orange);color:var(--white);border:none;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s;letter-spacing:.3px}
 .btn:hover{background:var(--orange2)}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .btn.full{width:100%;padding:14px}
 .btn.ghost{background:var(--card);color:var(--white);border:1px solid var(--border)}
 .btn.ghost:hover{background:var(--surface)}
-.log{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden}
-.log-header{background:var(--card);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
-.log-title{font-size:14px;font-weight:600;color:var(--white)}
-.log-count{font-size:11px;color:var(--muted)}
-.log-row{padding:16px 20px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:auto 1fr auto auto auto;gap:16px;align-items:center}
-.log-row:last-child{border-bottom:none}
-.card-id{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:6px 10px;font-family:'DM Mono',monospace;font-size:12px;color:var(--teal);font-weight:600;white-space:nowrap}
-.buyer-name{font-size:14px;font-weight:600;color:var(--white);margin-bottom:3px}
-.buyer-props{font-size:11px;color:var(--muted)}
-.tap-count{text-align:center}
-.tc-num{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--orange);line-height:1}
-.tc-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
-.last-tap{text-align:right}
-.lt-time{font-size:12px;color:var(--white);font-weight:500}
-.lt-lbl{font-size:10px;color:var(--muted);margin-top:2px}
-.btn-del{background:rgba(224,80,80,.1);border:1px solid rgba(224,80,80,.2);border-radius:4px;color:var(--red);padding:6px 10px;cursor:pointer;font-size:11px;font-weight:600;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.btn.danger{background:rgba(224,80,80,.1);color:var(--red);border:1px solid rgba(224,80,80,.3)}
+.btn.danger:hover{background:rgba(224,80,80,.2)}
 .empty-state{padding:40px 20px;text-align:center;color:var(--muted);font-style:italic;font-size:13px}
-.tap-wrap{max-width:480px;margin:0 auto;padding-bottom:40px}
-.tap-header{background:var(--surface);border-bottom:1px solid var(--border);padding:22px 20px;text-align:center}
-.tap-photo{width:68px;height:68px;border-radius:50%;background:var(--card);border:3px solid var(--orange);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:30px;overflow:hidden}
-.tap-photo img{width:100%;height:100%;object-fit:cover}
-.tap-agent-name{font-size:18px;font-weight:700;color:var(--white);margin-bottom:2px}
-.tap-agent-title{font-size:11px;color:var(--muted);margin-bottom:14px}
-.tap-btns{display:flex;gap:8px;justify-content:center}
-.tbtn{flex:1;max-width:120px;padding:10px 6px;border-radius:4px;font-size:11px;font-weight:600;text-align:center;text-decoration:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif}
-.tbtn-call{background:var(--orange);color:var(--white)}
-.tbtn-text{background:var(--card);color:var(--white);border:1px solid var(--border)}
-.tbtn-save{background:var(--teal);color:#0C0F1A;font-weight:700}
-.buyer-greeting{background:var(--card);border-bottom:1px solid var(--border);padding:16px 20px;display:flex;align-items:center;gap:12px}
-.bg-icon{font-size:28px;flex-shrink:0}
-.bg-hi{font-size:15px;font-weight:600;color:var(--white);margin-bottom:3px}
-.bg-sub{font-size:12px;color:var(--muted);line-height:1.55}
-.tap-listings{padding:16px 16px 0}
-.tl-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--orange);text-transform:uppercase;margin-bottom:12px}
-.prop-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:12px}
-.prop-card-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--teal);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
-.prop-card-text{font-size:13px;color:var(--white);word-break:break-word;line-height:1.5}
-.prop-card-link{color:var(--orange);text-decoration:none;font-weight:500}
-.interest-section{margin:12px 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px}
-.is-title{font-size:14px;font-weight:600;color:var(--white);margin-bottom:4px}
-.is-sub{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6}
-.if-group{margin-bottom:10px}
-.if-group input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 12px;outline:none}
-.if-success{background:rgba(46,204,138,.1);border:1px solid var(--green);color:var(--green);padding:12px;border-radius:4px;font-size:13px;text-align:center;display:none;margin-top:10px}
-.powered-by{text-align:center;padding:24px 16px;font-size:11px;color:var(--muted)}
-.powered-by a{color:var(--orange);text-decoration:none;cursor:pointer}
-.card-not-found{max-width:480px;margin:60px auto;padding:40px 24px;text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:8px}
-.card-not-found h2{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--white);margin-bottom:8px}
-.card-not-found p{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:8px}
 
 /* Auth */
 .auth-wrap{max-width:420px;margin:60px auto;padding:0 20px}
@@ -133,20 +71,102 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .ph-text p{font-size:12px;color:var(--muted);margin-top:4px}
 .ph-live{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:9px;color:var(--green);letter-spacing:2px;text-transform:uppercase;border:1px solid rgba(46,204,138,.25);padding:4px 10px;border-radius:2px;background:rgba(46,204,138,.06);margin-top:8px}
 
-/* Order */
+/* Orders */
 .price-display{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:14px;display:flex;justify-content:space-between;align-items:center}
 .price-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
 .price-value{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--orange);line-height:1}
+.orders-hist-row{padding:12px 14px;border-bottom:1px solid var(--border)}
+.orders-hist-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+.orders-hist-qty{font-size:13px;color:var(--white);font-weight:600}
+.orders-hist-time{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace}
+.orders-hist-range{font-size:11px;color:var(--teal);margin-top:4px;font-family:'DM Mono',monospace}
+.orders-hist-meta{font-size:11px;color:var(--muted);margin-top:3px}
 
-/* My Cards */
-.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
-.ccard{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:14px;display:flex;flex-direction:column;gap:4px}
+/* MY CARDS — tile grid */
+.cards-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.cards-head-info{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.ccard{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:6px;cursor:pointer;transition:all .15s;text-align:left;font-family:'DM Sans',sans-serif;color:var(--offwhite)}
+.ccard:hover{border-color:var(--orange);transform:translateY(-2px)}
 .ccard.assigned{border-color:rgba(0,196,167,.3)}
-.ccode{font-family:'DM Mono',monospace;font-size:14px;color:var(--teal);font-weight:600}
+.ccard.paused{border-color:rgba(240,165,0,.3);opacity:.7}
+.ccode{font-family:'DM Mono',monospace;font-size:15px;color:var(--teal);font-weight:600}
 .cstatus{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-family:'DM Mono',monospace}
 .cstatus.avail{color:var(--green)}
 .cstatus.assigned{color:var(--orange)}
-.clisting{font-size:11px;color:var(--offwhite);margin-top:4px}
+.cstatus.paused{color:var(--gold)}
+.cbuyer{font-size:12px;color:var(--offwhite);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* CARD DETAIL */
+.detail-wrap{max-width:760px;margin:0 auto;padding:32px 24px}
+.detail-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:12px;flex-wrap:wrap}
+.back-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:8px 14px;border-radius:4px;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif}
+.back-btn:hover{color:var(--white)}
+.detail-code{font-family:'DM Mono',monospace;font-size:22px;color:var(--teal);font-weight:600}
+.detail-status-badge{display:inline-block;padding:4px 10px;border-radius:3px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-family:'DM Mono',monospace;font-weight:600;margin-left:10px}
+.detail-status-badge.avail{background:rgba(46,204,138,.12);color:var(--green);border:1px solid rgba(46,204,138,.25)}
+.detail-status-badge.assigned{background:rgba(224,96,48,.12);color:var(--orange);border:1px solid rgba(224,96,48,.25)}
+.detail-status-badge.paused{background:rgba(240,165,0,.12);color:var(--gold);border:1px solid rgba(240,165,0,.25)}
+
+/* PROPERTIES form */
+.prop-section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.prop-section-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:'DM Mono',monospace}
+.prop-count-badge{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace}
+.prop-row{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px;position:relative}
+.prop-row-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.prop-row-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--teal);text-transform:uppercase}
+.prop-remove-btn{background:rgba(224,80,80,.1);border:1px solid rgba(224,80,80,.25);color:var(--red);padding:4px 10px;border-radius:3px;cursor:pointer;font-size:10px;font-family:'DM Sans',sans-serif;font-weight:600}
+.prop-preview{width:100%;aspect-ratio:16/9;background:var(--bg);border:1px dashed var(--border);border-radius:6px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.prop-preview img{width:100%;height:100%;object-fit:cover;display:block}
+.prop-preview-placeholder{color:var(--muted);font-size:11px;font-family:'DM Mono',monospace;letter-spacing:1px;padding:10px;text-align:center}
+.prop-inputs{display:flex;flex-direction:column;gap:8px}
+.prop-inputs input{background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:12px;padding:9px 11px;outline:none;width:100%}
+.prop-inputs input:focus{border-color:var(--orange)}
+.add-prop{background:transparent;border:1px dashed var(--border);color:var(--muted);padding:11px 16px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;margin-bottom:16px}
+.add-prop:hover:not(:disabled){border-color:var(--orange);color:var(--orange)}
+.add-prop:disabled{opacity:.4;cursor:not-allowed}
+.detail-actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.detail-actions .btn{flex:1;min-width:140px}
+
+/* BUYER TAP */
+.tap-wrap{max-width:480px;margin:0 auto;padding-bottom:40px}
+.tap-header{background:var(--surface);border-bottom:1px solid var(--border);padding:22px 20px;text-align:center}
+.tap-photo{width:68px;height:68px;border-radius:50%;background:var(--card);border:3px solid var(--orange);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:30px;overflow:hidden}
+.tap-photo img{width:100%;height:100%;object-fit:cover}
+.tap-agent-name{font-size:18px;font-weight:700;color:var(--white);margin-bottom:2px}
+.tap-agent-title{font-size:11px;color:var(--muted);margin-bottom:14px}
+.tap-btns{display:flex;gap:8px;justify-content:center}
+.tbtn{flex:1;max-width:120px;padding:10px 6px;border-radius:4px;font-size:11px;font-weight:600;text-align:center;text-decoration:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif}
+.tbtn-call{background:var(--orange);color:var(--white)}
+.tbtn-text{background:var(--card);color:var(--white);border:1px solid var(--border)}
+.tbtn-save{background:var(--teal);color:#0C0F1A;font-weight:700}
+.buyer-greeting{background:var(--card);border-bottom:1px solid var(--border);padding:16px 20px;display:flex;align-items:center;gap:12px}
+.bg-icon{font-size:28px;flex-shrink:0}
+.bg-hi{font-size:15px;font-weight:600;color:var(--white);margin-bottom:3px}
+.bg-sub{font-size:12px;color:var(--muted);line-height:1.55}
+.tap-listings{padding:16px 16px 0}
+.tl-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--orange);text-transform:uppercase;margin-bottom:12px}
+
+/* Image-first property cards */
+.hero-prop,.sub-prop{display:block;margin-bottom:14px;border-radius:10px;overflow:hidden;background:var(--surface);border:1px solid var(--border);text-decoration:none;color:inherit;cursor:pointer;transition:border-color .15s}
+.hero-prop:hover,.sub-prop:hover{border-color:var(--orange)}
+.hero-prop img{width:100%;display:block;aspect-ratio:16/10;object-fit:cover;background:var(--bg)}
+.sub-prop{margin-bottom:12px;border-radius:8px}
+.sub-prop img{width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--bg);display:block}
+.prop-caption{padding:12px 14px;font-size:12px;color:var(--orange);word-break:break-word;font-weight:500}
+.sub-prop .prop-caption{padding:10px 12px;font-size:11px}
+
+.interest-section{margin:12px 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px}
+.is-title{font-size:14px;font-weight:600;color:var(--white);margin-bottom:4px}
+.is-sub{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6}
+.if-group{margin-bottom:10px}
+.if-group input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 12px;outline:none}
+.if-success{background:rgba(46,204,138,.1);border:1px solid var(--green);color:var(--green);padding:12px;border-radius:4px;font-size:13px;text-align:center;display:none;margin-top:10px}
+.powered-by{text-align:center;padding:24px 16px;font-size:11px;color:var(--muted)}
+.powered-by a{color:var(--orange);text-decoration:none;cursor:pointer}
+.card-not-found{max-width:480px;margin:60px auto;padding:40px 24px;text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:8px}
+.card-not-found h2{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--white);margin-bottom:8px}
+.card-not-found p{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:8px}
 
 /* Admin */
 .admin-pill{display:inline-block;background:var(--gold);color:#000;font-size:10px;font-weight:700;padding:3px 8px;border-radius:3px;letter-spacing:1px;margin-left:8px}
@@ -166,11 +186,8 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
   nav{padding:0 14px;flex-wrap:wrap;height:auto;min-height:58px;padding-top:8px;padding-bottom:8px}
   .nav-tabs{gap:2px;width:100%;justify-content:center}
   .nav-tab{padding:6px 10px;font-size:11px}
-  .wrap,.profile-wrap{padding:20px 14px}
-  .stats-row{grid-template-columns:1fr 1fr}
-  .form-grid,.pgrid{grid-template-columns:1fr}
-  .log-row{grid-template-columns:auto 1fr auto auto}
-  .last-tap{display:none}
+  .wrap,.profile-wrap,.detail-wrap{padding:20px 14px}
+  .pgrid{grid-template-columns:1fr}
   .profile-hero{flex-direction:column;text-align:center}
   .card-grid{grid-template-columns:repeat(2,1fr)}
 }
@@ -178,13 +195,10 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 </head>
 <body>
 
-<!-- NAV (hidden until logged in) -->
 <nav id="mainNav" style="display:none">
   <a class="nav-logo" onclick="goHome()">For<span>Sale</span>NFC</a>
   <div class="nav-tabs" id="navTabs">
-    <button class="nav-tab active" data-view="dashboard" onclick="showView('dashboard',this)">Dashboard</button>
-    <button class="nav-tab" data-view="mycards" onclick="showView('mycards',this)">My Cards</button>
-    <button class="nav-tab" data-view="createlisting" onclick="showView('createlisting',this)">+ Listing</button>
+    <button class="nav-tab active" data-view="mycards" onclick="showView('mycards',this)">My Cards</button>
     <button class="nav-tab" data-view="orders" onclick="showView('orders',this)">Orders</button>
     <button class="nav-tab" data-view="profile" onclick="showView('profile',this)">Profile</button>
     <span class="nav-user" id="navUser"></span>
@@ -192,7 +206,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
   </div>
 </nav>
 
-<!-- AUTH VIEW (login / signup) -->
+<!-- AUTH -->
 <div class="view active" id="view-auth">
   <div class="auth-wrap">
     <div class="auth-logo">For<span>Sale</span>NFC</div>
@@ -220,72 +234,55 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
   </div>
 </div>
 
-<!-- DASHBOARD -->
-<div class="view" id="view-dashboard">
-  <div class="wrap">
-    <div class="page-title">Dashboard</div>
-    <div class="page-sub" id="dashSub">Your listings and tap activity</div>
-    <div class="stats-row">
-      <div class="stat-box"><div class="stat-val" id="statListings">0</div><div class="stat-lbl">Active Listings</div></div>
-      <div class="stat-box"><div class="stat-val" id="statTaps">0</div><div class="stat-lbl">Total Taps</div></div>
-      <div class="stat-box"><div class="stat-val" id="statLeads">0</div><div class="stat-lbl">Leads</div></div>
-      <div class="stat-box"><div class="stat-val" id="statAvailCards">0</div><div class="stat-lbl">Cards Available</div></div>
-    </div>
-    <div class="log">
-      <div class="log-header">
-        <div class="log-title">Your Listings</div>
-        <div class="log-count" id="logCount">0 listings</div>
-      </div>
-      <div id="logRows"><div class="empty-state"><span class="loading"></span>Loading…</div></div>
-    </div>
-  </div>
-</div>
-
-<!-- MY CARDS -->
+<!-- MY CARDS (landing) -->
 <div class="view" id="view-mycards">
   <div class="wrap">
-    <div class="page-title">My Cards</div>
-    <div class="page-sub">Every physical card you own. Card codes are printed on each NFC card.</div>
-    <div class="panel">
-      <div class="panel-title">Card Inventory</div>
-      <div class="panel-sub" id="cardsSummary">—</div>
-      <div id="cardsGrid"><div class="empty-state">Loading…</div></div>
+    <div class="cards-head">
+      <div>
+        <div class="page-title">My Cards</div>
+        <div class="page-sub">Click a card to assign a buyer and add properties</div>
+      </div>
+      <div class="cards-head-info" id="cardsHeadInfo">—</div>
     </div>
+    <div id="cardsContainer"><div class="empty-state"><span class="loading"></span>Loading…</div></div>
   </div>
 </div>
 
-<!-- CREATE LISTING -->
-<div class="view" id="view-createlisting">
-  <div class="wrap">
-    <div class="page-title">Create Listing</div>
-    <div class="page-sub">Assign one of your available cards to a buyer + properties</div>
+<!-- CARD DETAIL (work surface) -->
+<div class="view" id="view-detail">
+  <div class="detail-wrap">
+    <div class="detail-top">
+      <button class="back-btn" onclick="showView('mycards')">← Back to My Cards</button>
+      <div>
+        <span class="detail-code" id="dCode">FS-0000</span>
+        <span class="detail-status-badge avail" id="dStatus">AVAILABLE</span>
+      </div>
+    </div>
+
     <div class="panel">
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Buyer Name <span class="req">*</span></label>
-          <input type="text" id="inBuyerName" placeholder="Buyer name">
-        </div>
-        <div class="form-group">
-          <label>Card Code <span class="req">*</span></label>
-          <select id="inCardCode"><option value="">Loading cards…</option></select>
-        </div>
-        <div class="form-group"><label>Showing Date</label><input type="date" id="inDate"></div>
-        <div class="form-group"><label>Showing Time</label><input type="time" id="inTime"></div>
+      <div class="panel-title">Buyer Info</div>
+      <div class="pgrid">
+        <div class="pfield"><label>Buyer Name</label><input class="pinput" id="dBuyer" type="text" placeholder="e.g. Aj Moore"></div>
+        <div class="pfield"><label>Buyer Phone</label><input class="pinput" id="dPhone" type="tel" placeholder="(555) 123-4567"></div>
+        <div class="pfield"><label>Showing Date</label><input class="pinput" id="dDate" type="date"></div>
+        <div class="pfield"><label>Showing Time</label><input class="pinput" id="dTime" type="time"></div>
+        <div class="pfield full"><label>Notes (optional)</label><input class="pinput" id="dNotes" type="text" placeholder="Preferences, parking, etc."></div>
       </div>
-      <div class="props-section">
-        <div class="props-label">Properties Being Shown <span class="req">*</span></div>
-        <div id="propsList">
-          <div class="prop-row">
-            <div class="prop-link-wrap">
-              <span class="prop-link-icon">🔗</span>
-              <input class="prop-input" type="text" placeholder="Paste Zillow / Realtor / Redfin link — or type address">
-            </div>
-            <button class="prop-remove" onclick="removeProp(this)">✕</button>
-          </div>
-        </div>
-        <button class="add-prop-btn" onclick="addProp()">+ Add Another Property</button>
+    </div>
+
+    <div class="panel">
+      <div class="prop-section-head">
+        <div class="prop-section-title">Properties</div>
+        <div class="prop-count-badge" id="propCountBadge">0 / 3</div>
       </div>
-      <button class="btn full" id="btnCreateListing" onclick="createListing()">Create Listing &amp; Assign Card →</button>
+      <div id="propsContainer"></div>
+      <button class="add-prop" id="btnAddProp" onclick="addProperty()">+ Add Property (max 3)</button>
+    </div>
+
+    <div class="detail-actions">
+      <button class="btn full" id="btnSaveCard" onclick="saveCard()">💾 Save</button>
+      <button class="btn ghost" id="btnPauseCard" onclick="togglePauseCard()">Pause</button>
+      <button class="btn danger" id="btnClearCard" onclick="clearCard()">Clear / Unassign</button>
     </div>
   </div>
 </div>
@@ -389,7 +386,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
   </div>
 </div>
 
-<!-- ADMIN (admin users only — tab added dynamically) -->
+<!-- ADMIN -->
 <div class="view" id="view-admin">
   <div class="wrap">
     <div class="page-title">Admin Panel <span class="admin-pill">ADMIN</span></div>
@@ -414,38 +411,40 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
   </div>
 </div>
 
-<!-- BUYER TAP PAGE -->
+<!-- BUYER TAP -->
 <div class="view" id="view-tap"><div id="tapContent"></div></div>
 
 <div class="toast" id="toast"></div>
 <div class="db-status" id="dbStatus">DB connecting…</div>
 
 <script>
-/* ============================================================
-   ForSaleNFC — Spec v2 (auth + cards-as-inventory + listings)
-   Project: ufbqscikufkbcpzlpllr
-============================================================ */
+/* ForSaleNFC — Spec v3 (card-first + image properties) */
 
 const SUPABASE_URL = 'https://ufbqscikufkbcpzlpllr.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmYnFzY2lrdWZrYmNwemxwbGxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4NjQ0NTcsImV4cCI6MjA4OTQ0MDQ1N30.IxOaF1Un22BrRJNBYJuNj2AdHhUOgqSefoT1ok5gqh4';
-
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// State
-let USER     = null;   // auth user
-let PROFILE  = {};     // public.profiles row
+let USER = null;
+let PROFILE = {};
 let SETTINGS = { card_price_per_dozen:36, card_number_prefix:'FS', card_number_next:101 };
-let CARDS    = [];
+let CARDS = [];
 let LISTINGS = [];
-let ORDERS   = [];
+let ORDERS = [];
+let ACTIVE_CARD_ID = null;
+let FORM_PROPS = [];
 
-/* ----- utilities ----- */
 function esc(s){if(s===null||s===undefined)return '';return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function showToast(msg,variant){const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(variant?' '+variant:'')+' show';clearTimeout(t._timer);t._timer=setTimeout(()=>t.classList.remove('show'),2800);}
 function setDbStatus(state,msg){const el=document.getElementById('dbStatus');el.className='db-status '+(state==='ok'?'ok':state==='err'?'err':'');el.textContent=msg||state;}
 function setAuthMsg(id,text,variant){const el=document.getElementById(id);el.textContent=text;el.className='auth-msg '+variant+' show';}
+function normalizeUrl(u){
+  if(!u) return '';
+  const s = String(u).trim();
+  if(!s) return '';
+  if(/^https?:\/\//i.test(s)) return s;
+  return 'https://' + s;
+}
 
-/* ----- view switching ----- */
 function showView(id,tabEl){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
@@ -457,17 +456,14 @@ function showView(id,tabEl){
 }
 function goHome(){
   if(window.location.search){window.location.href=window.location.pathname;return;}
-  if(USER)showView('dashboard');
+  if(USER)showView('mycards');
 }
 
-/* ============================================================
-   AUTH
-============================================================ */
+/* AUTH */
 function toggleAuth(which){
   document.getElementById('authLogin').style.display  = which==='login'  ? 'block' : 'none';
   document.getElementById('authSignup').style.display = which==='signup' ? 'block' : 'none';
 }
-
 async function signUp(){
   const email = document.getElementById('suEmail').value.trim();
   const pass  = document.getElementById('suPass').value;
@@ -483,10 +479,8 @@ async function signUp(){
     document.getElementById('liEmail').value = email;
     return;
   }
-  // auto-logged-in (email confirmation disabled)
   await afterLogin();
 }
-
 async function signIn(){
   const email = document.getElementById('liEmail').value.trim();
   const pass  = document.getElementById('liPass').value;
@@ -497,7 +491,6 @@ async function signIn(){
   if(error){setAuthMsg('liMsg',error.message,'error');return;}
   await afterLogin();
 }
-
 async function signOut(){
   await db.auth.signOut();
   USER = null; PROFILE = {};
@@ -511,22 +504,19 @@ async function afterLogin(){
   const { data:{ user } } = await db.auth.getUser();
   USER = user;
   if(!USER){setAuthMsg('liMsg','Session missing — try again','error');return;}
-  // Load profile (trigger should have created it)
   PROFILE = await loadProfile();
   if(!PROFILE){
-    // Create defensively if trigger didn't fire
     await db.from('profiles').insert({ id: USER.id, email: USER.email });
     PROFILE = await loadProfile();
   }
-  document.getElementById('navUser').textContent = USER.email;
-  console.log('[ForSaleNFC] Loaded profile:', PROFILE);
-  console.log('[ForSaleNFC] is_admin flag:', PROFILE?.is_admin);
-  // Show admin tab for admins. (If your profile's is_admin is true, you see it.)
+  const displayName = (PROFILE && PROFILE.first_name && PROFILE.last_name)
+    ? `${PROFILE.first_name} ${PROFILE.last_name}`
+    : USER.email;
+  document.getElementById('navUser').textContent = displayName;
   if(PROFILE && PROFILE.is_admin === true) addAdminTab();
   document.getElementById('mainNav').style.display='flex';
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById('view-dashboard').classList.add('active');
-  document.querySelector('.nav-tab[data-view="dashboard"]').classList.add('active');
+  // LAND ON MY CARDS
+  showView('mycards');
   await Promise.all([ loadSettings().then(s=>SETTINGS=s), refreshAll() ]);
   loadProfileIntoForm();
   updateOrderPrice();
@@ -541,17 +531,12 @@ function addAdminTab(){
   btn.dataset.view = 'admin';
   btn.textContent = '🔒 Admin';
   btn.onclick = function(){ showView('admin', this); loadAdminForm(); };
-  // Insert before user email span
   const userSpan = document.getElementById('navUser');
   tabs.insertBefore(btn, userSpan);
 }
-
-// Expose a manual unlock for edge cases — type unlockAdmin() in console
 window.unlockAdmin = function(){ addAdminTab(); console.log('Admin tab added.'); };
 
-/* ============================================================
-   DATA LOADERS
-============================================================ */
+/* LOADERS */
 async function loadProfile(){
   const { data, error } = await db.from('profiles').select('*').eq('id', USER.id).maybeSingle();
   if(error){console.error('loadProfile:',error); setDbStatus('err','DB error');return null;}
@@ -578,180 +563,242 @@ async function loadOrders(){
   if(error){console.error(error);return [];}
   return data || [];
 }
-
 async function refreshAll(){
   [CARDS, LISTINGS, ORDERS] = await Promise.all([loadCards(), loadListings(), loadOrders()]);
-  renderDashboard();
   renderMyCards();
-  renderCardDropdown();
   renderOrders();
 }
 
-/* ============================================================
-   DASHBOARD
-============================================================ */
-function renderDashboard(){
-  const totalTaps  = LISTINGS.reduce((a,s)=>a+(s.taps ||0),0);
-  const totalLeads = LISTINGS.reduce((a,s)=>a+(s.leads||0),0);
-  const avail = CARDS.filter(c=>c.status==='available').length;
-  document.getElementById('statListings').textContent   = LISTINGS.length;
-  document.getElementById('statTaps').textContent       = totalTaps;
-  document.getElementById('statLeads').textContent      = totalLeads;
-  document.getElementById('statAvailCards').textContent = avail;
+/* MY CARDS */
+function renderMyCards(){
+  const el = document.getElementById('cardsContainer');
+  const info = document.getElementById('cardsHeadInfo');
+  if(!CARDS.length){
+    info.textContent = 'No cards yet';
+    el.innerHTML = '<div class="empty-state">No cards yet. Go to the Orders tab to place your first order.</div>';
+    return;
+  }
+  const avail    = CARDS.filter(c=>c.status==='available').length;
+  const assigned = CARDS.filter(c=>c.status==='assigned').length;
+  const paused   = CARDS.filter(c=>c.status==='paused').length;
+  info.textContent = `${CARDS.length} total · ${avail} available · ${assigned} assigned${paused?` · ${paused} paused`:''}`;
+  el.innerHTML = '<div class="card-grid">' + CARDS.map(c=>{
+    const listing = LISTINGS.find(l=>l.id===c.listing_id);
+    const buyerName = listing ? listing.buyer_name : '';
+    const st = c.status || 'available';
+    const statusLabel = st.toUpperCase();
+    const statusCls = st==='available' ? 'avail' : st;
+    const cardCls = 'ccard ' + (st==='available' ? '' : st);
+    const buyerLine = buyerName ? `<div class="cbuyer">→ ${esc(buyerName)}</div>` : '';
+    return `<button class="${cardCls}" onclick="openCardDetail('${esc(c.id)}')">
+      <div class="ccode">${esc(c.card_code)}</div>
+      <div class="cstatus ${statusCls}">${esc(statusLabel)}</div>
+      ${buyerLine}
+    </button>`;
+  }).join('') + '</div>';
+}
 
-  const rows=document.getElementById('logRows');
-  document.getElementById('logCount').textContent = LISTINGS.length + (LISTINGS.length===1?' listing':' listings');
-  if(LISTINGS.length===0){rows.innerHTML='<div class="empty-state">No listings yet. Create your first listing from the + Listing tab.</div>';return;}
-  rows.innerHTML = LISTINGS.map(s=>{
-    const card = CARDS.find(c=>c.listing_id===s.id);
-    const code = card ? card.card_code : '—';
-    const propsCount = (s.properties_json||[]).length;
-    const dateStr = s.showing_date||'';
-    const timeStr = s.showing_time ? ' · '+s.showing_time : '';
-    const lastTap = s.last_tap_at ? new Date(s.last_tap_at).toLocaleString() : 'Not yet tapped';
-    const lastLbl = s.last_tap_at ? 'Last tap' : 'Awaiting';
-    return `<div class="log-row">
-      <div class="card-id">${esc(code)}</div>
-      <div>
-        <div class="buyer-name">${esc(s.buyer_name||'(no buyer)')}</div>
-        <div class="buyer-props">${propsCount} ${propsCount===1?'property':'properties'}${dateStr?' · '+esc(dateStr)+timeStr:''}</div>
+/* CARD DETAIL */
+function openCardDetail(cardId){
+  const card = CARDS.find(c=>c.id===cardId);
+  if(!card){showToast('Card not found','error');return;}
+  ACTIVE_CARD_ID = cardId;
+  const listing = card.listing_id ? LISTINGS.find(l=>l.id===card.listing_id) : null;
+
+  document.getElementById('dCode').textContent = card.card_code;
+  const statusEl = document.getElementById('dStatus');
+  const st = card.status || 'available';
+  statusEl.textContent = st.toUpperCase();
+  statusEl.className = 'detail-status-badge ' + (st==='available'?'avail':st);
+
+  document.getElementById('dBuyer').value = listing?.buyer_name || '';
+  document.getElementById('dPhone').value = listing?.buyer_phone || '';
+  document.getElementById('dDate').value  = listing?.showing_date || '';
+  document.getElementById('dTime').value  = listing?.showing_time || '';
+  document.getElementById('dNotes').value = listing?.notes || '';
+
+  const props = Array.isArray(listing?.properties_json) ? listing.properties_json : [];
+  FORM_PROPS = props.map(p=>{
+    if(typeof p === 'string') return { image_url:'', listing_url:p };
+    if(p && typeof p === 'object') return { image_url:p.image_url||'', listing_url:p.listing_url||'' };
+    return { image_url:'', listing_url:'' };
+  });
+  if(FORM_PROPS.length === 0) FORM_PROPS = [{ image_url:'', listing_url:'' }];
+  renderProps();
+
+  document.getElementById('btnPauseCard').textContent = (st==='paused') ? 'Unpause' : 'Pause';
+
+  showView('detail');
+}
+
+function propPreviewHtml(url){
+  if(url && url.trim()){
+    return `<img src="${esc(url.trim())}" alt="" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=&quot;prop-preview-placeholder&quot;>IMAGE URL WON&apos;T LOAD</div>'">`;
+  }
+  return `<div class="prop-preview-placeholder">PASTE IMAGE URL BELOW</div>`;
+}
+
+function renderProps(){
+  const el = document.getElementById('propsContainer');
+  const badge = document.getElementById('propCountBadge');
+  const addBtn = document.getElementById('btnAddProp');
+  badge.textContent = `${FORM_PROPS.length} / 3`;
+  addBtn.disabled = FORM_PROPS.length >= 3;
+  el.innerHTML = FORM_PROPS.map((p, i)=>{
+    return `<div class="prop-row" data-i="${i}">
+      <div class="prop-row-head">
+        <div class="prop-row-label">${i===0?'Hero Property':'Property '+(i+1)}</div>
+        <button class="prop-remove-btn" onclick="removeProperty(${i})">Remove</button>
       </div>
-      <div class="tap-count"><div class="tc-num">${s.taps||0}</div><div class="tc-lbl">Taps</div></div>
-      <div class="last-tap"><div class="lt-time">${esc(lastTap)}</div><div class="lt-lbl">${lastLbl}</div></div>
-      <button class="btn-del" onclick="deleteListing('${esc(s.id)}')">Delete</button>
+      <div class="prop-preview" id="ppreview-${i}">${propPreviewHtml(p.image_url)}</div>
+      <div class="prop-inputs">
+        <input type="url" placeholder="Image URL (house photo)" value="${esc(p.image_url)}" oninput="updatePropField(${i},'image_url',this.value)">
+        <input type="url" placeholder="Listing URL (Zillow / Realtor / Redfin)" value="${esc(p.listing_url)}" oninput="updatePropField(${i},'listing_url',this.value)">
+      </div>
     </div>`;
   }).join('');
 }
 
-async function deleteListing(id){
-  if(!confirm('Delete this listing? Its card will become available again.')) return;
-  // Unassign any cards pointing at this listing
-  await db.from('cards').update({status:'available', listing_id:null, assigned_at:null}).eq('listing_id', id);
-  const { error } = await db.from('listings').delete().eq('id', id);
-  if(error){showToast('Delete failed: '+error.message,'error');return;}
-  showToast('Listing deleted','success');
-  await refreshAll();
-}
-
-/* ============================================================
-   MY CARDS
-============================================================ */
-function renderMyCards(){
-  const el = document.getElementById('cardsGrid');
-  const sum = document.getElementById('cardsSummary');
-  if(CARDS.length===0){
-    sum.textContent = 'No cards yet. Order cards from the Orders tab.';
-    el.innerHTML = '<div class="empty-state">No cards yet. Go to Orders tab to place your first order.</div>';
-    return;
+function updatePropField(index, field, value){
+  if(!FORM_PROPS[index]) return;
+  FORM_PROPS[index][field] = value;
+  if(field === 'image_url'){
+    const prev = document.getElementById('ppreview-'+index);
+    if(prev) prev.innerHTML = propPreviewHtml(value);
   }
-  const avail = CARDS.filter(c=>c.status==='available').length;
-  const assigned = CARDS.filter(c=>c.status==='assigned').length;
-  sum.textContent = `${CARDS.length} total · ${avail} available · ${assigned} assigned`;
-  el.innerHTML = '<div class="card-grid">' + CARDS.map(c=>{
-    const listing = LISTINGS.find(l=>l.id===c.listing_id);
-    const statusClass = c.status==='available' ? 'avail' : c.status==='assigned' ? 'assigned' : '';
-    const cls = c.status==='assigned' ? 'ccard assigned' : 'ccard';
-    const listingLine = listing ? `<div class="clisting">→ ${esc(listing.buyer_name||'listing')}</div>` : '';
-    return `<div class="${cls}"><div class="ccode">${esc(c.card_code)}</div><div class="cstatus ${statusClass}">${esc(c.status)}</div>${listingLine}</div>`;
-  }).join('') + '</div>';
 }
 
-/* ============================================================
-   CREATE LISTING
-============================================================ */
-function renderCardDropdown(){
-  const sel = document.getElementById('inCardCode');
-  if(!sel) return;
-  const avail = CARDS.filter(c=>c.status==='available');
-  if(avail.length===0){
-    if(CARDS.length===0){
-      sel.innerHTML = '<option value="">No cards yet — go to Orders to place your first order</option>';
+function addProperty(){
+  if(FORM_PROPS.length >= 3){showToast('Maximum 3 properties','error');return;}
+  FORM_PROPS.push({ image_url:'', listing_url:'' });
+  renderProps();
+}
+
+function removeProperty(i){
+  FORM_PROPS.splice(i,1);
+  if(FORM_PROPS.length === 0) FORM_PROPS.push({ image_url:'', listing_url:'' });
+  renderProps();
+}
+
+async function saveCard(){
+  try {
+    if(!ACTIVE_CARD_ID){showToast('No card open','error');return;}
+    const card = CARDS.find(c=>c.id===ACTIVE_CARD_ID);
+    if(!card){showToast('Card not found','error');return;}
+
+    const buyerName = document.getElementById('dBuyer').value.trim();
+    const buyerPhone= document.getElementById('dPhone').value.trim();
+    const sDate     = document.getElementById('dDate').value;
+    const sTime     = document.getElementById('dTime').value;
+    const notes     = document.getElementById('dNotes').value.trim();
+
+    const cleaned = FORM_PROPS
+      .map(p => ({
+        image_url:   (p.image_url||'').trim(),
+        listing_url: normalizeUrl(p.listing_url)
+      }))
+      .filter(p => p.image_url || p.listing_url);
+
+    const hasAny = !!buyerName || cleaned.some(p=>p.listing_url);
+    const currentStatus = card.status || 'available';
+    let nextStatus;
+    if(currentStatus === 'paused'){
+      nextStatus = 'paused';
     } else {
-      sel.innerHTML = '<option value="">All your cards are assigned</option>';
+      nextStatus = hasAny ? 'assigned' : 'available';
     }
-    return;
+
+    const btn = document.getElementById('btnSaveCard');
+    btn.disabled = true; btn.textContent = 'Saving…';
+
+    let listingId = card.listing_id;
+
+    if(hasAny){
+      if(listingId){
+        const { error } = await db.from('listings').update({
+          buyer_name: buyerName || null,
+          buyer_phone: buyerPhone || null,
+          showing_date: sDate || null,
+          showing_time: sTime || null,
+          notes: notes || null,
+          properties_json: cleaned
+        }).eq('id', listingId);
+        if(error) throw error;
+      } else {
+        const { data, error } = await db.from('listings').insert({
+          agent_id: USER.id,
+          buyer_name: buyerName || null,
+          buyer_phone: buyerPhone || null,
+          showing_date: sDate || null,
+          showing_time: sTime || null,
+          notes: notes || null,
+          properties_json: cleaned
+        }).select().maybeSingle();
+        if(error) throw error;
+        listingId = data.id;
+      }
+    } else {
+      if(listingId){
+        await db.from('listings').delete().eq('id', listingId);
+        listingId = null;
+      }
+    }
+
+    const { error: cErr } = await db.from('cards').update({
+      status: nextStatus,
+      listing_id: listingId,
+      assigned_at: (nextStatus==='assigned') ? (card.assigned_at || new Date().toISOString()) : null
+    }).eq('id', card.id).eq('agent_id', USER.id);
+    if(cErr) throw cErr;
+
+    btn.disabled=false; btn.textContent='💾 Save';
+    showToast('✓ Card saved','success');
+    await refreshAll();
+    openCardDetail(card.id);
+  } catch(err){
+    console.error('saveCard failed:', err);
+    const btn = document.getElementById('btnSaveCard');
+    if(btn){btn.disabled=false;btn.textContent='💾 Save';}
+    alert('SAVE FAILED\n\n' + (err.message || JSON.stringify(err)));
   }
-  sel.innerHTML = '<option value="">Select a card...</option>' +
-    avail.map(c=>`<option value="${esc(c.id)}">${esc(c.card_code)} — Available</option>`).join('');
 }
 
-function addProp(){
-  const list = document.getElementById('propsList');
-  const row = document.createElement('div');
-  row.className='prop-row';
-  row.innerHTML=`<div class="prop-link-wrap"><span class="prop-link-icon">🔗</span>
-    <input class="prop-input" type="text" placeholder="Paste Zillow / Realtor / Redfin link — or type address"></div>
-    <button class="prop-remove" onclick="removeProp(this)">✕</button>`;
-  list.appendChild(row);
-}
-function removeProp(btn){
-  const rows=document.querySelectorAll('#propsList .prop-row');
-  if(rows.length>1)btn.closest('.prop-row').remove();
-  else showToast('Must have at least one property','error');
-}
-function resetPropsForm(){
-  document.getElementById('propsList').innerHTML=`<div class="prop-row"><div class="prop-link-wrap"><span class="prop-link-icon">🔗</span>
-    <input class="prop-input" type="text" placeholder="Paste Zillow / Realtor / Redfin link — or type address"></div>
-    <button class="prop-remove" onclick="removeProp(this)">✕</button></div>`;
-}
-
-async function createListing(){
-  const buyerName = document.getElementById('inBuyerName').value.trim();
-  const cardId    = document.getElementById('inCardCode').value;
-  const showingDate = document.getElementById('inDate').value;
-  const showingTime = document.getElementById('inTime').value;
-  const properties  = [...document.querySelectorAll('#propsList .prop-input')].map(i=>i.value.trim()).filter(Boolean);
-
-  if(!buyerName){showToast('Please enter a buyer name','error');return;}
-  if(!cardId){showToast('Please select a card','error');return;}
-  if(properties.length===0){showToast('Add at least one property','error');return;}
-
-  const btn=document.getElementById('btnCreateListing');
-  btn.disabled=true;btn.textContent='Saving…';
-
-  // Insert listing
-  const { data: listing, error: listErr } = await db.from('listings').insert({
-    agent_id: USER.id,
-    buyer_name: buyerName,
-    showing_date: showingDate||null,
-    showing_time: showingTime||null,
-    properties_json: properties,
-  }).select().maybeSingle();
-
-  if(listErr || !listing){
-    btn.disabled=false;btn.textContent='Create Listing & Assign Card →';
-    showToast('Error: '+(listErr?.message||'insert failed'),'error');
-    return;
-  }
-
-  // Assign the card atomically (RLS enforces card belongs to this agent)
-  const { error: cardErr } = await db.from('cards').update({
-    status:'assigned',
-    listing_id: listing.id,
-    assigned_at: new Date().toISOString()
-  }).eq('id', cardId).eq('agent_id', USER.id).eq('status','available');
-
-  if(cardErr){
-    // Rollback listing
-    await db.from('listings').delete().eq('id', listing.id);
-    btn.disabled=false;btn.textContent='Create Listing & Assign Card →';
-    showToast('Card assignment failed: '+cardErr.message,'error');
-    return;
-  }
-
-  btn.disabled=false;btn.textContent='Create Listing & Assign Card →';
-  document.getElementById('inBuyerName').value='';
-  document.getElementById('inDate').value='';
-  document.getElementById('inTime').value='';
-  resetPropsForm();
-  showToast('✓ Listing created, card assigned','success');
+async function togglePauseCard(){
+  if(!ACTIVE_CARD_ID) return;
+  const card = CARDS.find(c=>c.id===ACTIVE_CARD_ID);
+  if(!card) return;
+  const newStatus = (card.status==='paused') ? ((card.listing_id)?'assigned':'available') : 'paused';
+  const { error } = await db.from('cards').update({ status: newStatus }).eq('id', card.id).eq('agent_id', USER.id);
+  if(error){ alert('Pause failed: '+error.message); return; }
+  showToast(newStatus==='paused' ? 'Card paused' : 'Card unpaused', 'success');
   await refreshAll();
-  showView('dashboard');
+  openCardDetail(card.id);
 }
 
-/* ============================================================
-   PROFILE
-============================================================ */
+async function clearCard(){
+  if(!ACTIVE_CARD_ID) return;
+  if(!confirm('Clear this card and mark it available?\n\nThis removes the buyer info and properties. The card returns to your available inventory.')) return;
+  const card = CARDS.find(c=>c.id===ACTIVE_CARD_ID);
+  if(!card) return;
+  try {
+    if(card.listing_id){
+      await db.from('listings').delete().eq('id', card.listing_id);
+    }
+    const { error } = await db.from('cards').update({
+      status: 'available',
+      listing_id: null,
+      assigned_at: null
+    }).eq('id', card.id).eq('agent_id', USER.id);
+    if(error) throw error;
+    showToast('Card cleared — now available','success');
+    await refreshAll();
+    showView('mycards');
+  } catch(err){
+    alert('CLEAR FAILED\n\n' + (err.message || JSON.stringify(err)));
+  }
+}
+
+/* PROFILE */
 function loadProfileIntoForm(){
   const p = PROFILE || {};
   document.getElementById('pEmail').value = USER?.email || '';
@@ -768,10 +815,6 @@ function loadProfileIntoForm(){
     document.getElementById('pAvatarInitials').style.display='none';
   }
   updatePreview();
-  const full = ((p.first_name||'')+' '+(p.last_name||'')).trim();
-  if(full || p.brokerage){
-    document.getElementById('dashSub').textContent = [full, p.brokerage, 'Your listings and tap activity'].filter(Boolean).join(' · ');
-  }
 }
 function updatePreview(){
   const fn=document.getElementById('pFirstName').value.trim();
@@ -828,14 +871,11 @@ async function saveProfile(){
   btn.disabled=false;btn.textContent='💾 Save Profile';
   if(error){showToast('Save failed: '+error.message,'error');return;}
   PROFILE = data;
-  const full = (p.first_name+' '+p.last_name).trim();
-  document.getElementById('dashSub').textContent = [full, p.brokerage, 'Your listings and tap activity'].filter(Boolean).join(' · ');
+  document.getElementById('navUser').textContent = `${p.first_name} ${p.last_name}`;
   showToast('✓ Profile saved','success');
 }
 
-/* ============================================================
-   ORDERS
-============================================================ */
+/* ORDERS */
 function computePrice(qty){
   const perDozen = SETTINGS.card_price_per_dozen || 36;
   return Math.round((qty/12)*perDozen);
@@ -846,33 +886,15 @@ function updateOrderPrice(){
   document.getElementById('oPrice').textContent = '$'+price;
   document.getElementById('btnOrderLabel').textContent = `Order ${qty} Cards — $${price}`;
 }
-
 async function placeOrder(){
   try {
-    console.log('[ForSaleNFC] placeOrder() clicked');
-
-    if(!USER || !USER.id){
-      alert('You are not logged in. Please refresh and sign in again.');
-      return;
-    }
-
-    // Read profile from form OR fall back to DB profile
+    if(!USER || !USER.id){ alert('You are not logged in. Please refresh and sign in again.'); return; }
     const p = readProfileForm();
     const pErr = validateProfile(p);
-    if(pErr){
-      alert('Complete your profile first:\n\n' + pErr + '\n\nTaking you to the Profile tab.');
-      showView('profile');
-      return;
-    }
-
-    // Shipping name — if empty, use agent's name as default
+    if(pErr){ alert('Complete your profile first:\n\n' + pErr); showView('profile'); return; }
     let shipName = document.getElementById('oShipName').value.trim();
     if(!shipName) shipName = (p.first_name + ' ' + p.last_name).trim();
-    if(!shipName){
-      alert('Please enter a shipping name (who receives the cards).');
-      document.getElementById('oShipName').focus();
-      return;
-    }
+    if(!shipName){ alert('Please enter a shipping name.'); document.getElementById('oShipName').focus(); return; }
 
     const qty = parseInt(document.getElementById('oQty').value)||12;
     const price = computePrice(qty);
@@ -882,19 +904,10 @@ async function placeOrder(){
     const origLabel = document.getElementById('btnOrderLabel').textContent;
     document.getElementById('btnOrderLabel').textContent='Placing order…';
 
-    console.log('[ForSaleNFC] Saving profile then ordering...', { qty, price, shipName });
-
-    // Save profile first
     const { error: profErr } = await db.from('profiles').update(p).eq('id', USER.id);
-    if(profErr){
-      btn.disabled=false;
-      document.getElementById('btnOrderLabel').textContent=origLabel;
-      alert('PROFILE SAVE FAILED before order:\n\n' + (profErr.message||JSON.stringify(profErr)));
-      return;
-    }
+    if(profErr){ btn.disabled=false; document.getElementById('btnOrderLabel').textContent=origLabel; alert('PROFILE SAVE FAILED:\n\n' + (profErr.message||JSON.stringify(profErr))); return; }
     PROFILE = { ...PROFILE, ...p };
 
-    // Insert order
     const { data: order, error: orderErr } = await db.from('orders').insert({
       agent_id: USER.id,
       quantity: qty,
@@ -908,52 +921,33 @@ async function placeOrder(){
       notes:           document.getElementById('oNotes').value.trim() || null
     }).select().maybeSingle();
 
-    console.log('[ForSaleNFC] Order insert result:', { order, orderErr });
-
     if(orderErr || !order){
-      btn.disabled=false;
-      document.getElementById('btnOrderLabel').textContent=origLabel;
-      const msg = orderErr ? (orderErr.message||orderErr.code||JSON.stringify(orderErr)) : 'insert returned no row';
-      alert('ORDER INSERT FAILED\n\n' + msg);
-      return;
+      btn.disabled=false; document.getElementById('btnOrderLabel').textContent=origLabel;
+      alert('ORDER INSERT FAILED\n\n' + (orderErr ? (orderErr.message||JSON.stringify(orderErr)) : 'insert returned no row')); return;
     }
 
-    // Generate cards server-side
     const { data: genResult, error: genErr } = await db.rpc('generate_cards_for_order', {
-      p_order_id: order.id,
-      p_agent_id: USER.id,
-      p_quantity: qty
+      p_order_id: order.id, p_agent_id: USER.id, p_quantity: qty
     });
-
-    console.log('[ForSaleNFC] Card gen result:', { genResult, genErr });
-
     if(genErr){
-      btn.disabled=false;
-      document.getElementById('btnOrderLabel').textContent=origLabel;
-      const msg = genErr.message||genErr.code||JSON.stringify(genErr);
-      alert('CARD GENERATION FAILED\n(Order was saved but cards were not created)\n\n' + msg);
-      return;
+      btn.disabled=false; document.getElementById('btnOrderLabel').textContent=origLabel;
+      alert('CARD GENERATION FAILED\n\n' + (genErr.message||JSON.stringify(genErr))); return;
     }
 
     SETTINGS = await loadSettings();
-
     btn.disabled=false;
     document.getElementById('btnOrderLabel').textContent=origLabel;
     document.getElementById('orderSuccess').style.display='block';
     document.getElementById('orderSuccessDetails').innerHTML =
       `Order ${order.id.slice(0,8)} · ${qty} cards · ${esc(genResult.range||'')} · ${new Date(order.created_at).toLocaleString()}`;
     document.getElementById('oNotes').value='';
-    alert('✓ ORDER PLACED\n\n' + qty + ' cards · ' + (genResult.range||'') + '\n\nCheck the My Cards tab.');
+    alert('✓ ORDER PLACED\n\n' + qty + ' cards · ' + (genResult.range||'') + '\n\nGo to My Cards to use them.');
     showToast(`✓ Order placed — ${qty} cards assigned`,'success');
     await refreshAll();
-
   } catch(err){
-    console.error('[ForSaleNFC] placeOrder exception:', err);
-    const btn=document.getElementById('btnOrder');
-    if(btn){btn.disabled=false;}
-    const lbl=document.getElementById('btnOrderLabel');
-    if(lbl){lbl.textContent='Order 12 Cards — $36';}
-    alert('UNEXPECTED ERROR in placeOrder:\n\n' + (err?.message || String(err)));
+    const btn=document.getElementById('btnOrder'); if(btn) btn.disabled=false;
+    const lbl=document.getElementById('btnOrderLabel'); if(lbl) lbl.textContent='Order 12 Cards — $36';
+    alert('UNEXPECTED ERROR:\n\n' + (err?.message || String(err)));
   }
 }
 
@@ -964,20 +958,18 @@ function renderOrders(){
     const range = (o.card_prefix && o.card_start && o.card_end)
       ? `${o.card_prefix}-${String(o.card_start).padStart(4,'0')} → ${o.card_prefix}-${String(o.card_end).padStart(4,'0')}`
       : '—';
-    return `<div style="padding:12px 14px;border-bottom:1px solid var(--border)">
-      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center">
-        <div style="font-size:13px;color:var(--white);font-weight:600">${o.quantity} cards · $${o.total_price}</div>
-        <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace">${new Date(o.created_at).toLocaleString()}</div>
+    return `<div class="orders-hist-row">
+      <div class="orders-hist-top">
+        <div class="orders-hist-qty">${o.quantity} cards · $${o.total_price}</div>
+        <div class="orders-hist-time">${new Date(o.created_at).toLocaleString()}</div>
       </div>
-      <div style="font-size:11px;color:var(--teal);margin-top:4px;font-family:'DM Mono',monospace">${esc(range)}</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:3px">Status: ${esc(o.status)} ${o.shipping_name?'· Ship to '+esc(o.shipping_name):''}</div>
+      <div class="orders-hist-range">${esc(range)}</div>
+      <div class="orders-hist-meta">Status: ${esc(o.status)} ${o.shipping_name?'· Ship to '+esc(o.shipping_name):''}</div>
     </div>`;
   }).join('');
 }
 
-/* ============================================================
-   ADMIN
-============================================================ */
+/* ADMIN */
 function loadAdminForm(){
   document.getElementById('aPrice').value  = SETTINGS.card_price_per_dozen ?? 36;
   document.getElementById('aPrefix').value = SETTINGS.card_number_prefix || 'FS';
@@ -1018,27 +1010,24 @@ async function renderAdminOrders(){
     const range = (o.card_prefix && o.card_start && o.card_end)
       ? `${o.card_prefix}-${String(o.card_start).padStart(4,'0')} → ${o.card_prefix}-${String(o.card_end).padStart(4,'0')}`
       : '—';
-    return `<div style="padding:12px 14px;border-bottom:1px solid var(--border)">
-      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center">
-        <div style="font-size:13px;color:var(--white);font-weight:600">${esc(o.shipping_name||'Unknown')} · ${o.quantity} cards · $${o.total_price}</div>
-        <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace">${new Date(o.created_at).toLocaleString()}</div>
+    return `<div class="orders-hist-row">
+      <div class="orders-hist-top">
+        <div class="orders-hist-qty">${esc(o.shipping_name||'Unknown')} · ${o.quantity} cards · $${o.total_price}</div>
+        <div class="orders-hist-time">${new Date(o.created_at).toLocaleString()}</div>
       </div>
-      <div style="font-size:11px;color:var(--teal);margin-top:4px;font-family:'DM Mono',monospace">${esc(range)}</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:3px">Status: ${esc(o.status)} ${o.notes?'· '+esc(o.notes):''}</div>
-      ${o.shipping_address ? `<div style="font-size:11px;color:var(--muted);margin-top:3px">Ship: ${esc([o.shipping_address,o.shipping_city,o.shipping_state,o.shipping_zip].filter(Boolean).join(', '))}</div>` : ''}
+      <div class="orders-hist-range">${esc(range)}</div>
+      <div class="orders-hist-meta">Status: ${esc(o.status)} ${o.notes?'· '+esc(o.notes):''}</div>
+      ${o.shipping_address ? `<div class="orders-hist-meta">Ship: ${esc([o.shipping_address,o.shipping_city,o.shipping_state,o.shipping_zip].filter(Boolean).join(', '))}</div>` : ''}
     </div>`;
   }).join('');
 }
 
-/* ============================================================
-   BUYER TAP PAGE (anon — no login)
-============================================================ */
+/* BUYER TAP — image first */
 async function loadTapPageFromQuery(){
   const params = new URLSearchParams(window.location.search);
   const cardCode = params.get('t');
   if(!cardCode) return false;
 
-  // Hide nav
   document.getElementById('mainNav').style.display='none';
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-tap').classList.add('active');
@@ -1046,17 +1035,15 @@ async function loadTapPageFromQuery(){
   const tc=document.getElementById('tapContent');
   tc.innerHTML='<div class="card-not-found"><p><span class="loading"></span>Loading card…</p></div>';
 
-  // Look up card
   const { data: card } = await db.from('cards').select('*').eq('card_code', cardCode).maybeSingle();
-  if(!card || !card.listing_id){
+  if(!card || !card.listing_id || card.status==='paused'){
     tc.innerHTML = `<div class="card-not-found">
-      <h2>Card Not Found</h2>
+      <h2>Card Not Assigned</h2>
       <p>Card <strong style="color:var(--teal);font-family:'DM Mono',monospace">${esc(cardCode)}</strong> hasn't been assigned to a showing yet.</p>
     </div>`;
     return true;
   }
 
-  // Load listing + agent in parallel
   const [lRes, pRes] = await Promise.all([
     db.from('listings').select('*').eq('id', card.listing_id).maybeSingle(),
     db.from('profiles').select('first_name,last_name,phone,brokerage,license_number,headline,photo_data,email').eq('id', card.agent_id).maybeSingle()
@@ -1068,11 +1055,26 @@ async function loadTapPageFromQuery(){
     return true;
   }
 
-  // Record the tap (async via RPC — fire and continue)
   db.rpc('record_tap', { p_card_code: cardCode, p_user_agent: (navigator.userAgent||'').slice(0,200) });
 
   renderTapPage(listing, profile, cardCode);
   return true;
+}
+
+function buildPropLink(p, heroClass){
+  const href = p.listing_url ? normalizeUrl(p.listing_url) : '';
+  const hasImg = !!p.image_url;
+  const caption = p.listing_url ? p.listing_url : 'View listing';
+  const linkAttrs = href ? `href="${esc(href)}" target="_blank" rel="noopener"` : '';
+  if(hasImg){
+    return `<a class="${heroClass}" ${linkAttrs}>
+      <img src="${esc(p.image_url)}" alt="" onerror="this.outerHTML='<div class=&quot;prop-caption&quot;>${esc(caption).replace(/"/g,'&quot;')}</div>'">
+    </a>`;
+  } else {
+    return `<a class="${heroClass}" ${linkAttrs}>
+      <div class="prop-caption">${esc(caption)}</div>
+    </a>`;
+  }
 }
 
 function renderTapPage(listing, profile, cardCode){
@@ -1082,12 +1084,23 @@ function renderTapPage(listing, profile, cardCode){
   const rawPhone = (profile.phone||'').replace(/\D/g,'');
   const photoHtml = profile.photo_data ? `<img src="${esc(profile.photo_data)}" alt="">` : '👤';
   const headline = profile.headline || 'Tap to View This Property';
-  const properties = listing.properties_json||[];
-  const propsHtml = properties.map(prop=>{
-    const isUrl = /^https?:\/\//i.test(prop) || /^www\./i.test(prop);
-    const content = isUrl ? `<a class="prop-card-link" href="${esc(prop.startsWith('http')?prop:'https://'+prop)}" target="_blank" rel="noopener">${esc(prop)}</a>` : esc(prop);
-    return `<div class="prop-card"><div class="prop-card-label">Property</div><div class="prop-card-text">${content}</div></div>`;
-  }).join('');
+
+  const rawProps = Array.isArray(listing.properties_json) ? listing.properties_json : [];
+  const props = rawProps.map(p=>{
+    if(typeof p === 'string') return { image_url:'', listing_url:p };
+    if(p && typeof p === 'object') return { image_url:p.image_url||'', listing_url:p.listing_url||'' };
+    return { image_url:'', listing_url:'' };
+  }).filter(p => p.image_url || p.listing_url);
+
+  let propsHtml = '';
+  if(props.length){
+    propsHtml += buildPropLink(props[0], 'hero-prop');
+    for(let i=1;i<props.length;i++){
+      propsHtml += buildPropLink(props[i], 'sub-prop');
+    }
+  } else {
+    propsHtml = '<div class="empty-state">No properties added yet.</div>';
+  }
 
   tc.innerHTML = `<div class="tap-wrap">
     <div class="tap-header">
@@ -1150,29 +1163,23 @@ function saveContactTap(){
   a.click();
 }
 
-/* ============================================================
-   INIT
-============================================================ */
+/* INIT */
 (async function init(){
   setDbStatus('','DB connecting…');
 
-  // Buyer tap page is top priority — no login needed
   const isTap = await loadTapPageFromQuery();
   if(isTap) return;
 
-  // Check for existing session
   const { data:{ session } } = await db.auth.getSession();
   if(session){
     USER = session.user;
     await afterLogin();
   } else {
-    // Show auth view
     document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
     document.getElementById('view-auth').classList.add('active');
     setDbStatus('ok','DB connected');
   }
 
-  // Listen for auth changes (e.g. email verification redirect)
   db.auth.onAuthStateChange(async (event, session) => {
     if(event === 'SIGNED_IN' && session && !USER){
       USER = session.user;
