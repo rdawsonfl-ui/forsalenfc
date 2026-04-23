@@ -215,6 +215,14 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .db-status.ok{color:var(--green);border-color:rgba(46,204,138,.3)}
 .db-status.err{color:var(--red);border-color:rgba(224,80,80,.3)}
 
+/* IDLE TIMEOUT MODAL */
+.idle-overlay{display:none;position:fixed;inset:0;background:rgba(12,15,26,.85);backdrop-filter:blur(6px);z-index:10000;align-items:center;justify-content:center;padding:20px}
+.idle-overlay.show{display:flex}
+.idle-modal{background:var(--surface);border:1px solid var(--orange);border-radius:10px;padding:28px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.idle-title{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--white);letter-spacing:1px;margin-bottom:10px}
+.idle-body{font-size:13px;color:var(--offwhite);line-height:1.5;margin-bottom:20px}
+.idle-body span{color:var(--orange);font-family:'DM Mono',monospace;font-weight:600}
+
 @media(max-width:768px){
   nav{padding:0 14px;flex-wrap:wrap;height:auto;min-height:58px;padding-top:8px;padding-bottom:8px}
   .nav-tabs{gap:2px;width:100%;justify-content:center}
@@ -501,6 +509,15 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 <div class="toast" id="toast"></div>
 <div class="db-status" id="dbStatus">DB connecting…</div>
 
+<!-- IDLE TIMEOUT WARNING MODAL -->
+<div class="idle-overlay" id="idleOverlay">
+  <div class="idle-modal">
+    <div class="idle-title">Are you still there?</div>
+    <div class="idle-body">You'll be signed out in <span id="idleCountdown">120</span> seconds for security.</div>
+    <button class="btn full" onclick="stayActive()">I'm Still Here</button>
+  </div>
+</div>
+
 <script>
 /* ForSaleNFC — Spec v3 (card-first + image properties) */
 
@@ -518,6 +535,14 @@ let ACTIVE_CARD_ID = null;
 let FORM_PROPS = [];
 let SHOW_ARCHIVED = false;
 
+/* Idle timeout: 30 min total, warn at 28 min (2 min countdown) */
+const IDLE_TIMEOUT_MS   = 30 * 60 * 1000;  // 30 minutes
+const IDLE_WARNING_MS   = 28 * 60 * 1000;  // warn at 28 min (2-min countdown)
+let idleWarnTimer  = null;
+let idleLogoutTimer= null;
+let idleCountdownInterval = null;
+let idleActive = false;       // true while user is signed in and timer is running
+
 /* Completion checks */
 function isProfileComplete(p){
   if(!p) return false;
@@ -527,6 +552,79 @@ function hasEverOrdered(){ return Array.isArray(ORDERS) && ORDERS.length > 0; }
 function hasCardsEverAssigned(){
   // cards.assigned_at set OR status !== available means card has been used
   return Array.isArray(CARDS) && CARDS.some(c => c.assigned_at || (c.status && c.status !== 'available'));
+}
+
+/* IDLE TIMEOUT */
+function startIdleTimer(){
+  idleActive = true;
+  resetIdleTimer();
+  // attach listeners once
+  if(!window.__idleListenersAttached){
+    ['mousedown','keydown','touchstart','scroll','click'].forEach(ev => {
+      document.addEventListener(ev, onUserActivity, { passive: true });
+    });
+    window.__idleListenersAttached = true;
+  }
+}
+function stopIdleTimer(){
+  idleActive = false;
+  clearTimeout(idleWarnTimer);
+  clearTimeout(idleLogoutTimer);
+  clearInterval(idleCountdownInterval);
+  idleWarnTimer = null;
+  idleLogoutTimer = null;
+  idleCountdownInterval = null;
+  hideIdleModal();
+}
+function resetIdleTimer(){
+  if(!idleActive) return;
+  clearTimeout(idleWarnTimer);
+  clearTimeout(idleLogoutTimer);
+  clearInterval(idleCountdownInterval);
+  hideIdleModal();
+  idleWarnTimer = setTimeout(showIdleWarning, IDLE_WARNING_MS);
+  idleLogoutTimer = setTimeout(forceSignOutIdle, IDLE_TIMEOUT_MS);
+}
+function onUserActivity(){
+  // If the warning modal is showing, activity alone doesn't dismiss it —
+  // user must tap "I'm Still Here". But before the warning, any activity resets.
+  const modal = document.getElementById('idleOverlay');
+  if(modal && modal.classList.contains('show')) return;
+  resetIdleTimer();
+}
+function showIdleWarning(){
+  const modal = document.getElementById('idleOverlay');
+  const cd = document.getElementById('idleCountdown');
+  let remaining = Math.floor((IDLE_TIMEOUT_MS - IDLE_WARNING_MS) / 1000); // 120s
+  cd.textContent = remaining;
+  modal.classList.add('show');
+  idleCountdownInterval = setInterval(()=>{
+    remaining--;
+    if(remaining <= 0){
+      clearInterval(idleCountdownInterval);
+      return;
+    }
+    cd.textContent = remaining;
+  }, 1000);
+}
+function hideIdleModal(){
+  const modal = document.getElementById('idleOverlay');
+  if(modal) modal.classList.remove('show');
+}
+function stayActive(){
+  hideIdleModal();
+  resetIdleTimer();
+  showToast('Session extended','success');
+}
+async function forceSignOutIdle(){
+  stopIdleTimer();
+  await db.auth.signOut();
+  USER = null; PROFILE = {};
+  document.getElementById('mainNav').style.display='none';
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-auth').classList.add('active');
+  toggleAuth('login');
+  setAuthMsg('liMsg','You were signed out after 30 minutes of inactivity.','error');
 }
 
 function esc(s){if(s===null||s===undefined)return '';return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -588,6 +686,7 @@ async function signIn(){
   await afterLogin();
 }
 async function signOut(){
+  stopIdleTimer();
   await db.auth.signOut();
   USER = null; PROFILE = {};
   document.getElementById('mainNav').style.display='none';
@@ -629,6 +728,9 @@ async function afterLogin(){
   } else {
     showView('mycards');
   }
+
+  // Start 30-min idle timer
+  startIdleTimer();
 }
 
 function addAdminTab(){
