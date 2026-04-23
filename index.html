@@ -64,6 +64,12 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .auth-msg.error{background:rgba(224,80,80,.1);border:1px solid var(--red);color:#ffb5b5}
 .auth-msg.success{background:rgba(46,204,138,.1);border:1px solid var(--green);color:#b6f0d0}
 
+/* Password field with show/hide toggle */
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:42px}
+.pw-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px 6px;line-height:1;user-select:none}
+.pw-eye:hover{color:var(--white)}
+
 /* Profile */
 .profile-wrap{max-width:680px;margin:0 auto;padding:32px 24px}
 .profile-hero{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:24px;margin-bottom:18px;display:flex;align-items:center;gap:20px}
@@ -267,7 +273,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
         <div class="auth-title">Sign In</div>
         <div class="auth-sub">Sign in to your agent account</div>
         <div class="pfield"><label>Email</label><input class="pinput" id="liEmail" type="email" autocomplete="email"></div>
-        <div class="pfield" style="margin-top:12px"><label>Password</label><input class="pinput" id="liPass" type="password" autocomplete="current-password"></div>
+        <div class="pfield" style="margin-top:12px"><label>Password</label><div class="pw-wrap"><input class="pinput" id="liPass" type="password" autocomplete="current-password"><button type="button" class="pw-eye" onclick="togglePw('liPass',this)" aria-label="Show password">👁</button></div></div>
         <button class="btn full" style="margin-top:18px" id="btnSignIn" onclick="signIn()">Sign In</button>
         <div class="auth-msg" id="liMsg"></div>
         <div class="auth-toggle" style="margin-top:10px"><a onclick="toggleAuth('forgot')">Forgot password?</a></div>
@@ -277,7 +283,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
         <div class="auth-title">Create Account</div>
         <div class="auth-sub">Get your agent account set up</div>
         <div class="pfield"><label>Email</label><input class="pinput" id="suEmail" type="email" autocomplete="email"></div>
-        <div class="pfield" style="margin-top:12px"><label>Password <span class="req">*</span></label><input class="pinput" id="suPass" type="password" autocomplete="new-password" placeholder="At least 6 characters"></div>
+        <div class="pfield" style="margin-top:12px"><label>Password <span class="req">*</span></label><div class="pw-wrap"><input class="pinput" id="suPass" type="password" autocomplete="new-password" placeholder="At least 6 characters"><button type="button" class="pw-eye" onclick="togglePw('suPass',this)" aria-label="Show password">👁</button></div></div>
         <button class="btn full" style="margin-top:18px" id="btnSignUp" onclick="signUp()">Create Account</button>
         <div class="auth-msg" id="suMsg"></div>
         <div class="auth-toggle">Already have an account? <a onclick="toggleAuth('login')">Sign in</a></div>
@@ -293,8 +299,8 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
       <div id="authReset" style="display:none">
         <div class="auth-title">Set New Password</div>
         <div class="auth-sub">Enter a new password for your account.</div>
-        <div class="pfield"><label>New Password <span class="req">*</span></label><input class="pinput" id="rpPass" type="password" autocomplete="new-password" placeholder="At least 6 characters"></div>
-        <div class="pfield" style="margin-top:12px"><label>Confirm Password <span class="req">*</span></label><input class="pinput" id="rpPass2" type="password" autocomplete="new-password"></div>
+        <div class="pfield"><label>New Password <span class="req">*</span></label><div class="pw-wrap"><input class="pinput" id="rpPass" type="password" autocomplete="new-password" placeholder="At least 6 characters"><button type="button" class="pw-eye" onclick="togglePw('rpPass',this)" aria-label="Show password">👁</button></div></div>
+        <div class="pfield" style="margin-top:12px"><label>Confirm Password <span class="req">*</span></label><div class="pw-wrap"><input class="pinput" id="rpPass2" type="password" autocomplete="new-password"><button type="button" class="pw-eye" onclick="togglePw('rpPass2',this)" aria-label="Show password">👁</button></div></div>
         <button class="btn full" style="margin-top:18px" id="btnReset" onclick="completePasswordReset()">Set New Password</button>
         <div class="auth-msg" id="rpMsg"></div>
       </div>
@@ -696,6 +702,18 @@ function toggleAuth(which){
   document.getElementById('authSignup').style.display = which==='signup' ? 'block' : 'none';
   document.getElementById('authForgot').style.display = which==='forgot' ? 'block' : 'none';
   document.getElementById('authReset').style.display  = which==='reset'  ? 'block' : 'none';
+}
+
+function togglePw(inputId, btnEl){
+  const el = document.getElementById(inputId);
+  if(!el) return;
+  if(el.type === 'password'){
+    el.type = 'text';
+    if(btnEl) btnEl.textContent = '🙈';
+  } else {
+    el.type = 'password';
+    if(btnEl) btnEl.textContent = '👁';
+  }
 }
 
 async function sendPasswordReset(){
