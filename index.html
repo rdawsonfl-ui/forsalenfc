@@ -270,6 +270,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
         <div class="pfield" style="margin-top:12px"><label>Password</label><input class="pinput" id="liPass" type="password" autocomplete="current-password"></div>
         <button class="btn full" style="margin-top:18px" id="btnSignIn" onclick="signIn()">Sign In</button>
         <div class="auth-msg" id="liMsg"></div>
+        <div class="auth-toggle" style="margin-top:10px"><a onclick="toggleAuth('forgot')">Forgot password?</a></div>
         <div class="auth-toggle">New here? <a onclick="toggleAuth('signup')">Create an account</a></div>
       </div>
       <div id="authSignup" style="display:none">
@@ -280,6 +281,22 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
         <button class="btn full" style="margin-top:18px" id="btnSignUp" onclick="signUp()">Create Account</button>
         <div class="auth-msg" id="suMsg"></div>
         <div class="auth-toggle">Already have an account? <a onclick="toggleAuth('login')">Sign in</a></div>
+      </div>
+      <div id="authForgot" style="display:none">
+        <div class="auth-title">Reset Password</div>
+        <div class="auth-sub">Enter your email and we'll send you a reset link.</div>
+        <div class="pfield"><label>Email</label><input class="pinput" id="fpEmail" type="email" autocomplete="email"></div>
+        <button class="btn full" style="margin-top:18px" id="btnForgot" onclick="sendPasswordReset()">Send Reset Link</button>
+        <div class="auth-msg" id="fpMsg"></div>
+        <div class="auth-toggle"><a onclick="toggleAuth('login')">← Back to sign in</a></div>
+      </div>
+      <div id="authReset" style="display:none">
+        <div class="auth-title">Set New Password</div>
+        <div class="auth-sub">Enter a new password for your account.</div>
+        <div class="pfield"><label>New Password <span class="req">*</span></label><input class="pinput" id="rpPass" type="password" autocomplete="new-password" placeholder="At least 6 characters"></div>
+        <div class="pfield" style="margin-top:12px"><label>Confirm Password <span class="req">*</span></label><input class="pinput" id="rpPass2" type="password" autocomplete="new-password"></div>
+        <button class="btn full" style="margin-top:18px" id="btnReset" onclick="completePasswordReset()">Set New Password</button>
+        <div class="auth-msg" id="rpMsg"></div>
       </div>
     </div>
   </div>
@@ -677,6 +694,37 @@ function goHome(){
 function toggleAuth(which){
   document.getElementById('authLogin').style.display  = which==='login'  ? 'block' : 'none';
   document.getElementById('authSignup').style.display = which==='signup' ? 'block' : 'none';
+  document.getElementById('authForgot').style.display = which==='forgot' ? 'block' : 'none';
+  document.getElementById('authReset').style.display  = which==='reset'  ? 'block' : 'none';
+}
+
+async function sendPasswordReset(){
+  const email = document.getElementById('fpEmail').value.trim();
+  if(!email){setAuthMsg('fpMsg','Please enter your email','error');return;}
+  const btn=document.getElementById('btnForgot');
+  btn.disabled=true;btn.textContent='Sending…';
+  const { error } = await db.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin
+  });
+  btn.disabled=false;btn.textContent='Send Reset Link';
+  if(error){setAuthMsg('fpMsg', error.message, 'error');return;}
+  setAuthMsg('fpMsg', '✓ Check your email for a reset link. It may take a minute to arrive.', 'success');
+}
+
+async function completePasswordReset(){
+  const p1 = document.getElementById('rpPass').value;
+  const p2 = document.getElementById('rpPass2').value;
+  if(!p1 || p1.length < 6){setAuthMsg('rpMsg','Password must be at least 6 characters','error');return;}
+  if(p1 !== p2){setAuthMsg('rpMsg','Passwords do not match','error');return;}
+  const btn=document.getElementById('btnReset');
+  btn.disabled=true;btn.textContent='Saving…';
+  const { error } = await db.auth.updateUser({ password: p1 });
+  btn.disabled=false;btn.textContent='Set New Password';
+  if(error){setAuthMsg('rpMsg', error.message, 'error');return;}
+  setAuthMsg('rpMsg','✓ Password updated. Signing you in…','success');
+  setTimeout(async ()=>{
+    await afterLogin();
+  }, 800);
 }
 async function signUp(){
   const email = document.getElementById('suEmail').value.trim();
@@ -1757,8 +1805,23 @@ function saveContactTap(){
   const isTap = await loadTapPageFromQuery();
   if(isTap) return;
 
+  // Password recovery comes back as a URL hash like #access_token=...&type=recovery
+  // The Supabase client auto-processes it, then fires PASSWORD_RECOVERY. We need to
+  // catch that early and show the reset form instead of logging the user straight in.
+  const hash = window.location.hash || '';
+  const isRecovery = hash.includes('type=recovery') || hash.includes('type=signup');
+
   const { data:{ session } } = await db.auth.getSession();
-  if(session){
+
+  if(isRecovery){
+    // Show Reset form — do NOT call afterLogin(), the user is in a recovery-only session.
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById('view-auth').classList.add('active');
+    toggleAuth('reset');
+    setDbStatus('ok','DB connected');
+    // Clean hash so refresh doesn't re-trigger
+    try { history.replaceState(null, '', window.location.pathname); } catch {}
+  } else if(session){
     USER = session.user;
     await afterLogin();
   } else {
@@ -1768,6 +1831,12 @@ function saveContactTap(){
   }
 
   db.auth.onAuthStateChange(async (event, session) => {
+    if(event === 'PASSWORD_RECOVERY'){
+      document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+      document.getElementById('view-auth').classList.add('active');
+      toggleAuth('reset');
+      return;
+    }
     if(event === 'SIGNED_IN' && session && !USER){
       USER = session.user;
       await afterLogin();
