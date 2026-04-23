@@ -19,6 +19,8 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .nav-tab{padding:7px 14px;border-radius:4px;font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .15s;letter-spacing:.3px;background:var(--card);color:var(--muted)}
 .nav-tab.active{background:var(--orange);color:var(--white)}
 .nav-tab:not(.active):hover{color:var(--white)}
+.nav-tab.locked{opacity:.4;cursor:not-allowed;position:relative}
+.nav-tab.locked::after{content:'🔒';margin-left:4px;font-size:10px}
 .nav-user{font-size:11px;color:var(--muted);padding:0 8px;font-family:'DM Mono',monospace}
 .nav-signout{background:transparent;color:var(--muted);border:1px solid var(--border);padding:6px 10px;border-radius:4px;cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif}
 .nav-signout:hover{color:var(--white);border-color:var(--muted)}
@@ -240,7 +242,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
   <a class="nav-logo" onclick="goHome()">For<span>Sale</span>NFC</a>
   <div class="nav-tabs" id="navTabs">
     <button class="nav-tab" data-view="dashboard" onclick="showView('dashboard',this)">Dashboard</button>
-    <button class="nav-tab active" data-view="mycards" onclick="showView('mycards',this)">My Cards</button>
+    <button class="nav-tab" data-view="mycards" onclick="showView('mycards',this)">My Cards</button>
     <button class="nav-tab" data-view="orders" onclick="showView('orders',this)">Orders</button>
     <button class="nav-tab" data-view="profile" onclick="showView('profile',this)">Profile</button>
     <span class="nav-user" id="navUser"></span>
@@ -640,6 +642,17 @@ function normalizeUrl(u){
 }
 
 function showView(id,tabEl){
+  // GUARD: If user is signed in but profile incomplete, restrict navigation
+  // to Dashboard, Profile, and Admin only. My Cards and Orders are locked.
+  if(USER && PROFILE && !isProfileComplete(PROFILE)){
+    const allowed = ['dashboard','profile','admin','auth','tap','detail'];
+    if(!allowed.includes(id)){
+      // Bounce to Profile with a message
+      showToast('Complete your profile first','error');
+      id = 'profile';
+      tabEl = document.querySelector('.nav-tab[data-view="profile"]');
+    }
+  }
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   const v=document.getElementById('view-'+id);
@@ -704,6 +717,11 @@ async function afterLogin(){
     await db.from('profiles').insert({ id: USER.id, email: USER.email });
     PROFILE = await loadProfile();
   }
+
+  // CRITICAL: hide every view (including auth) BEFORE showing nav,
+  // so routing picks the right one without any flash.
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+
   const displayName = (PROFILE && PROFILE.first_name && PROFILE.last_name)
     ? `${PROFILE.first_name} ${PROFILE.last_name}`
     : USER.email;
@@ -717,8 +735,8 @@ async function afterLogin(){
   updateOrderPrice();
   renderDashboard();
 
-  // Returning-user routing:
-  //   profile incomplete     → Dashboard
+  // Returning-user routing — hard hold on Dashboard if profile incomplete:
+  //   profile incomplete     → Dashboard (LOCKED — see showView guard)
   //   profile complete + no cards → Orders
   //   cards exist            → My Cards
   if(!isProfileComplete(PROFILE)){
@@ -782,7 +800,16 @@ async function refreshAll(){
 }
 
 /* DASHBOARD */
+function updateNavLocks(){
+  const profileOk = isProfileComplete(PROFILE);
+  const mycardsTab = document.querySelector('.nav-tab[data-view="mycards"]');
+  const ordersTab  = document.querySelector('.nav-tab[data-view="orders"]');
+  if(mycardsTab){ mycardsTab.classList.toggle('locked', !profileOk); }
+  if(ordersTab){  ordersTab.classList.toggle('locked', !profileOk);  }
+}
+
 function renderDashboard(){
+  updateNavLocks();
   const profileOk = isProfileComplete(PROFILE);
   const orderedOk = hasEverOrdered();
   const cardsOk   = CARDS.length > 0;
