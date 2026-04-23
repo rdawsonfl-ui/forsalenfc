@@ -156,13 +156,14 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .tl-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--orange);text-transform:uppercase;margin-bottom:12px}
 
 /* Image-first property cards */
-.hero-prop,.sub-prop{display:block;margin-bottom:14px;border-radius:10px;overflow:hidden;background:var(--surface);border:1px solid var(--border);text-decoration:none;color:inherit;cursor:pointer;transition:border-color .15s}
-.hero-prop:hover,.sub-prop:hover{border-color:var(--orange)}
+.hero-prop,.sub-prop{display:block;margin-bottom:14px;border-radius:10px;overflow:hidden;background:var(--surface);border:1px solid var(--border);text-decoration:none;color:inherit;cursor:pointer;transition:all .15s}
+.hero-prop:hover,.sub-prop:hover{border-color:var(--orange);transform:translateY(-1px)}
 .hero-prop img{width:100%;display:block;aspect-ratio:16/10;object-fit:cover;background:var(--bg)}
 .sub-prop{margin-bottom:12px;border-radius:8px}
 .sub-prop img{width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--bg);display:block}
-.prop-caption{padding:12px 14px;font-size:12px;color:var(--orange);word-break:break-word;font-weight:500}
-.sub-prop .prop-caption{padding:10px 12px;font-size:11px}
+.prop-cta{padding:14px 16px;font-size:14px;font-weight:700;color:var(--white);background:var(--orange);text-align:center;letter-spacing:.5px}
+.sub-prop .prop-cta{padding:12px 14px;font-size:13px}
+.hero-prop.no-image .prop-cta,.sub-prop.no-image .prop-cta{padding:18px}
 
 .interest-section{margin:12px 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px}
 .is-title{font-size:14px;font-weight:600;color:var(--white);margin-bottom:4px}
@@ -1614,18 +1615,22 @@ async function loadTapPageFromQuery(){
   return true;
 }
 
-function buildPropLink(p, heroClass){
+function buildPropLink(p, heroClass, index, total){
   const href = p.listing_url ? normalizeUrl(p.listing_url) : '';
   const hasImg = !!p.image_url;
-  const caption = p.listing_url ? p.listing_url : 'View listing';
   const linkAttrs = href ? `href="${esc(href)}" target="_blank" rel="noopener"` : '';
+  // Clean label — never expose the raw URL to the buyer
+  const label = total > 1
+    ? (index === 0 ? 'View Property 1 →' : `View Property ${index + 1} →`)
+    : 'View Full Listing →';
   if(hasImg){
     return `<a class="${heroClass}" ${linkAttrs}>
-      <img src="${esc(p.image_url)}" alt="" onerror="this.outerHTML='<div class=&quot;prop-caption&quot;>${esc(caption).replace(/"/g,'&quot;')}</div>'">
+      <img src="${esc(p.image_url)}" alt="" onerror="this.style.display='none'">
+      <div class="prop-cta">${esc(label)}</div>
     </a>`;
   } else {
-    return `<a class="${heroClass}" ${linkAttrs}>
-      <div class="prop-caption">${esc(caption)}</div>
+    return `<a class="${heroClass} no-image" ${linkAttrs}>
+      <div class="prop-cta">${esc(label)}</div>
     </a>`;
   }
 }
@@ -1647,9 +1652,9 @@ function renderTapPage(listing, profile, cardCode){
 
   let propsHtml = '';
   if(props.length){
-    propsHtml += buildPropLink(props[0], 'hero-prop');
+    propsHtml += buildPropLink(props[0], 'hero-prop', 0, props.length);
     for(let i=1;i<props.length;i++){
-      propsHtml += buildPropLink(props[i], 'sub-prop');
+      propsHtml += buildPropLink(props[i], 'sub-prop', i, props.length);
     }
   } else {
     propsHtml = '<div class="empty-state">No properties added yet.</div>';
