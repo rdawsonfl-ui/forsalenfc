@@ -168,8 +168,41 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .card-not-found h2{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--white);margin-bottom:8px}
 .card-not-found p{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:8px}
 
-/* Admin */
-.admin-pill{display:inline-block;background:var(--gold);color:#000;font-size:10px;font-weight:700;padding:3px 8px;border-radius:3px;letter-spacing:1px;margin-left:8px}
+/* DASHBOARD */
+.dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:8px}
+.dash-block{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px;display:flex;flex-direction:column;gap:14px}
+.dash-block.done{border-color:rgba(46,204,138,.35)}
+.dash-block.current{border-color:var(--orange);box-shadow:0 0 0 2px rgba(224,96,48,.15)}
+.dash-block-head{display:flex;align-items:center;gap:14px}
+.dash-icon{width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--muted);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;flex-shrink:0}
+.dash-block.done .dash-icon{background:var(--green);color:#0C0F1A;border-color:var(--green)}
+.dash-block.current .dash-icon{background:var(--orange);color:#fff;border-color:var(--orange)}
+.dash-block-title{font-size:15px;font-weight:600;color:var(--white)}
+.dash-block-status{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.dash-block.done .dash-block-status{color:var(--green)}
+.dash-block.current .dash-block-status{color:var(--orange)}
+.dash-block-body{font-size:12px;color:var(--muted);line-height:1.55;flex:1}
+.dash-block .btn{margin-top:auto}
+.dash-block.done .btn{background:var(--card);color:var(--white);border:1px solid var(--border)}
+.dash-block.done .btn:hover{background:var(--surface)}
+
+/* SEARCH BAR on My Cards */
+.cards-search{margin-bottom:16px;position:relative}
+.cards-search input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;padding:11px 14px 11px 38px;outline:none;transition:border-color .15s}
+.cards-search input:focus{border-color:var(--orange)}
+.cards-search input::placeholder{color:var(--muted)}
+.cards-search::before{content:'🔍';position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.6;pointer-events:none}
+
+/* Archived toggle */
+.archive-toggle{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;cursor:pointer;padding:4px 8px;border-radius:3px;background:var(--card);border:1px solid var(--border);margin-left:auto}
+.archive-toggle.active{color:var(--orange);border-color:var(--orange)}
+.ccard.archived{border-color:rgba(224,80,80,.25);opacity:.55}
+.cstatus.archived{color:var(--red)}
+.detail-status-badge.archived{background:rgba(224,80,80,.1);color:var(--red);border:1px solid rgba(224,80,80,.25)}
+
+@media(max-width:768px){
+  .dash-grid{grid-template-columns:1fr}
+}
 
 /* Toast */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface);border:1px solid var(--border);color:var(--white);padding:12px 24px;border-radius:6px;font-size:13px;z-index:9998;opacity:0;transition:all .3s;box-shadow:0 8px 32px rgba(0,0,0,.4);max-width:90vw}
@@ -198,6 +231,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 <nav id="mainNav" style="display:none">
   <a class="nav-logo" onclick="goHome()">For<span>Sale</span>NFC</a>
   <div class="nav-tabs" id="navTabs">
+    <button class="nav-tab" data-view="dashboard" onclick="showView('dashboard',this)">Dashboard</button>
     <button class="nav-tab active" data-view="mycards" onclick="showView('mycards',this)">My Cards</button>
     <button class="nav-tab" data-view="orders" onclick="showView('orders',this)">Orders</button>
     <button class="nav-tab" data-view="profile" onclick="showView('profile',this)">Profile</button>
@@ -234,6 +268,49 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
   </div>
 </div>
 
+<!-- DASHBOARD -->
+<div class="view" id="view-dashboard">
+  <div class="wrap">
+    <div class="page-title">Welcome to ForSaleNFC</div>
+    <div class="page-sub" id="dashSub">Complete your profile to order your cards</div>
+    <div class="dash-grid">
+      <div class="dash-block" id="dashProfileBlock">
+        <div class="dash-block-head">
+          <div class="dash-icon" id="dashProfileIcon">1</div>
+          <div>
+            <div class="dash-block-title">Profile</div>
+            <div class="dash-block-status" id="dashProfileStatus">Not complete</div>
+          </div>
+        </div>
+        <div class="dash-block-body" id="dashProfileBody">Required: name, phone, email, brokerage, license, state.</div>
+        <button class="btn full" id="dashProfileBtn" onclick="showView('profile')">Complete Profile</button>
+      </div>
+      <div class="dash-block" id="dashOrderBlock">
+        <div class="dash-block-head">
+          <div class="dash-icon" id="dashOrderIcon">2</div>
+          <div>
+            <div class="dash-block-title">Order Cards</div>
+            <div class="dash-block-status" id="dashOrderStatus">Not ordered</div>
+          </div>
+        </div>
+        <div class="dash-block-body" id="dashOrderBody">Order your first batch of NFC cards.</div>
+        <button class="btn full" id="dashOrderBtn" onclick="showView('orders')">Place Order</button>
+      </div>
+      <div class="dash-block" id="dashCardsBlock">
+        <div class="dash-block-head">
+          <div class="dash-icon" id="dashCardsIcon">3</div>
+          <div>
+            <div class="dash-block-title">My Cards</div>
+            <div class="dash-block-status" id="dashCardsStatus">No cards yet</div>
+          </div>
+        </div>
+        <div class="dash-block-body" id="dashCardsBody">Your cards will appear here after your first order.</div>
+        <button class="btn full" id="dashCardsBtn" onclick="showView('mycards')">Open My Cards</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- MY CARDS (landing) -->
 <div class="view" id="view-mycards">
   <div class="wrap">
@@ -242,7 +319,13 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
         <div class="page-title">My Cards</div>
         <div class="page-sub">Click a card to assign a buyer and add properties</div>
       </div>
-      <div class="cards-head-info" id="cardsHeadInfo">—</div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <div class="cards-head-info" id="cardsHeadInfo">—</div>
+        <button class="archive-toggle" id="archiveToggle" onclick="toggleArchived()">Show archived</button>
+      </div>
+    </div>
+    <div class="cards-search">
+      <input type="text" id="cardsSearch" placeholder="Search by buyer name or card code (e.g. Aj Moore or FS-0101)" oninput="renderMyCards()">
     </div>
     <div id="cardsContainer"><div class="empty-state"><span class="loading"></span>Loading…</div></div>
   </div>
@@ -281,8 +364,8 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 
     <div class="detail-actions">
       <button class="btn full" id="btnSaveCard" onclick="saveCard()">💾 Save</button>
-      <button class="btn ghost" id="btnPauseCard" onclick="togglePauseCard()">Pause</button>
-      <button class="btn danger" id="btnClearCard" onclick="clearCard()">Clear / Unassign</button>
+      <button class="btn ghost" id="btnPauseCard" onclick="togglePauseCard()">Pause Card</button>
+      <button class="btn danger" id="btnClearCard" onclick="clearCard()">Clear Assignment</button>
     </div>
   </div>
 </div>
@@ -325,6 +408,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
       <div id="orderSuccess" style="display:none;background:rgba(46,204,138,.1);border:1px solid var(--green);color:var(--green);padding:14px;border-radius:6px;margin-top:14px;font-size:13px;line-height:1.5">
         <strong>✓ Order received.</strong> We'll contact you shortly to confirm.
         <div id="orderSuccessDetails" style="margin-top:6px;color:var(--muted);font-family:'DM Mono',monospace;font-size:11px"></div>
+        <button class="btn full" style="margin-top:12px" onclick="showView('mycards')">Go to My Cards →</button>
       </div>
     </div>
 
@@ -364,7 +448,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
       <div class="pgrid">
         <div class="pfield full"><label>Brokerage Name <span class="req">*</span></label><input class="pinput" id="pBrokerage" type="text" oninput="updatePreview()"></div>
         <div class="pfield"><label>License Number <span class="req">*</span></label><input class="pinput" id="pLicense" type="text" oninput="updatePreview()"></div>
-        <div class="pfield"><label>License State</label>
+        <div class="pfield"><label>License State <span class="req">*</span></label>
           <select class="pinput" id="pState" onchange="updatePreview()">
             <option value="">Select state</option>
             <option>FL</option><option>TX</option><option>CA</option><option>NY</option><option>AZ</option><option>NC</option><option>GA</option><option>CO</option><option>WA</option><option>NV</option>
@@ -432,6 +516,18 @@ let LISTINGS = [];
 let ORDERS = [];
 let ACTIVE_CARD_ID = null;
 let FORM_PROPS = [];
+let SHOW_ARCHIVED = false;
+
+/* Completion checks */
+function isProfileComplete(p){
+  if(!p) return false;
+  return !!(p.first_name && p.last_name && p.phone && p.brokerage && p.license_number && p.license_state);
+}
+function hasEverOrdered(){ return Array.isArray(ORDERS) && ORDERS.length > 0; }
+function hasCardsEverAssigned(){
+  // cards.assigned_at set OR status !== available means card has been used
+  return Array.isArray(CARDS) && CARDS.some(c => c.assigned_at || (c.status && c.status !== 'available'));
+}
 
 function esc(s){if(s===null||s===undefined)return '';return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function showToast(msg,variant){const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(variant?' '+variant:'')+' show';clearTimeout(t._timer);t._timer=setTimeout(()=>t.classList.remove('show'),2800);}
@@ -515,11 +611,24 @@ async function afterLogin(){
   document.getElementById('navUser').textContent = displayName;
   if(PROFILE && PROFILE.is_admin === true) addAdminTab();
   document.getElementById('mainNav').style.display='flex';
-  // LAND ON MY CARDS
-  showView('mycards');
+
+  // Load data BEFORE routing so we can make an informed decision
   await Promise.all([ loadSettings().then(s=>SETTINGS=s), refreshAll() ]);
   loadProfileIntoForm();
   updateOrderPrice();
+  renderDashboard();
+
+  // Returning-user routing:
+  //   profile incomplete     → Dashboard
+  //   profile complete + no cards → Orders
+  //   cards exist            → My Cards
+  if(!isProfileComplete(PROFILE)){
+    showView('dashboard');
+  } else if(CARDS.length === 0){
+    showView('orders');
+  } else {
+    showView('mycards');
+  }
 }
 
 function addAdminTab(){
@@ -567,9 +676,102 @@ async function refreshAll(){
   [CARDS, LISTINGS, ORDERS] = await Promise.all([loadCards(), loadListings(), loadOrders()]);
   renderMyCards();
   renderOrders();
+  renderDashboard();
+}
+
+/* DASHBOARD */
+function renderDashboard(){
+  const profileOk = isProfileComplete(PROFILE);
+  const orderedOk = hasEverOrdered();
+  const cardsOk   = CARDS.length > 0;
+
+  // Profile block
+  const pBlock = document.getElementById('dashProfileBlock');
+  const pStatus = document.getElementById('dashProfileStatus');
+  const pBody = document.getElementById('dashProfileBody');
+  const pBtn = document.getElementById('dashProfileBtn');
+  pBlock.classList.remove('done','current');
+  if(profileOk){
+    pBlock.classList.add('done');
+    pStatus.textContent = 'Complete';
+    pBody.textContent = `${PROFILE.first_name||''} ${PROFILE.last_name||''} · ${PROFILE.brokerage||''}`;
+    pBtn.textContent = 'Edit Profile';
+  } else {
+    pBlock.classList.add('current');
+    pStatus.textContent = 'Not complete';
+    pBody.textContent = 'Required: name, phone, email, brokerage, license, state.';
+    pBtn.textContent = 'Complete Profile';
+  }
+
+  // Order block
+  const oBlock = document.getElementById('dashOrderBlock');
+  const oStatus = document.getElementById('dashOrderStatus');
+  const oBody = document.getElementById('dashOrderBody');
+  const oBtn = document.getElementById('dashOrderBtn');
+  oBlock.classList.remove('done','current');
+  if(orderedOk){
+    oBlock.classList.add('done');
+    oStatus.textContent = 'Ordered';
+    const totalCards = ORDERS.reduce((s,o)=>s+(o.quantity||0),0);
+    oBody.textContent = `${ORDERS.length} order${ORDERS.length>1?'s':''} · ${totalCards} cards ordered total`;
+    oBtn.textContent = 'Order More';
+  } else if(profileOk){
+    oBlock.classList.add('current');
+    oStatus.textContent = 'Not ordered';
+    oBody.textContent = 'Order your first batch of NFC cards.';
+    oBtn.textContent = 'Place Order';
+  } else {
+    oStatus.textContent = 'Not ordered';
+    oBody.textContent = 'Finish your profile first.';
+    oBtn.textContent = 'Place Order';
+  }
+
+  // Cards block
+  const cBlock = document.getElementById('dashCardsBlock');
+  const cStatus = document.getElementById('dashCardsStatus');
+  const cBody = document.getElementById('dashCardsBody');
+  const cBtn = document.getElementById('dashCardsBtn');
+  cBlock.classList.remove('done','current');
+  if(cardsOk){
+    cBlock.classList.add('done');
+    const avail = CARDS.filter(c=>c.status==='available').length;
+    const assigned = CARDS.filter(c=>c.status==='assigned').length;
+    cStatus.textContent = `${CARDS.length} cards`;
+    cBody.textContent = `${avail} available · ${assigned} assigned`;
+    cBtn.textContent = 'Open My Cards';
+  } else if(orderedOk){
+    cBlock.classList.add('current');
+    cStatus.textContent = 'Processing';
+    cBody.textContent = 'Your cards are being generated.';
+    cBtn.textContent = 'Open My Cards';
+  } else {
+    cStatus.textContent = 'No cards yet';
+    cBody.textContent = 'Your cards will appear here after your first order.';
+    cBtn.textContent = 'Open My Cards';
+  }
+
+  // Subtitle
+  const sub = document.getElementById('dashSub');
+  if(!profileOk) sub.textContent = 'Complete your profile to order your cards';
+  else if(!orderedOk) sub.textContent = 'You\'re ready to order your first batch of cards';
+  else if(!cardsOk) sub.textContent = 'Cards are generating — check My Cards in a moment';
+  else sub.textContent = 'You\'re all set. Click a card in My Cards to assign a buyer.';
 }
 
 /* MY CARDS */
+function toggleArchived(){
+  SHOW_ARCHIVED = !SHOW_ARCHIVED;
+  const btn = document.getElementById('archiveToggle');
+  if(SHOW_ARCHIVED){
+    btn.classList.add('active');
+    btn.textContent = 'Hide archived';
+  } else {
+    btn.classList.remove('active');
+    btn.textContent = 'Show archived';
+  }
+  renderMyCards();
+}
+
 function renderMyCards(){
   const el = document.getElementById('cardsContainer');
   const info = document.getElementById('cardsHeadInfo');
@@ -581,8 +783,29 @@ function renderMyCards(){
   const avail    = CARDS.filter(c=>c.status==='available').length;
   const assigned = CARDS.filter(c=>c.status==='assigned').length;
   const paused   = CARDS.filter(c=>c.status==='paused').length;
-  info.textContent = `${CARDS.length} total · ${avail} available · ${assigned} assigned${paused?` · ${paused} paused`:''}`;
-  el.innerHTML = '<div class="card-grid">' + CARDS.map(c=>{
+  const archived = CARDS.filter(c=>c.status==='archived').length;
+  info.textContent = `${CARDS.length} total · ${avail} available · ${assigned} assigned${paused?` · ${paused} paused`:''}${archived?` · ${archived} archived`:''}`;
+
+  const q = (document.getElementById('cardsSearch')?.value||'').trim().toLowerCase();
+
+  // Filter cards: hide archived unless toggle on, then apply search
+  let visible = CARDS.filter(c => SHOW_ARCHIVED ? true : c.status !== 'archived');
+
+  if(q){
+    visible = visible.filter(c => {
+      const code = (c.card_code||'').toLowerCase();
+      const listing = LISTINGS.find(l=>l.id===c.listing_id);
+      const buyer = listing ? (listing.buyer_name||'').toLowerCase() : '';
+      return code.includes(q) || buyer.includes(q);
+    });
+  }
+
+  if(visible.length === 0){
+    el.innerHTML = `<div class="empty-state">No cards match "${esc(q)}"</div>`;
+    return;
+  }
+
+  el.innerHTML = '<div class="card-grid">' + visible.map(c=>{
     const listing = LISTINGS.find(l=>l.id===c.listing_id);
     const buyerName = listing ? listing.buyer_name : '';
     const st = c.status || 'available';
@@ -626,7 +849,31 @@ function openCardDetail(cardId){
   if(FORM_PROPS.length === 0) FORM_PROPS = [{ image_url:'', listing_url:'' }];
   renderProps();
 
-  document.getElementById('btnPauseCard').textContent = (st==='paused') ? 'Unpause' : 'Pause';
+  // Button labels based on state
+  const pauseBtn = document.getElementById('btnPauseCard');
+  const clearBtn = document.getElementById('btnClearCard');
+  const saveBtn = document.getElementById('btnSaveCard');
+
+  if(st === 'archived'){
+    pauseBtn.style.display = 'none';
+    clearBtn.style.display = 'none';
+    saveBtn.textContent = '💾 Save (Archived — read-only)';
+    saveBtn.disabled = true;
+  } else if(st === 'paused'){
+    pauseBtn.style.display = '';
+    pauseBtn.textContent = 'Activate Card';
+    clearBtn.style.display = '';
+    saveBtn.style.display = '';
+    saveBtn.disabled = false;
+    saveBtn.textContent = '💾 Save';
+  } else {
+    pauseBtn.style.display = '';
+    pauseBtn.textContent = 'Pause Card';
+    clearBtn.style.display = '';
+    saveBtn.style.display = '';
+    saveBtn.disabled = false;
+    saveBtn.textContent = '💾 Save';
+  }
 
   showView('detail');
 }
@@ -767,30 +1014,46 @@ async function togglePauseCard(){
   if(!ACTIVE_CARD_ID) return;
   const card = CARDS.find(c=>c.id===ACTIVE_CARD_ID);
   if(!card) return;
-  const newStatus = (card.status==='paused') ? ((card.listing_id)?'assigned':'available') : 'paused';
+  let newStatus;
+  if(card.status === 'paused'){
+    // Activate: if there's buyer/listing data → assigned; if blank → available
+    newStatus = card.listing_id ? 'assigned' : 'available';
+  } else {
+    newStatus = 'paused';
+  }
   const { error } = await db.from('cards').update({ status: newStatus }).eq('id', card.id).eq('agent_id', USER.id);
-  if(error){ alert('Pause failed: '+error.message); return; }
-  showToast(newStatus==='paused' ? 'Card paused' : 'Card unpaused', 'success');
+  if(error){ alert('Pause/activate failed: '+error.message); return; }
+  showToast(newStatus==='paused' ? 'Card paused' : 'Card activated', 'success');
   await refreshAll();
   openCardDetail(card.id);
 }
 
 async function clearCard(){
   if(!ACTIVE_CARD_ID) return;
-  if(!confirm('Clear this card and mark it available?\n\nThis removes the buyer info and properties. The card returns to your available inventory.')) return;
   const card = CARDS.find(c=>c.id===ACTIVE_CARD_ID);
   if(!card) return;
+  // If card was never actually assigned (no listing, no buyer data, never had assigned_at)
+  // don't archive — just reset to available. This protects the "never given out" exception.
+  const wasEverAssigned = card.listing_id || card.assigned_at;
+
+  const confirmMsg = wasEverAssigned
+    ? 'Archive this card?\n\nThis wipes the buyer info and properties. The card will be moved to your archive (hidden by default).\n\nOnce a card has been assigned, it cannot return to available inventory.'
+    : 'Clear this card?\n\nThis card has no assignment, so it will simply return to available.';
+
+  if(!confirm(confirmMsg)) return;
+
   try {
     if(card.listing_id){
       await db.from('listings').delete().eq('id', card.listing_id);
     }
+    const newStatus = wasEverAssigned ? 'archived' : 'available';
     const { error } = await db.from('cards').update({
-      status: 'available',
-      listing_id: null,
-      assigned_at: null
+      status: newStatus,
+      listing_id: null
+      // Keep assigned_at as historical marker — do NOT null it out
     }).eq('id', card.id).eq('agent_id', USER.id);
     if(error) throw error;
-    showToast('Card cleared — now available','success');
+    showToast(wasEverAssigned ? 'Card archived' : 'Card cleared','success');
     await refreshAll();
     showView('mycards');
   } catch(err){
@@ -859,12 +1122,14 @@ function validateProfile(p){
   if(!p.phone)      return 'Please enter your cell phone';
   if(!p.brokerage)  return 'Please enter your brokerage';
   if(!p.license_number) return 'Please enter your license number';
+  if(!p.license_state)  return 'Please select your license state';
   return null;
 }
 async function saveProfile(){
   const p = readProfileForm();
   const err = validateProfile(p);
   if(err){showToast(err,'error');return;}
+  const wasCompleteBefore = isProfileComplete(PROFILE);
   const btn=document.getElementById('btnSaveProfile');
   btn.disabled=true;btn.textContent='Saving…';
   const { data, error } = await db.from('profiles').update(p).eq('id', USER.id).select().maybeSingle();
@@ -872,7 +1137,17 @@ async function saveProfile(){
   if(error){showToast('Save failed: '+error.message,'error');return;}
   PROFILE = data;
   document.getElementById('navUser').textContent = `${p.first_name} ${p.last_name}`;
+  renderDashboard();
   showToast('✓ Profile saved','success');
+
+  // Auto-redirect: if profile is now complete for the first time and user has no cards → Orders
+  const nowComplete = isProfileComplete(PROFILE);
+  if(nowComplete && !wasCompleteBefore && CARDS.length === 0){
+    setTimeout(()=>{
+      showToast('Now let\'s order your cards','success');
+      showView('orders');
+    }, 900);
+  }
 }
 
 /* ORDERS */
