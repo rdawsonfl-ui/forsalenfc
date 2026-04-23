@@ -971,10 +971,19 @@ function openCardDetail(cardId){
   statusEl.className = 'detail-status-badge ' + (st==='available'?'avail':st);
 
   document.getElementById('dBuyer').value = listing?.buyer_name || '';
-  document.getElementById('dPhone').value = listing?.buyer_phone || '';
+  // Phone is stashed in notes as "Phone: XXX · rest of notes". Parse it back.
+  const rawNotes = listing?.notes || '';
+  let parsedPhone = '';
+  let parsedNotes = rawNotes;
+  const phoneMatch = rawNotes.match(/^Phone:\s*([^·]+?)(?:\s*·\s*(.*))?$/);
+  if(phoneMatch){
+    parsedPhone = phoneMatch[1].trim();
+    parsedNotes = (phoneMatch[2] || '').trim();
+  }
+  document.getElementById('dPhone').value = parsedPhone;
   document.getElementById('dDate').value  = listing?.showing_date || '';
   document.getElementById('dTime').value  = listing?.showing_time || '';
-  document.getElementById('dNotes').value = listing?.notes || '';
+  document.getElementById('dNotes').value = parsedNotes;
 
   const props = Array.isArray(listing?.properties_json) ? listing.properties_json : [];
   FORM_PROPS = props.map(p=>{
@@ -1239,14 +1248,20 @@ async function saveCard(){
 
     let listingId = card.listing_id;
 
+    // The DB schema doesn't have a buyer_phone column on listings.
+    // Combine phone into notes so it's still saved.
+    const combinedNotes = [
+      buyerPhone ? `Phone: ${buyerPhone}` : '',
+      notes || ''
+    ].filter(Boolean).join(' · ') || null;
+
     if(hasAny){
       if(listingId){
         const { error } = await db.from('listings').update({
           buyer_name: buyerName || null,
-          buyer_phone: buyerPhone || null,
           showing_date: sDate || null,
           showing_time: sTime || null,
-          notes: notes || null,
+          notes: combinedNotes,
           properties_json: cleaned
         }).eq('id', listingId);
         if(error) throw error;
@@ -1254,10 +1269,9 @@ async function saveCard(){
         const { data, error } = await db.from('listings').insert({
           agent_id: USER.id,
           buyer_name: buyerName || null,
-          buyer_phone: buyerPhone || null,
           showing_date: sDate || null,
           showing_time: sTime || null,
-          notes: notes || null,
+          notes: combinedNotes,
           properties_json: cleaned
         }).select().maybeSingle();
         if(error) throw error;
