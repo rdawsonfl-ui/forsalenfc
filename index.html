@@ -124,6 +124,10 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .prop-inputs{display:flex;flex-direction:column;gap:8px}
 .prop-inputs input{background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:12px;padding:9px 11px;outline:none;width:100%}
 .prop-inputs input:focus{border-color:var(--orange)}
+.prop-fetch-status{font-size:11px;font-family:'DM Mono',monospace;letter-spacing:.5px;padding:6px 2px;display:flex;align-items:center;gap:6px}
+.prop-fetch-status.loading{color:var(--muted)}
+.prop-fetch-status.ok{color:var(--green)}
+.prop-fetch-status.err{color:var(--gold)}
 .add-prop{background:transparent;border:1px dashed var(--border);color:var(--muted);padding:11px 16px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;margin-bottom:16px}
 .add-prop:hover:not(:disabled){border-color:var(--orange);color:var(--orange)}
 .add-prop:disabled{opacity:.4;cursor:not-allowed}
@@ -1011,7 +1015,7 @@ function propPreviewHtml(url){
   if(url && url.trim()){
     return `<img src="${esc(url.trim())}" alt="" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=&quot;prop-preview-placeholder&quot;>IMAGE URL WON&apos;T LOAD</div>'">`;
   }
-  return `<div class="prop-preview-placeholder">PASTE IMAGE URL BELOW</div>`;
+  return `<div class="prop-preview-placeholder">PASTE A LISTING URL BELOW</div>`;
 }
 
 function renderProps(){
@@ -1021,6 +1025,14 @@ function renderProps(){
   badge.textContent = `${FORM_PROPS.length} / 3`;
   addBtn.disabled = FORM_PROPS.length >= 3;
   el.innerHTML = FORM_PROPS.map((p, i)=>{
+    const showManualImage = p._fetchFailed === true;
+    const statusLine = p._fetchState === 'loading'
+      ? `<div class="prop-fetch-status loading"><span class="loading"></span> Fetching image…</div>`
+      : p._fetchState === 'success'
+        ? `<div class="prop-fetch-status ok">✓ Image fetched automatically</div>`
+        : p._fetchFailed
+          ? `<div class="prop-fetch-status err">⚠ Couldn't auto-fetch. Paste an image URL below.</div>`
+          : '';
     return `<div class="prop-row" data-i="${i}">
       <div class="prop-row-head">
         <div class="prop-row-label">${i===0?'Hero Property':'Property '+(i+1)}</div>
@@ -1028,8 +1040,9 @@ function renderProps(){
       </div>
       <div class="prop-preview" id="ppreview-${i}">${propPreviewHtml(p.image_url)}</div>
       <div class="prop-inputs">
-        <input type="url" placeholder="Image URL (house photo)" value="${esc(p.image_url)}" oninput="updatePropField(${i},'image_url',this.value)">
-        <input type="url" placeholder="Listing URL (Zillow / Realtor / Redfin)" value="${esc(p.listing_url)}" oninput="updatePropField(${i},'listing_url',this.value)">
+        <input type="url" id="plink-${i}" placeholder="Paste listing URL (Zillow / Realtor / Redfin)" value="${esc(p.listing_url)}" oninput="onListingUrlInput(${i},this.value)" onblur="onListingUrlBlur(${i},this.value)" onpaste="onListingUrlPaste(${i},event)">
+        ${statusLine}
+        ${showManualImage ? `<input type="url" placeholder="Image URL (manual fallback)" value="${esc(p.image_url)}" oninput="updatePropField(${i},'image_url',this.value)">` : ''}
       </div>
     </div>`;
   }).join('');
@@ -1041,6 +1054,96 @@ function updatePropField(index, field, value){
   if(field === 'image_url'){
     const prev = document.getElementById('ppreview-'+index);
     if(prev) prev.innerHTML = propPreviewHtml(value);
+  }
+}
+
+/* ONE-PASTE FLOW: listing URL input handlers */
+function onListingUrlInput(index, value){
+  if(!FORM_PROPS[index]) return;
+  FORM_PROPS[index].listing_url = value;
+  // If user is editing the URL, clear previous fetch state so they can re-fetch on blur
+  if(FORM_PROPS[index]._fetchedFrom && FORM_PROPS[index]._fetchedFrom !== value){
+    FORM_PROPS[index]._fetchState = null;
+    FORM_PROPS[index]._fetchFailed = false;
+  }
+}
+
+function onListingUrlPaste(index, event){
+  // After paste, trigger fetch almost immediately
+  setTimeout(()=>{
+    const input = document.getElementById('plink-'+index);
+    if(input) fetchPropertyImage(index, input.value);
+  }, 50);
+}
+
+function onListingUrlBlur(index, value){
+  // If they typed (not pasted), fetch on blur
+  if(!FORM_PROPS[index]) return;
+  const v = (value||'').trim();
+  if(!v) return;
+  // Don't re-fetch if we already fetched this exact URL successfully
+  if(FORM_PROPS[index]._fetchedFrom === v && FORM_PROPS[index].image_url) return;
+  fetchPropertyImage(index, v);
+}
+
+async function fetchPropertyImage(index, rawUrl){
+  if(!FORM_PROPS[index]) return;
+  const url = (rawUrl||'').trim();
+  if(!url) return;
+
+  // Mark loading
+  FORM_PROPS[index]._fetchState = 'loading';
+  FORM_PROPS[index]._fetchFailed = false;
+  FORM_PROPS[index]._fetchedFrom = url;
+  renderProps();
+  // Restore focus so user doesn't lose their place
+  setTimeout(()=>{
+    const el = document.getElementById('plink-'+index);
+    if(el){
+      el.focus();
+      const len = el.value.length;
+      el.setSelectionRange(len, len);
+    }
+  }, 0);
+
+  try {
+    const endpoint = SUPABASE_URL + '/functions/v1/link-preview';
+    const resp = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY
+      },
+      body: JSON.stringify({ url })
+    });
+    const data = await resp.json().catch(()=>({}));
+
+    // Only apply result if this URL is still the current one for this property
+    if(FORM_PROPS[index] && FORM_PROPS[index].listing_url === url){
+      if(data && data.ok && data.image_url){
+        FORM_PROPS[index].image_url = data.image_url;
+        FORM_PROPS[index]._fetchState = 'success';
+        FORM_PROPS[index]._fetchFailed = false;
+      } else {
+        FORM_PROPS[index]._fetchState = 'failed';
+        FORM_PROPS[index]._fetchFailed = true;
+        // Keep any existing image_url the agent may have typed manually
+      }
+      renderProps();
+      // Restore focus if user hasn't moved on
+      setTimeout(()=>{
+        const el = document.getElementById('plink-'+index);
+        if(el && document.activeElement?.tagName !== 'INPUT') el.blur();
+      }, 0);
+    }
+  } catch(err){
+    console.error('fetchPropertyImage failed:', err);
+    if(FORM_PROPS[index] && FORM_PROPS[index].listing_url === url){
+      FORM_PROPS[index]._fetchState = 'failed';
+      FORM_PROPS[index]._fetchFailed = true;
+      renderProps();
+    }
   }
 }
 
