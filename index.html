@@ -128,6 +128,8 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .prop-fetch-status.loading{color:var(--muted)}
 .prop-fetch-status.ok{color:var(--green)}
 .prop-fetch-status.err{color:var(--gold)}
+.prop-fallback-image{background:var(--bg);border:1px solid var(--gold);border-radius:4px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:12px;padding:9px 11px;outline:none;width:100%;margin-top:4px}
+.prop-fallback-image:focus{border-color:var(--orange)}
 .add-prop{background:transparent;border:1px dashed var(--border);color:var(--muted);padding:11px 16px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;margin-bottom:16px}
 .add-prop:hover:not(:disabled){border-color:var(--orange);color:var(--orange)}
 .add-prop:disabled{opacity:.4;cursor:not-allowed}
@@ -1025,14 +1027,6 @@ function renderProps(){
   badge.textContent = `${FORM_PROPS.length} / 3`;
   addBtn.disabled = FORM_PROPS.length >= 3;
   el.innerHTML = FORM_PROPS.map((p, i)=>{
-    const showManualImage = p._fetchFailed === true;
-    const statusLine = p._fetchState === 'loading'
-      ? `<div class="prop-fetch-status loading"><span class="loading"></span> Fetching image…</div>`
-      : p._fetchState === 'success'
-        ? `<div class="prop-fetch-status ok">✓ Image fetched automatically</div>`
-        : p._fetchFailed
-          ? `<div class="prop-fetch-status err">⚠ Couldn't auto-fetch. Paste an image URL below.</div>`
-          : '';
     return `<div class="prop-row" data-i="${i}">
       <div class="prop-row-head">
         <div class="prop-row-label">${i===0?'Hero Property':'Property '+(i+1)}</div>
@@ -1041,11 +1035,11 @@ function renderProps(){
       <div class="prop-preview" id="ppreview-${i}">${propPreviewHtml(p.image_url)}</div>
       <div class="prop-inputs">
         <input type="url" id="plink-${i}" placeholder="Paste listing URL (Zillow / Realtor / Redfin)" value="${esc(p.listing_url)}" oninput="onListingUrlInput(${i},this.value)" onblur="onListingUrlBlur(${i},this.value)" onpaste="onListingUrlPaste(${i},event)">
-        ${statusLine}
-        ${showManualImage ? `<input type="url" placeholder="Image URL (manual fallback)" value="${esc(p.image_url)}" oninput="updatePropField(${i},'image_url',this.value)">` : ''}
       </div>
     </div>`;
   }).join('');
+  // Restore status/fallback for each row in case of re-render
+  for(let i=0;i<FORM_PROPS.length;i++) updatePropStatusInPlace(i);
 }
 
 function updatePropField(index, field, value){
@@ -1058,6 +1052,8 @@ function updatePropField(index, field, value){
 }
 
 /* ONE-PASTE FLOW: listing URL input handlers */
+let _suppressBlurFetch = false;
+
 function onListingUrlInput(index, value){
   if(!FORM_PROPS[index]) return;
   FORM_PROPS[index].listing_url = value;
@@ -1069,42 +1065,98 @@ function onListingUrlInput(index, value){
 }
 
 function onListingUrlPaste(index, event){
-  // After paste, trigger fetch almost immediately
+  // After paste, trigger fetch almost immediately. Suppress blur-fired fetch from the same paste.
   setTimeout(()=>{
     const input = document.getElementById('plink-'+index);
-    if(input) fetchPropertyImage(index, input.value);
+    if(input){
+      _suppressBlurFetch = true;
+      fetchPropertyImage(index, input.value);
+      // release the suppression after a beat — covers the blur that re-renders cause
+      setTimeout(()=>{ _suppressBlurFetch = false; }, 1500);
+    }
   }, 50);
 }
 
 function onListingUrlBlur(index, value){
-  // If they typed (not pasted), fetch on blur
+  if(_suppressBlurFetch) return;
   if(!FORM_PROPS[index]) return;
   const v = (value||'').trim();
   if(!v) return;
-  // Don't re-fetch if we already fetched this exact URL successfully
-  if(FORM_PROPS[index]._fetchedFrom === v && FORM_PROPS[index].image_url) return;
+  // Don't fetch if URL is too short to be valid
+  if(v.length < 10) return;
+  // Don't re-fetch if we already fetched this exact URL (success OR failure)
+  if(FORM_PROPS[index]._fetchedFrom === v) return;
   fetchPropertyImage(index, v);
+}
+
+function updatePropStatusInPlace(index){
+  // Update only the status line + preview for this row, don't re-render the input
+  const p = FORM_PROPS[index];
+  if(!p) return;
+  const row = document.querySelector('.prop-row[data-i="'+index+'"]');
+  if(!row) return;
+
+  // Update preview
+  const prev = row.querySelector('.prop-preview');
+  if(prev) prev.innerHTML = propPreviewHtml(p.image_url);
+
+  // Update or insert status line
+  let statusEl = row.querySelector('.prop-fetch-status');
+  const newStatusHtml =
+    p._fetchState === 'loading' ? `<span class="loading"></span> Fetching image…` :
+    p._fetchState === 'success' ? `✓ Image fetched automatically` :
+    p._fetchFailed              ? `⚠ Couldn't auto-fetch. Paste an image URL below.` :
+    null;
+  const newStatusClass =
+    p._fetchState === 'loading' ? 'loading' :
+    p._fetchState === 'success' ? 'ok' :
+    p._fetchFailed              ? 'err' : '';
+  if(statusEl){
+    if(newStatusHtml === null){
+      statusEl.remove();
+    } else {
+      statusEl.className = 'prop-fetch-status ' + newStatusClass;
+      statusEl.innerHTML = newStatusHtml;
+    }
+  } else if(newStatusHtml !== null){
+    const inputs = row.querySelector('.prop-inputs');
+    const linkInput = row.querySelector('#plink-'+index);
+    statusEl = document.createElement('div');
+    statusEl.className = 'prop-fetch-status ' + newStatusClass;
+    statusEl.innerHTML = newStatusHtml;
+    if(linkInput && linkInput.nextSibling){
+      inputs.insertBefore(statusEl, linkInput.nextSibling);
+    } else {
+      inputs.appendChild(statusEl);
+    }
+  }
+
+  // Show/hide manual fallback image input
+  const existingFallback = row.querySelector('.prop-fallback-image');
+  if(p._fetchFailed && !existingFallback){
+    const fallback = document.createElement('input');
+    fallback.type = 'url';
+    fallback.placeholder = 'Image URL (manual fallback)';
+    fallback.value = p.image_url || '';
+    fallback.className = 'prop-fallback-image';
+    fallback.oninput = function(){ updatePropField(index, 'image_url', this.value); };
+    row.querySelector('.prop-inputs').appendChild(fallback);
+  } else if(!p._fetchFailed && existingFallback){
+    existingFallback.remove();
+  }
 }
 
 async function fetchPropertyImage(index, rawUrl){
   if(!FORM_PROPS[index]) return;
   const url = (rawUrl||'').trim();
   if(!url) return;
+  if(url.length < 10) return;
 
-  // Mark loading
+  // Mark loading + update status in-place (do NOT re-render whole list)
   FORM_PROPS[index]._fetchState = 'loading';
   FORM_PROPS[index]._fetchFailed = false;
   FORM_PROPS[index]._fetchedFrom = url;
-  renderProps();
-  // Restore focus so user doesn't lose their place
-  setTimeout(()=>{
-    const el = document.getElementById('plink-'+index);
-    if(el){
-      el.focus();
-      const len = el.value.length;
-      el.setSelectionRange(len, len);
-    }
-  }, 0);
+  updatePropStatusInPlace(index);
 
   try {
     const endpoint = SUPABASE_URL + '/functions/v1/link-preview';
@@ -1128,21 +1180,15 @@ async function fetchPropertyImage(index, rawUrl){
       } else {
         FORM_PROPS[index]._fetchState = 'failed';
         FORM_PROPS[index]._fetchFailed = true;
-        // Keep any existing image_url the agent may have typed manually
       }
-      renderProps();
-      // Restore focus if user hasn't moved on
-      setTimeout(()=>{
-        const el = document.getElementById('plink-'+index);
-        if(el && document.activeElement?.tagName !== 'INPUT') el.blur();
-      }, 0);
+      updatePropStatusInPlace(index);
     }
   } catch(err){
     console.error('fetchPropertyImage failed:', err);
     if(FORM_PROPS[index] && FORM_PROPS[index].listing_url === url){
       FORM_PROPS[index]._fetchState = 'failed';
       FORM_PROPS[index]._fetchFailed = true;
-      renderProps();
+      updatePropStatusInPlace(index);
     }
   }
 }
