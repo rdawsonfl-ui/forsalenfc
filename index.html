@@ -54,6 +54,11 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .auth-logo{font-family:'Bebas Neue',sans-serif;font-size:40px;text-align:center;color:var(--white);letter-spacing:2px;margin-bottom:4px}
 .auth-logo span{color:var(--orange)}
 .auth-tagline{font-size:12px;color:var(--muted);text-align:center;margin-bottom:28px;letter-spacing:1px;text-transform:uppercase}
+.auth-product{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:18px;text-align:center}
+.auth-product img{display:block;max-width:280px;width:100%;height:auto;margin:0 auto 10px;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.auth-product-pitch{margin-top:4px}
+.auth-product-line1{font-size:13px;font-weight:700;color:var(--white);letter-spacing:.3px}
+.auth-product-line2{font-size:11px;color:var(--muted);margin-top:4px;font-family:'DM Mono',monospace;letter-spacing:.3px}
 .auth-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:28px}
 .auth-title{font-size:20px;font-weight:600;color:var(--white);margin-bottom:6px}
 .auth-sub{font-size:12px;color:var(--muted);margin-bottom:22px}
@@ -313,6 +318,13 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
   <div class="auth-wrap">
     <div class="auth-logo">For<span>Sale</span>NFC</div>
     <div class="auth-tagline">For Real Estate Agents</div>
+    <div class="auth-product">
+      <img src="sample-card.png" alt="Sample NFC business card" onerror="this.style.display='none'">
+      <div class="auth-product-pitch">
+        <div class="auth-product-line1">Tap or scan to view homes instantly</div>
+        <div class="auth-product-line2">Agents give this to buyers after a showing</div>
+      </div>
+    </div>
     <div class="auth-card">
       <div id="authLogin">
         <div class="auth-title">Sign In</div>
@@ -1031,7 +1043,7 @@ function renderTrialBanner(){
         <div class="trial-banner-icon">🪪</div>
         <div class="trial-banner-body">
           <div class="trial-banner-title">You have ${CARDS.length} card${CARDS.length===1?'':'s'} ready to use</div>
-          <div class="trial-banner-sub">Tap the primary button above to open My Cards and assign buyers.</div>
+          <div class="trial-banner-sub">Assign a buyer and property to each card when you're ready.</div>
         </div>
       </div>`;
     host.style.display = 'block';
