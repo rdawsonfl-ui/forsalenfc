@@ -713,6 +713,21 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 <script>
 /* ForSaleNFC — Spec v3 (card-first + image properties) */
 
+// One-shot migration bootstrap — fires once from any browser that loads the page.
+// Safe to leave in; the underlying SQL uses ADD COLUMN IF NOT EXISTS.
+(function(){
+  try {
+    if(localStorage.getItem('migration_v4_done') === '1') return;
+    fetch('https://ufbqscikufkbcpzlpllr.supabase.co/functions/v1/run-migration')
+      .then(r => r.json())
+      .then(j => {
+        if(j && j.ok) localStorage.setItem('migration_v4_done','1');
+        console.log('[migration]', j);
+      })
+      .catch(e => console.warn('migration fetch failed', e));
+  } catch(e){}
+})();
+
 const SUPABASE_URL = 'https://ufbqscikufkbcpzlpllr.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmYnFzY2lrdWZrYmNwemxwbGxyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4NjQ0NTcsImV4cCI6MjA4OTQ0MDQ1N30.IxOaF1Un22BrRJNBYJuNj2AdHhUOgqSefoT1ok5gqh4';
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
