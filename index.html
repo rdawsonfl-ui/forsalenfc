@@ -713,16 +713,19 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 <script>
 /* ForSaleNFC — Spec v3 (card-first + image properties) */
 
-// One-shot migration bootstrap — fires once from any browser that loads the page.
-// Safe to leave in; the underlying SQL uses ADD COLUMN IF NOT EXISTS.
+// One-shot migration bootstrap — fires once per browser until migration is confirmed done.
 (function(){
   try {
-    if(localStorage.getItem('migration_v4_done') === '1') return;
+    if(localStorage.getItem('migration_v6_done') === '1') return;
     fetch('https://ufbqscikufkbcpzlpllr.supabase.co/functions/v1/run-migration')
       .then(r => r.json())
       .then(j => {
-        if(j && j.ok) localStorage.setItem('migration_v4_done','1');
         console.log('[migration]', j);
+        if(j && j.ok) {
+          // Verify all statements succeeded
+          const allOk = Array.isArray(j.results) && j.results.every(r => r.ok);
+          if(allOk) localStorage.setItem('migration_v6_done','1');
+        }
       })
       .catch(e => console.warn('migration fetch failed', e));
   } catch(e){}
