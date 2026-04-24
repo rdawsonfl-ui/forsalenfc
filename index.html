@@ -60,6 +60,12 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .auth-product-pitch{margin-top:4px}
 .auth-product-line1{font-size:13px;font-weight:500;color:var(--white);letter-spacing:.3px}
 .auth-product-line2{font-size:11px;font-weight:400;color:var(--muted);margin-top:3px;letter-spacing:.3px}
+.auth-onboarding{margin-bottom:18px}
+.auth-onboarding-banner{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,rgba(255,193,7,.12),rgba(255,107,53,.08));border:1px solid var(--gold);border-radius:10px;padding:14px;margin-bottom:12px}
+.auth-onboarding-icon{font-size:26px;line-height:1;flex-shrink:0}
+.auth-onboarding-body{flex:1;min-width:0}
+.auth-onboarding-title{font-weight:700;font-size:14px;color:var(--white);margin-bottom:2px}
+.auth-onboarding-sub{font-size:12px;color:var(--muted);line-height:1.4}
 .auth-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:28px}
 .auth-title{font-size:20px;font-weight:600;color:var(--white);margin-bottom:6px}
 .auth-sub{font-size:12px;color:var(--muted);margin-bottom:22px}
@@ -327,16 +333,25 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
         <div class="auth-product-line2">Given to buyers after showings</div>
       </div>
     </div>
+    <div class="auth-onboarding" id="authOnboarding">
+      <div class="auth-onboarding-banner">
+        <div class="auth-onboarding-icon">🎁</div>
+        <div class="auth-onboarding-body">
+          <div class="auth-onboarding-title">3 free trial cards are waiting</div>
+          <div class="auth-onboarding-sub">Create your agent account to claim them.</div>
+        </div>
+      </div>
+      <button class="btn full btn-primary-lg" onclick="toggleAuth('signup')">Create Account →</button>
+    </div>
     <div class="auth-card">
       <div id="authLogin">
         <div class="auth-title">Sign In</div>
-        <div class="auth-sub">Sign in to your agent account</div>
+        <div class="auth-sub">Already have an account? Sign in below.</div>
         <div class="pfield"><label>Email</label><input class="pinput" id="liEmail" type="email" autocomplete="email"></div>
         <div class="pfield" style="margin-top:12px"><label>Password</label><div class="pw-wrap"><input class="pinput" id="liPass" type="password" autocomplete="current-password"><button type="button" class="pw-eye" onclick="togglePw('liPass',this)" aria-label="Show password">👁</button></div></div>
         <button class="btn full" style="margin-top:18px" id="btnSignIn" onclick="signIn()">Sign In</button>
         <div class="auth-msg" id="liMsg"></div>
         <div class="auth-toggle" style="margin-top:10px"><a onclick="toggleAuth('forgot')">Forgot password?</a></div>
-        <div class="auth-toggle">New here? <a onclick="toggleAuth('signup')">Create an account</a></div>
       </div>
       <div id="authSignup" style="display:none">
         <div class="auth-title">Create Account</div>
@@ -779,6 +794,10 @@ function toggleAuth(which){
   document.getElementById('authSignup').style.display = which==='signup' ? 'block' : 'none';
   document.getElementById('authForgot').style.display = which==='forgot' ? 'block' : 'none';
   document.getElementById('authReset').style.display  = which==='reset'  ? 'block' : 'none';
+  // State A banner only shows above the Sign In view. When the user switches
+  // to signup / forgot / reset, we hide it so there's only ONE primary CTA.
+  const onboarding = document.getElementById('authOnboarding');
+  if(onboarding) onboarding.style.display = (which === 'login') ? 'block' : 'none';
 }
 
 function togglePw(inputId, btnEl){
