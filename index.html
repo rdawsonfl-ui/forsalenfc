@@ -397,7 +397,6 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
     <section class="dash-section" id="dashCardsSection" style="display:none">
       <div class="dash-section-title">My Cards</div>
       <div class="dash-section-sub" id="dashCardsSummary">—</div>
-      <button class="btn full" onclick="showView('mycards')">Go to My Cards</button>
     </section>
 
     <section class="dash-section" id="dashOrderSection">
@@ -1022,7 +1021,24 @@ function renderTrialBanner(){
   const free = PROFILE?.free_cards_remaining ?? 0;
   const hasClaimedTrial = ORDERS.some(o => o.is_trial === true);
   const profileOk = isProfileComplete(PROFILE);
+  const cardsOk = CARDS.length > 0;
 
+  // RULE: button only appears when agent has NO cards yet.
+  // If cards exist, banner becomes status-only (no action — primary CTA handles it).
+  if(cardsOk){
+    host.innerHTML = `
+      <div class="trial-banner dim">
+        <div class="trial-banner-icon">🪪</div>
+        <div class="trial-banner-body">
+          <div class="trial-banner-title">You have ${CARDS.length} card${CARDS.length===1?'':'s'} ready to use</div>
+          <div class="trial-banner-sub">Tap the primary button above to open My Cards and assign buyers.</div>
+        </div>
+      </div>`;
+    host.style.display = 'block';
+    return;
+  }
+
+  // No cards yet:
   if(free > 0 && !hasClaimedTrial && profileOk){
     host.innerHTML = `
       <div class="trial-banner">
@@ -1042,17 +1058,6 @@ function renderTrialBanner(){
           <div class="trial-banner-title">${free} free trial cards are waiting</div>
           <div class="trial-banner-sub">Finish your profile first — we need a shipping address.</div>
         </div>
-      </div>`;
-    host.style.display = 'block';
-  } else if(hasClaimedTrial && free === 0 && ORDERS.filter(o=>!o.is_trial).length === 0){
-    host.innerHTML = `
-      <div class="trial-banner dim">
-        <div class="trial-banner-icon">✓</div>
-        <div class="trial-banner-body">
-          <div class="trial-banner-title">You've used your free cards</div>
-          <div class="trial-banner-sub">Order 12+ cards to continue. Each card unlocks instant NFC showings.</div>
-        </div>
-        <button class="btn" onclick="showView('orders')">Order Cards</button>
       </div>`;
     host.style.display = 'block';
   } else {
