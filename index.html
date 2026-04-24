@@ -185,6 +185,32 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 
 /* DASHBOARD */
 .dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:8px}
+.trial-banner{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,rgba(255,107,53,.12),rgba(46,204,138,.08));border:1px solid var(--orange);border-radius:10px;padding:16px;margin:16px 0 8px}
+.trial-banner.warn{background:linear-gradient(135deg,rgba(255,193,7,.12),rgba(255,107,53,.06));border-color:var(--gold)}
+.trial-banner.dim{background:rgba(255,255,255,.03);border-color:var(--border);opacity:.85}
+.trial-banner-icon{font-size:28px;line-height:1}
+.trial-banner-body{flex:1;min-width:0}
+.trial-banner-title{font-weight:700;font-size:14px;color:var(--white);margin-bottom:3px}
+.trial-banner-sub{font-size:12px;color:var(--muted);line-height:1.4}
+.trial-banner .btn{flex-shrink:0;padding:10px 16px;font-size:12px}
+@media (max-width:620px){.trial-banner{flex-direction:column;align-items:stretch;text-align:center}.trial-banner .btn{width:100%}}
+
+/* Admin Agents */
+.agent-row{display:grid;grid-template-columns:2fr 2fr 1.5fr;gap:12px;align-items:center;padding:14px;border:1px solid var(--border);border-radius:8px;margin-bottom:10px;background:var(--bg)}
+.agent-row-main{min-width:0}
+.agent-row-name{font-weight:700;font-size:13px;color:var(--white);margin-bottom:2px;display:flex;align-items:center}
+.agent-row-email{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;word-break:break-all}
+.agent-row-brokerage{font-size:11px;color:var(--muted);margin-top:2px}
+.agent-row-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.agent-stat{display:flex;flex-direction:column;gap:1px}
+.agent-stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-family:'DM Mono',monospace}
+.agent-stat-value{font-size:13px;color:var(--white);font-weight:600}
+.agent-row-edits{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.agent-edit-field{display:flex;flex-direction:column;gap:3px}
+.agent-edit-field label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-family:'DM Mono',monospace}
+.agent-edit-field input{background:var(--surface);border:1px solid var(--border);border-radius:4px;color:var(--white);font-family:'DM Mono',monospace;font-size:12px;padding:7px 9px;outline:none;width:100%}
+.agent-edit-field input:focus{border-color:var(--orange)}
+@media (max-width:900px){.agent-row{grid-template-columns:1fr}.agent-row-stats{grid-template-columns:repeat(4,1fr)}}
 .dash-block{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px;display:flex;flex-direction:column;gap:14px}
 .dash-block.done{border-color:rgba(46,204,138,.35)}
 .dash-block.current{border-color:var(--orange);box-shadow:0 0 0 2px rgba(224,96,48,.15)}
@@ -200,6 +226,28 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .dash-block .btn{margin-top:auto}
 .dash-block.done .btn{background:var(--card);color:var(--white);border:1px solid var(--border)}
 .dash-block.done .btn:hover{background:var(--surface)}
+
+/* NEW Dashboard (one-page cleanup spec) */
+.dash-welcome{margin-bottom:18px}
+.dash-sample-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:18px;text-align:center}
+.dash-sample-card img{display:block;max-width:360px;width:100%;height:auto;margin:0 auto;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.35)}
+.dash-sample-caption{margin-top:10px;font-size:12px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.3px}
+.dash-primary-wrap{margin:18px 0}
+.btn-primary-lg{padding:18px 24px;font-size:15px;font-weight:700;letter-spacing:.5px}
+.dash-section{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px;margin-bottom:14px}
+.dash-section.secondary{padding:14px 18px;background:transparent;border-style:dashed}
+.dash-section.secondary .dash-section-title{font-size:13px}
+.dash-section.secondary .dash-section-sub{font-size:11px;margin-bottom:10px}
+.dash-section.secondary .btn{padding:9px 14px;font-size:12px;width:auto}
+.dash-section-title{font-size:16px;font-weight:700;color:var(--white);margin-bottom:4px}
+.dash-section-sub{font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:14px}
+.profile-summary{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.profile-summary-left{display:flex;align-items:center;gap:12px;min-width:0}
+.profile-summary-check{width:28px;height:28px;border-radius:50%;background:var(--green);color:#0C0F1A;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0}
+.profile-summary-title{font-size:13px;font-weight:700;color:var(--white)}
+.profile-summary-meta{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:2px}
+.btn-ghost{background:var(--card);color:var(--white);border:1px solid var(--border);border-radius:4px;padding:9px 14px;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;letter-spacing:.3px;transition:all .15s}
+.btn-ghost:hover{background:var(--surface);border-color:var(--orange)}
 
 /* SEARCH BAR on My Cards */
 .cards-search{margin-bottom:16px;position:relative}
@@ -255,9 +303,6 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
   <a class="nav-logo" onclick="goHome()">For<span>Sale</span>NFC</a>
   <div class="nav-tabs" id="navTabs">
     <button class="nav-tab" data-view="dashboard" onclick="showView('dashboard',this)">Dashboard</button>
-    <button class="nav-tab" data-view="mycards" onclick="showView('mycards',this)">My Cards</button>
-    <button class="nav-tab" data-view="orders" onclick="showView('orders',this)">Orders</button>
-    <button class="nav-tab" data-view="profile" onclick="showView('profile',this)">Profile</button>
     <span class="nav-user" id="navUser"></span>
     <button class="nav-signout" onclick="signOut()">Sign out</button>
   </div>
@@ -311,43 +356,55 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 <!-- DASHBOARD -->
 <div class="view" id="view-dashboard">
   <div class="wrap">
-    <div class="page-title">Welcome to ForSaleNFC</div>
-    <div class="page-sub" id="dashSub">Complete your profile to order your cards</div>
-    <div class="dash-grid">
-      <div class="dash-block" id="dashProfileBlock">
-        <div class="dash-block-head">
-          <div class="dash-icon" id="dashProfileIcon">1</div>
-          <div>
-            <div class="dash-block-title">Profile</div>
-            <div class="dash-block-status" id="dashProfileStatus">Not complete</div>
-          </div>
-        </div>
-        <div class="dash-block-body" id="dashProfileBody">Required: name, phone, email, brokerage, license, state.</div>
-        <button class="btn full" id="dashProfileBtn" onclick="showView('profile')">Complete Profile</button>
-      </div>
-      <div class="dash-block" id="dashOrderBlock">
-        <div class="dash-block-head">
-          <div class="dash-icon" id="dashOrderIcon">2</div>
-          <div>
-            <div class="dash-block-title">Order Cards</div>
-            <div class="dash-block-status" id="dashOrderStatus">Not ordered</div>
-          </div>
-        </div>
-        <div class="dash-block-body" id="dashOrderBody">Order your first batch of NFC cards.</div>
-        <button class="btn full" id="dashOrderBtn" onclick="showView('orders')">Place Order</button>
-      </div>
-      <div class="dash-block" id="dashCardsBlock">
-        <div class="dash-block-head">
-          <div class="dash-icon" id="dashCardsIcon">3</div>
-          <div>
-            <div class="dash-block-title">My Cards</div>
-            <div class="dash-block-status" id="dashCardsStatus">No cards yet</div>
-          </div>
-        </div>
-        <div class="dash-block-body" id="dashCardsBody">Your cards will appear here after your first order.</div>
-        <button class="btn full" id="dashCardsBtn" onclick="showView('mycards')">Open My Cards</button>
-      </div>
+    <div class="dash-welcome">
+      <div class="page-title">Welcome to ForSaleNFC</div>
+      <div class="page-sub" id="dashSub">Complete your profile to order your cards</div>
     </div>
+
+    <div class="dash-sample-card">
+      <img src="/sample-card.png" alt="Sample NFC business card" onerror="this.style.display='none'">
+      <div class="dash-sample-caption">This is the card you give to buyers after a showing.</div>
+    </div>
+
+    <div id="trialBanner" style="display:none"></div>
+
+    <!-- Primary CTA (dynamic — only one dominant at a time) -->
+    <div class="dash-primary-wrap" id="dashPrimaryWrap"></div>
+
+    <!-- Section 1: PROFILE (big when incomplete, small summary when done) -->
+    <section class="dash-section" id="dashProfileSection">
+      <div id="dashProfileIncomplete">
+        <div class="dash-section-title">Your Profile</div>
+        <div class="dash-section-sub">Required: name, phone, email, brokerage, license, state. Photo optional.</div>
+        <button class="btn full" onclick="showView('profile')">Complete Profile</button>
+      </div>
+      <div id="dashProfileComplete" style="display:none">
+        <div class="profile-summary">
+          <div class="profile-summary-left">
+            <div class="profile-summary-check">✓</div>
+            <div>
+              <div class="profile-summary-title">Profile Complete</div>
+              <div class="profile-summary-meta" id="profileSummaryMeta">—</div>
+            </div>
+          </div>
+          <button class="btn-ghost" onclick="showView('profile')">Edit Profile</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2 (when no cards): ORDER CARDS big block -->
+    <!-- Section 2 (when cards exist): MY CARDS big, then Order More small -->
+    <section class="dash-section" id="dashCardsSection" style="display:none">
+      <div class="dash-section-title">My Cards</div>
+      <div class="dash-section-sub" id="dashCardsSummary">—</div>
+      <button class="btn full" onclick="showView('mycards')">Go to My Cards</button>
+    </section>
+
+    <section class="dash-section" id="dashOrderSection">
+      <div class="dash-section-title" id="dashOrderTitle">Order Cards</div>
+      <div class="dash-section-sub" id="dashOrderSub">Order your first batch of NFC cards.</div>
+      <button class="btn full" id="dashOrderBtn" onclick="showView('orders')">Place Order</button>
+    </section>
   </div>
 </div>
 
@@ -432,6 +489,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
         <div class="pfield">
           <label>Price</label>
           <div class="price-display"><span class="price-label">Total</span><span class="price-value" id="oPrice">$36</span></div>
+          <div id="oPriceHint" style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:4px">Rate: $36/dozen</div>
         </div>
       </div>
       <div class="pgrid" style="margin-top:14px">
@@ -527,6 +585,12 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
         Next order starts at: <span id="aPreview" style="color:var(--teal)">FS-0101</span>
       </div>
       <button class="btn" style="margin-top:14px" onclick="saveAdminSettings()">💾 Save Settings</button>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Agents</div>
+      <div class="panel-sub">All signed-up agents. Click a row to edit pricing or trial cards.</div>
+      <input type="text" class="pinput" id="aAgentSearch" placeholder="Search by name, email, or brokerage…" oninput="filterAdminAgents()" style="margin-bottom:12px">
+      <div id="aAgents"><div class="empty-state">Loading…</div></div>
     </div>
     <div class="panel">
       <div class="panel-title">All Orders (Fulfillment View)</div>
@@ -693,7 +757,7 @@ function showView(id,tabEl){
 }
 function goHome(){
   if(window.location.search){window.location.href=window.location.pathname;return;}
-  if(USER)showView('mycards');
+  if(USER)showView('dashboard');
 }
 
 /* AUTH */
@@ -808,17 +872,9 @@ async function afterLogin(){
   updateOrderPrice();
   renderDashboard();
 
-  // Returning-user routing — hard hold on Dashboard if profile incomplete:
-  //   profile incomplete     → Dashboard (LOCKED — see showView guard)
-  //   profile complete + no cards → Orders
-  //   cards exist            → My Cards
-  if(!isProfileComplete(PROFILE)){
-    showView('dashboard');
-  } else if(CARDS.length === 0){
-    showView('orders');
-  } else {
-    showView('mycards');
-  }
+  // Returning-user routing: always land on Dashboard.
+  // Dashboard's primary CTA guides the agent to the next step based on state.
+  showView('dashboard');
 
   // Start 30-min idle timer
   startIdleTimer();
@@ -874,90 +930,185 @@ async function refreshAll(){
 
 /* DASHBOARD */
 function updateNavLocks(){
-  const profileOk = isProfileComplete(PROFILE);
-  const mycardsTab = document.querySelector('.nav-tab[data-view="mycards"]');
-  const ordersTab  = document.querySelector('.nav-tab[data-view="orders"]');
-  if(mycardsTab){ mycardsTab.classList.toggle('locked', !profileOk); }
-  if(ordersTab){  ordersTab.classList.toggle('locked', !profileOk);  }
+  // No-op: Profile / My Cards / Orders are no longer in the top nav.
+  // Kept as an empty function so any remaining callers don't crash.
 }
 
 function renderDashboard(){
-  updateNavLocks();
   const profileOk = isProfileComplete(PROFILE);
   const orderedOk = hasEverOrdered();
   const cardsOk   = CARDS.length > 0;
 
-  // Profile block
-  const pBlock = document.getElementById('dashProfileBlock');
-  const pStatus = document.getElementById('dashProfileStatus');
-  const pBody = document.getElementById('dashProfileBody');
-  const pBtn = document.getElementById('dashProfileBtn');
-  pBlock.classList.remove('done','current');
+  // === Section 1: Profile (big when incomplete, summary when complete) ===
+  const incompleteEl = document.getElementById('dashProfileIncomplete');
+  const completeEl   = document.getElementById('dashProfileComplete');
   if(profileOk){
-    pBlock.classList.add('done');
-    pStatus.textContent = 'Complete';
-    pBody.textContent = `${PROFILE.first_name||''} ${PROFILE.last_name||''} · ${PROFILE.brokerage||''}`;
-    pBtn.textContent = 'Edit Profile';
+    incompleteEl.style.display = 'none';
+    completeEl.style.display = 'block';
+    const fullName = `${PROFILE.first_name||''} ${PROFILE.last_name||''}`.trim() || '—';
+    const brokerage = PROFILE.brokerage || '';
+    document.getElementById('profileSummaryMeta').textContent =
+      brokerage ? `${fullName} · ${brokerage}` : fullName;
   } else {
-    pBlock.classList.add('current');
-    pStatus.textContent = 'Not complete';
-    pBody.textContent = 'Required: name, phone, email, brokerage, license, state.';
-    pBtn.textContent = 'Complete Profile';
+    incompleteEl.style.display = 'block';
+    completeEl.style.display = 'none';
   }
 
-  // Order block
-  const oBlock = document.getElementById('dashOrderBlock');
-  const oStatus = document.getElementById('dashOrderStatus');
-  const oBody = document.getElementById('dashOrderBody');
-  const oBtn = document.getElementById('dashOrderBtn');
-  oBlock.classList.remove('done','current');
-  if(orderedOk){
-    oBlock.classList.add('done');
-    oStatus.textContent = 'Ordered';
-    const totalCards = ORDERS.reduce((s,o)=>s+(o.quantity||0),0);
-    oBody.textContent = `${ORDERS.length} order${ORDERS.length>1?'s':''} · ${totalCards} cards ordered total`;
-    oBtn.textContent = 'Order More';
-  } else if(profileOk){
-    oBlock.classList.add('current');
-    oStatus.textContent = 'Not ordered';
-    oBody.textContent = 'Order your first batch of NFC cards.';
-    oBtn.textContent = 'Place Order';
-  } else {
-    oStatus.textContent = 'Not ordered';
-    oBody.textContent = 'Finish your profile first.';
-    oBtn.textContent = 'Place Order';
-  }
+  // === Section 2 & 3 ordering ===
+  // If cards exist: My Cards (big, primary) above Order More Cards (thin, secondary)
+  // If no cards:    Order Cards (big) is the only section below Profile
+  const cardsSection = document.getElementById('dashCardsSection');
+  const orderSection = document.getElementById('dashOrderSection');
+  const orderTitle   = document.getElementById('dashOrderTitle');
+  const orderSub     = document.getElementById('dashOrderSub');
+  const orderBtn     = document.getElementById('dashOrderBtn');
 
-  // Cards block
-  const cBlock = document.getElementById('dashCardsBlock');
-  const cStatus = document.getElementById('dashCardsStatus');
-  const cBody = document.getElementById('dashCardsBody');
-  const cBtn = document.getElementById('dashCardsBtn');
-  cBlock.classList.remove('done','current');
   if(cardsOk){
-    cBlock.classList.add('done');
-    const avail = CARDS.filter(c=>c.status==='available').length;
+    // My Cards — show summary
+    cardsSection.style.display = 'block';
+    const avail    = CARDS.filter(c=>c.status==='available').length;
     const assigned = CARDS.filter(c=>c.status==='assigned').length;
-    cStatus.textContent = `${CARDS.length} cards`;
-    cBody.textContent = `${avail} available · ${assigned} assigned`;
-    cBtn.textContent = 'Open My Cards';
-  } else if(orderedOk){
-    cBlock.classList.add('current');
-    cStatus.textContent = 'Processing';
-    cBody.textContent = 'Your cards are being generated.';
-    cBtn.textContent = 'Open My Cards';
+    document.getElementById('dashCardsSummary').textContent =
+      `${CARDS.length} cards · ${avail} available · ${assigned} assigned`;
+
+    // Order section becomes thin "Order More Cards"
+    orderSection.classList.add('secondary');
+    orderTitle.textContent = 'Order More Cards';
+    orderSub.textContent   = 'Running low? Order another batch.';
+    orderBtn.textContent   = 'Order More';
+
+    // Ensure DOM order: Profile, Cards, Order (Order moves below Cards)
+    const dashWrap = orderSection.parentElement;
+    if(cardsSection.nextElementSibling !== orderSection){
+      dashWrap.insertBefore(orderSection, cardsSection.nextElementSibling);
+    }
   } else {
-    cStatus.textContent = 'No cards yet';
-    cBody.textContent = 'Your cards will appear here after your first order.';
-    cBtn.textContent = 'Open My Cards';
+    cardsSection.style.display = 'none';
+    orderSection.classList.remove('secondary');
+    orderTitle.textContent = 'Order Cards';
+    orderSub.textContent   = profileOk
+      ? 'You are ready to order your first batch of cards (12+ per order).'
+      : 'Complete your profile before ordering cards.';
+    orderBtn.textContent   = 'Place Order';
+    orderBtn.disabled      = !profileOk;
   }
 
-  // Subtitle
+  // Primary CTA: only one dominant at a time
+  const wrap = document.getElementById('dashPrimaryWrap');
+  let primary = null;
+  if(!profileOk){
+    primary = { label:'Complete Profile', onclick:"showView('profile')" };
+  } else if(!cardsOk){
+    primary = { label:'Order Cards', onclick:"showView('orders')" };
+  } else {
+    primary = { label:'Go to My Cards', onclick:"showView('mycards')" };
+  }
+  wrap.innerHTML = `<button class="btn full btn-primary-lg" onclick="${primary.onclick}">${primary.label} →</button>`;
+
+  // Subtitle under welcome
   const sub = document.getElementById('dashSub');
-  if(!profileOk) sub.textContent = 'Complete your profile to order your cards';
-  else if(!orderedOk) sub.textContent = 'You\'re ready to order your first batch of cards';
-  else if(!cardsOk) sub.textContent = 'Cards are generating — check My Cards in a moment';
-  else sub.textContent = 'You\'re all set. Click a card in My Cards to assign a buyer.';
+  if(!profileOk) sub.textContent = 'Complete your profile to order your cards.';
+  else if(!orderedOk) sub.textContent = 'You are ready to order your first batch of cards.';
+  else if(!cardsOk) sub.textContent = 'Your cards are being generated — check My Cards in a moment.';
+  else sub.textContent = 'You are all set. Click a card in My Cards to assign a buyer.';
+
+  // Trial card banner
+  renderTrialBanner();
+}
+
+function renderTrialBanner(){
+  const host = document.getElementById('trialBanner');
+  if(!host) return;
+  const free = PROFILE?.free_cards_remaining ?? 0;
+  const hasClaimedTrial = ORDERS.some(o => o.is_trial === true);
+  const profileOk = isProfileComplete(PROFILE);
+
+  if(free > 0 && !hasClaimedTrial && profileOk){
+    host.innerHTML = `
+      <div class="trial-banner">
+        <div class="trial-banner-icon">🎁</div>
+        <div class="trial-banner-body">
+          <div class="trial-banner-title">You have ${free} free cards to try the system</div>
+          <div class="trial-banner-sub">We'll mail you ${free} pre-numbered NFC cards at no cost. Paid orders (12+ cards) are separate.</div>
+        </div>
+        <button class="btn" onclick="claimTrialCards()" id="btnClaimTrial">Send My Trial Cards</button>
+      </div>`;
+    host.style.display = 'block';
+  } else if(free > 0 && !profileOk){
+    host.innerHTML = `
+      <div class="trial-banner warn">
+        <div class="trial-banner-icon">🎁</div>
+        <div class="trial-banner-body">
+          <div class="trial-banner-title">${free} free trial cards are waiting</div>
+          <div class="trial-banner-sub">Finish your profile first — we need a shipping address.</div>
+        </div>
+      </div>`;
+    host.style.display = 'block';
+  } else if(hasClaimedTrial && free === 0 && ORDERS.filter(o=>!o.is_trial).length === 0){
+    host.innerHTML = `
+      <div class="trial-banner dim">
+        <div class="trial-banner-icon">✓</div>
+        <div class="trial-banner-body">
+          <div class="trial-banner-title">You've used your free cards</div>
+          <div class="trial-banner-sub">Order 12+ cards to continue. Each card unlocks instant NFC showings.</div>
+        </div>
+        <button class="btn" onclick="showView('orders')">Order Cards</button>
+      </div>`;
+    host.style.display = 'block';
+  } else {
+    host.style.display = 'none';
+  }
+}
+
+async function claimTrialCards(){
+  const btn = document.getElementById('btnClaimTrial');
+  if(!btn) return;
+  const free = PROFILE?.free_cards_remaining ?? 0;
+  if(free <= 0){ showToast('No free cards remaining','error'); return; }
+  if(!isProfileComplete(PROFILE)){ showToast('Complete your profile first','error'); showView('profile'); return; }
+  if(!confirm(`Ship me ${free} free trial cards?\n\nThey'll be mailed to your profile address. This is a one-time offer per account.`)) return;
+
+  btn.disabled = true;
+  btn.textContent = 'Processing…';
+
+  try {
+    // 1. Create trial order (total_price=0, is_trial=true)
+    const shipName = `${PROFILE.first_name||''} ${PROFILE.last_name||''}`.trim();
+    const { data: order, error: orderErr } = await db.from('orders').insert({
+      agent_id: USER.id,
+      quantity: free,
+      total_price: 0,
+      status: 'paid',
+      is_trial: true,
+      shipping_name: shipName,
+      shipping_address: null,
+      shipping_city: null,
+      shipping_state: PROFILE.license_state || null,
+      shipping_zip: null,
+      notes: 'FREE TRIAL — ' + free + ' cards'
+    }).select().maybeSingle();
+    if(orderErr || !order) throw new Error(orderErr?.message || 'order insert failed');
+
+    // 2. Generate the free cards
+    const { data: genResult, error: genErr } = await db.rpc('generate_cards_for_order', {
+      p_order_id: order.id, p_agent_id: USER.id, p_quantity: free
+    });
+    if(genErr) throw new Error(genErr.message);
+
+    // 3. Decrement free_cards_remaining to 0
+    const { error: profErr } = await db.from('profiles').update({ free_cards_remaining: 0 }).eq('id', USER.id);
+    if(profErr) throw new Error(profErr.message);
+
+    PROFILE = { ...PROFILE, free_cards_remaining: 0 };
+    SETTINGS = await loadSettings();
+    await refreshAll();
+    showToast(`✓ ${free} trial cards on the way! Range: ${genResult.range||''}`,'success');
+    alert(`✓ TRIAL CARDS CONFIRMED\n\n${free} cards · ${genResult.range||''}\n\nWe'll mail them to:\n${shipName}\n\nThey're already visible in My Cards — you can assign buyers before the cards arrive.`);
+  } catch(err){
+    btn.disabled = false;
+    btn.textContent = 'Send My Trial Cards';
+    alert('TRIAL CLAIM FAILED:\n\n' + (err?.message || String(err)));
+  }
 }
 
 /* MY CARDS */
@@ -1499,19 +1650,30 @@ async function saveProfile(){
   renderDashboard();
   showToast('✓ Profile saved','success');
 
-  // Auto-redirect: if profile is now complete for the first time and user has no cards → Orders
+  // Auto-redirect: if profile is now complete for the first time and user has no cards → Dashboard (Order section highlighted)
   const nowComplete = isProfileComplete(PROFILE);
   if(nowComplete && !wasCompleteBefore && CARDS.length === 0){
     setTimeout(()=>{
       showToast('Now let\'s order your cards','success');
-      showView('orders');
+      showView('dashboard');
+      // Scroll the order section into view
+      setTimeout(()=>{
+        const os = document.getElementById('dashOrderSection');
+        if(os) os.scrollIntoView({behavior:'smooth', block:'center'});
+      }, 100);
     }, 900);
   }
 }
 
 /* ORDERS */
+function effectivePricePerDozen(){
+  // Per-agent custom override takes priority; fall back to global settings.
+  const custom = PROFILE?.custom_price_per_dozen;
+  if(custom != null && custom >= 0) return custom;
+  return SETTINGS.card_price_per_dozen || 36;
+}
 function computePrice(qty){
-  const perDozen = SETTINGS.card_price_per_dozen || 36;
+  const perDozen = effectivePricePerDozen();
   return Math.round((qty/12)*perDozen);
 }
 function updateOrderPrice(){
@@ -1519,6 +1681,15 @@ function updateOrderPrice(){
   const price = computePrice(qty);
   document.getElementById('oPrice').textContent = '$'+price;
   document.getElementById('btnOrderLabel').textContent = `Order ${qty} Cards — $${price}`;
+  // Show per-agent pricing hint
+  const hint = document.getElementById('oPriceHint');
+  if(hint){
+    const perDz = effectivePricePerDozen();
+    const isCustom = PROFILE?.custom_price_per_dozen != null;
+    hint.innerHTML = isCustom
+      ? `Your rate: <strong style="color:var(--green)">$${perDz}/dozen</strong> (custom)`
+      : `Rate: $${perDz}/dozen`;
+  }
 }
 async function placeOrder(){
   try {
@@ -1604,6 +1775,8 @@ function renderOrders(){
 }
 
 /* ADMIN */
+let ADMIN_AGENTS_CACHE = [];
+
 function loadAdminForm(){
   document.getElementById('aPrice').value  = SETTINGS.card_price_per_dozen ?? 36;
   document.getElementById('aPrefix').value = SETTINGS.card_number_prefix || 'FS';
@@ -1611,10 +1784,120 @@ function loadAdminForm(){
   document.getElementById('aNotifEmail').value = SETTINGS.notification_email || '';
   updateAdminPreview();
   renderAdminOrders();
+  renderAdminAgents();
   ['aPrefix','aNext'].forEach(id=>{
     const el=document.getElementById(id);
     el.oninput=updateAdminPreview;
   });
+}
+
+async function renderAdminAgents(){
+  const el = document.getElementById('aAgents');
+  el.innerHTML = '<div class="empty-state">Loading agents…</div>';
+  try {
+    // Fetch profiles + aggregate orders + cards counts
+    const { data: profiles, error: pErr } = await db.from('profiles')
+      .select('*').order('created_at', { ascending: false });
+    if(pErr) throw pErr;
+
+    const { data: allOrders } = await db.from('orders').select('agent_id,quantity,total_price,is_trial');
+    const { data: allCards }  = await db.from('cards').select('agent_id');
+
+    // Build per-agent aggregates
+    const agg = {};
+    (allOrders||[]).forEach(o=>{
+      const a = agg[o.agent_id] = agg[o.agent_id] || { orders:0, paid_spend:0, cards_ordered:0 };
+      a.orders += 1;
+      if(!o.is_trial) a.paid_spend += (o.total_price||0);
+      a.cards_ordered += (o.quantity||0);
+    });
+    (allCards||[]).forEach(c=>{
+      const a = agg[c.agent_id] = agg[c.agent_id] || { orders:0, paid_spend:0, cards_ordered:0, cards:0 };
+      a.cards = (a.cards||0) + 1;
+    });
+
+    ADMIN_AGENTS_CACHE = (profiles||[]).map(p => ({
+      ...p,
+      _orders: agg[p.id]?.orders || 0,
+      _spend:  agg[p.id]?.paid_spend || 0,
+      _cards:  agg[p.id]?.cards || 0
+    }));
+
+    renderAdminAgentsTable(ADMIN_AGENTS_CACHE);
+  } catch(err){
+    el.innerHTML = '<div class="empty-state">Error: '+esc(err.message||String(err))+'</div>';
+  }
+}
+
+function filterAdminAgents(){
+  const q = (document.getElementById('aAgentSearch').value||'').trim().toLowerCase();
+  if(!q){ renderAdminAgentsTable(ADMIN_AGENTS_CACHE); return; }
+  const filtered = ADMIN_AGENTS_CACHE.filter(a=>{
+    const hay = [a.first_name,a.last_name,a.email,a.brokerage].filter(Boolean).join(' ').toLowerCase();
+    return hay.includes(q);
+  });
+  renderAdminAgentsTable(filtered);
+}
+
+function renderAdminAgentsTable(agents){
+  const el = document.getElementById('aAgents');
+  if(!agents.length){ el.innerHTML = '<div class="empty-state">No agents match.</div>'; return; }
+  const rows = agents.map(a=>{
+    const name = [a.first_name,a.last_name].filter(Boolean).join(' ') || '—';
+    const joined = a.created_at ? new Date(a.created_at).toLocaleDateString() : '—';
+    const customPriceVal = a.custom_price_per_dozen != null ? a.custom_price_per_dozen : '';
+    const freeVal = a.free_cards_remaining != null ? a.free_cards_remaining : 0;
+    const adminBadge = a.is_admin ? '<span class="admin-pill" style="margin-left:6px">ADMIN</span>' : '';
+    return `<div class="agent-row" data-id="${esc(a.id)}">
+      <div class="agent-row-main">
+        <div class="agent-row-name">${esc(name)}${adminBadge}</div>
+        <div class="agent-row-email">${esc(a.email||'')}</div>
+        <div class="agent-row-brokerage">${esc(a.brokerage||'—')}</div>
+      </div>
+      <div class="agent-row-stats">
+        <div class="agent-stat"><span class="agent-stat-label">Joined</span><span class="agent-stat-value">${esc(joined)}</span></div>
+        <div class="agent-stat"><span class="agent-stat-label">Orders</span><span class="agent-stat-value">${a._orders}</span></div>
+        <div class="agent-stat"><span class="agent-stat-label">Cards</span><span class="agent-stat-value">${a._cards}</span></div>
+        <div class="agent-stat"><span class="agent-stat-label">Spend</span><span class="agent-stat-value">$${a._spend}</span></div>
+      </div>
+      <div class="agent-row-edits">
+        <div class="agent-edit-field">
+          <label>Custom $/dz</label>
+          <input type="number" min="0" placeholder="default" value="${customPriceVal}" onchange="updateAgentPrice('${esc(a.id)}',this.value)">
+        </div>
+        <div class="agent-edit-field">
+          <label>Free left</label>
+          <input type="number" min="0" value="${freeVal}" onchange="updateAgentFreeCards('${esc(a.id)}',this.value)">
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  el.innerHTML = rows;
+}
+
+async function updateAgentPrice(agentId, raw){
+  const val = raw === '' ? null : Math.max(0, parseInt(raw)||0);
+  const { error } = await db.from('profiles').update({ custom_price_per_dozen: val }).eq('id', agentId);
+  if(error){ showToast('Update failed: '+error.message,'error'); return; }
+  // Update cache
+  const a = ADMIN_AGENTS_CACHE.find(x=>x.id===agentId);
+  if(a) a.custom_price_per_dozen = val;
+  // If editing own profile, update local
+  if(agentId === USER?.id) PROFILE = { ...PROFILE, custom_price_per_dozen: val };
+  showToast(val==null ? '✓ Reset to default' : `✓ Custom price: $${val}/dozen`,'success');
+}
+
+async function updateAgentFreeCards(agentId, raw){
+  const val = Math.max(0, parseInt(raw)||0);
+  const { error } = await db.from('profiles').update({ free_cards_remaining: val }).eq('id', agentId);
+  if(error){ showToast('Update failed: '+error.message,'error'); return; }
+  const a = ADMIN_AGENTS_CACHE.find(x=>x.id===agentId);
+  if(a) a.free_cards_remaining = val;
+  if(agentId === USER?.id){
+    PROFILE = { ...PROFILE, free_cards_remaining: val };
+    renderDashboard();
+  }
+  showToast(`✓ Free cards: ${val}`,'success');
 }
 function updateAdminPreview(){
   const pref=document.getElementById('aPrefix').value.trim()||'FS';
