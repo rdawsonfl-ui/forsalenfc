@@ -948,136 +948,140 @@ function updateNavLocks(){
 }
 
 function renderDashboard(){
-  const profileOk = isProfileComplete(PROFILE);
-  const orderedOk = hasEverOrdered();
-  const cardsOk   = CARDS.length > 0;
+  const profileOk       = isProfileComplete(PROFILE);
+  const cardsOk         = CARDS.length > 0;
+  const free            = PROFILE?.free_cards_remaining ?? 0;
+  const hasClaimedTrial = ORDERS.some(o => o.is_trial === true);
+  const trialAvailable  = free > 0 && !hasClaimedTrial && !cardsOk;
 
-  // === Section 1: Profile (big when incomplete, summary when complete) ===
-  const incompleteEl = document.getElementById('dashProfileIncomplete');
-  const completeEl   = document.getElementById('dashProfileComplete');
+  const profileSectionEl = document.getElementById('dashProfileSection');
+  const profileIncompleteEl = document.getElementById('dashProfileIncomplete');
+  const profileCompleteEl   = document.getElementById('dashProfileComplete');
+  const cardsSection  = document.getElementById('dashCardsSection');
+  const orderSection  = document.getElementById('dashOrderSection');
+  const orderTitle    = document.getElementById('dashOrderTitle');
+  const orderSub      = document.getElementById('dashOrderSub');
+  const orderBtn      = document.getElementById('dashOrderBtn');
+  const trialHost     = document.getElementById('trialBanner');
+  const primaryWrap   = document.getElementById('dashPrimaryWrap');
+  const sub           = document.getElementById('dashSub');
+
+  // Always update the profile-complete summary text (used in state 2 & 3)
   if(profileOk){
-    incompleteEl.style.display = 'none';
-    completeEl.style.display = 'block';
     const fullName = `${PROFILE.first_name||''} ${PROFILE.last_name||''}`.trim() || '—';
     const brokerage = PROFILE.brokerage || '';
     document.getElementById('profileSummaryMeta').textContent =
       brokerage ? `${fullName} · ${brokerage}` : fullName;
-  } else {
-    incompleteEl.style.display = 'block';
-    completeEl.style.display = 'none';
   }
 
-  // === Section 2 & 3 ordering ===
-  // If cards exist: My Cards (big, primary) above Order More Cards (thin, secondary)
-  // If no cards:    Order Cards (big) is the only section below Profile
-  const cardsSection = document.getElementById('dashCardsSection');
-  const orderSection = document.getElementById('dashOrderSection');
-  const orderTitle   = document.getElementById('dashOrderTitle');
-  const orderSub     = document.getElementById('dashOrderSub');
-  const orderBtn     = document.getElementById('dashOrderBtn');
+  // Clear everything first — each state is a clean slate
+  trialHost.innerHTML = '';
+  trialHost.style.display = 'none';
+  primaryWrap.innerHTML = '';
+  profileSectionEl.style.display = 'none';
+  cardsSection.style.display = 'none';
+  orderSection.style.display = 'none';
+  orderSection.classList.remove('secondary');
 
-  if(cardsOk){
-    // My Cards — show summary
-    cardsSection.style.display = 'block';
-    const avail    = CARDS.filter(c=>c.status==='available').length;
-    const assigned = CARDS.filter(c=>c.status==='assigned').length;
-    document.getElementById('dashCardsSummary').textContent =
-      `${CARDS.length} cards · ${avail} available · ${assigned} assigned`;
-
-    // Order section becomes thin "Order More Cards"
-    orderSection.classList.add('secondary');
-    orderTitle.textContent = 'Order More Cards';
-    orderSub.textContent   = 'Running low? Order another batch.';
-    orderBtn.textContent   = 'Order More';
-
-    // Ensure DOM order: Profile, Cards, Order (Order moves below Cards)
-    const dashWrap = orderSection.parentElement;
-    if(cardsSection.nextElementSibling !== orderSection){
-      dashWrap.insertBefore(orderSection, cardsSection.nextElementSibling);
-    }
-  } else {
-    cardsSection.style.display = 'none';
-    orderSection.classList.remove('secondary');
-    orderTitle.textContent = 'Order Cards';
-    orderSub.textContent   = profileOk
-      ? 'You are ready to order your first batch of cards (12+ per order).'
-      : 'Complete your profile before ordering cards.';
-    orderBtn.textContent   = 'Place Order';
-    orderBtn.disabled      = !profileOk;
-  }
-
-  // Primary CTA: only one dominant at a time
-  const wrap = document.getElementById('dashPrimaryWrap');
-  let primary = null;
+  // ============ STATE 1: Profile incomplete (trial onboarding) ============
+  // ONE combined block. No separate Profile section. No Order section.
   if(!profileOk){
-    primary = { label:'Complete Profile', onclick:"showView('profile')" };
-  } else if(!cardsOk){
-    primary = { label:'Order Cards', onclick:"showView('orders')" };
-  } else {
-    primary = { label:'Go to My Cards', onclick:"showView('mycards')" };
-  }
-  wrap.innerHTML = `<button class="btn full btn-primary-lg" onclick="${primary.onclick}">${primary.label} →</button>`;
-
-  // Subtitle under welcome
-  const sub = document.getElementById('dashSub');
-  if(!profileOk) sub.textContent = 'Complete your profile to order your cards.';
-  else if(!orderedOk) sub.textContent = 'You are ready to order your first batch of cards.';
-  else if(!cardsOk) sub.textContent = 'Your cards are being generated — check My Cards in a moment.';
-  else sub.textContent = 'You are all set. Click a card in My Cards to assign a buyer.';
-
-  // Trial card banner
-  renderTrialBanner();
-}
-
-function renderTrialBanner(){
-  const host = document.getElementById('trialBanner');
-  if(!host) return;
-  const free = PROFILE?.free_cards_remaining ?? 0;
-  const hasClaimedTrial = ORDERS.some(o => o.is_trial === true);
-  const profileOk = isProfileComplete(PROFILE);
-  const cardsOk = CARDS.length > 0;
-
-  // RULE: button only appears when agent has NO cards yet.
-  // If cards exist, banner becomes status-only (no action — primary CTA handles it).
-  if(cardsOk){
-    host.innerHTML = `
-      <div class="trial-banner dim">
-        <div class="trial-banner-icon">🪪</div>
-        <div class="trial-banner-body">
-          <div class="trial-banner-title">You have ${CARDS.length} card${CARDS.length===1?'':'s'} ready to use</div>
-          <div class="trial-banner-sub">Assign a buyer and property to each card when you're ready.</div>
-        </div>
-      </div>`;
-    host.style.display = 'block';
-    return;
-  }
-
-  // No cards yet:
-  if(free > 0 && !hasClaimedTrial && profileOk){
-    host.innerHTML = `
-      <div class="trial-banner">
-        <div class="trial-banner-icon">🎁</div>
-        <div class="trial-banner-body">
-          <div class="trial-banner-title">You have ${free} free cards to try the system</div>
-          <div class="trial-banner-sub">We'll mail you ${free} pre-numbered NFC cards at no cost. Paid orders (12+ cards) are separate.</div>
-        </div>
-        <button class="btn" onclick="claimTrialCards()" id="btnClaimTrial">Send My Trial Cards</button>
-      </div>`;
-    host.style.display = 'block';
-  } else if(free > 0 && !profileOk){
-    host.innerHTML = `
+    sub.textContent = 'Complete your profile to ship your free trial cards.';
+    const title = trialAvailable
+      ? `${free} free trial cards are waiting`
+      : 'Finish setting up your account';
+    const body = trialAvailable
+      ? 'Complete your profile so we can ship your trial cards.'
+      : 'Complete your profile to order your cards.';
+    trialHost.innerHTML = `
       <div class="trial-banner warn">
         <div class="trial-banner-icon">🎁</div>
         <div class="trial-banner-body">
-          <div class="trial-banner-title">${free} free trial cards are waiting</div>
-          <div class="trial-banner-sub">Finish your profile first — we need a shipping address.</div>
+          <div class="trial-banner-title">${title}</div>
+          <div class="trial-banner-sub">${body}</div>
         </div>
       </div>`;
-    host.style.display = 'block';
-  } else {
-    host.style.display = 'none';
+    trialHost.style.display = 'block';
+    primaryWrap.innerHTML = `<button class="btn full btn-primary-lg" onclick="showView('profile')">Complete Profile →</button>`;
+    return;
+  }
+
+  // ============ STATE 2: Profile complete, trial not yet claimed, no cards ============
+  // ONE trial block + tiny profile summary. No Order section yet.
+  if(trialAvailable){
+    sub.textContent = 'Your free trial cards are ready to ship.';
+    trialHost.innerHTML = `
+      <div class="trial-banner">
+        <div class="trial-banner-icon">🎁</div>
+        <div class="trial-banner-body">
+          <div class="trial-banner-title">Your ${free} free trial cards are ready</div>
+          <div class="trial-banner-sub">We'll ship your pre-numbered NFC cards at no cost.</div>
+        </div>
+      </div>`;
+    trialHost.style.display = 'block';
+    primaryWrap.innerHTML = `<button class="btn full btn-primary-lg" id="btnClaimTrial" onclick="claimTrialCards()">Send My Trial Cards →</button>`;
+    // Profile summary shown as a small status (NOT a CTA)
+    profileSectionEl.style.display = 'block';
+    profileIncompleteEl.style.display = 'none';
+    profileCompleteEl.style.display = 'block';
+    return;
+  }
+
+  // ============ STATE 3a: Profile complete, no trial available, no cards ============
+  // Order Cards becomes the primary action.
+  if(!cardsOk){
+    sub.textContent = 'You are ready to order your first batch of cards.';
+    primaryWrap.innerHTML = `<button class="btn full btn-primary-lg" onclick="showView('orders')">Order Cards →</button>`;
+    profileSectionEl.style.display = 'block';
+    profileIncompleteEl.style.display = 'none';
+    profileCompleteEl.style.display = 'block';
+    // Show Order section big (since no cards yet)
+    orderSection.style.display = 'block';
+    orderTitle.textContent = 'Order Cards';
+    orderSub.textContent   = 'You are ready to order your first batch of cards (12+ per order).';
+    orderBtn.textContent   = 'Place Order';
+    orderBtn.disabled      = false;
+    return;
+  }
+
+  // ============ STATE 3b: Cards exist ============
+  // Primary: Go to My Cards. Profile summary small. Order More secondary. Status banner.
+  sub.textContent = 'You are all set. Click a card to assign a buyer.';
+  const avail    = CARDS.filter(c=>c.status==='available').length;
+  const assigned = CARDS.filter(c=>c.status==='assigned').length;
+  trialHost.innerHTML = `
+    <div class="trial-banner dim">
+      <div class="trial-banner-icon">🪪</div>
+      <div class="trial-banner-body">
+        <div class="trial-banner-title">You have ${CARDS.length} card${CARDS.length===1?'':'s'} ready to use</div>
+        <div class="trial-banner-sub">Assign a buyer and property to each card when you're ready.</div>
+      </div>
+    </div>`;
+  trialHost.style.display = 'block';
+  primaryWrap.innerHTML = `<button class="btn full btn-primary-lg" onclick="showView('mycards')">Go to My Cards →</button>`;
+  profileSectionEl.style.display = 'block';
+  profileIncompleteEl.style.display = 'none';
+  profileCompleteEl.style.display = 'block';
+  // My Cards status block (no button)
+  cardsSection.style.display = 'block';
+  document.getElementById('dashCardsSummary').textContent =
+    `${CARDS.length} cards · ${avail} available · ${assigned} assigned`;
+  // Order More — secondary
+  orderSection.style.display = 'block';
+  orderSection.classList.add('secondary');
+  orderTitle.textContent = 'Order More Cards';
+  orderSub.textContent   = 'Running low? Order another batch.';
+  orderBtn.textContent   = 'Order More';
+  orderBtn.disabled      = false;
+  // Ensure Order sits below Cards
+  const dashWrap = orderSection.parentElement;
+  if(cardsSection.nextElementSibling !== orderSection){
+    dashWrap.insertBefore(orderSection, cardsSection.nextElementSibling);
   }
 }
+
+// Kept as a no-op shim so nothing else breaks if it still calls it.
+function renderTrialBanner(){ /* merged into renderDashboard */ }
 
 async function claimTrialCards(){
   const btn = document.getElementById('btnClaimTrial');
