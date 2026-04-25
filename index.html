@@ -310,9 +310,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .toast.success{background:rgba(46,204,138,.15);border-color:var(--green);color:#b6f0d0}
 .loading{display:inline-block;width:12px;height:12px;border:2px solid var(--muted);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.db-status{position:fixed;bottom:14px;right:14px;font-family:'DM Mono',monospace;font-size:10px;padding:5px 10px;border-radius:3px;z-index:9999;background:var(--surface);border:1px solid var(--border);color:var(--muted);letter-spacing:1px}
-.db-status.ok{color:var(--green);border-color:rgba(46,204,138,.3)}
-.db-status.err{color:var(--red);border-color:rgba(224,80,80,.3)}
+.db-status{display:none}
 
 /* IDLE TIMEOUT MODAL */
 .idle-overlay{display:none;position:fixed;inset:0;background:rgba(12,15,26,.85);backdrop-filter:blur(6px);z-index:10000;align-items:center;justify-content:center;padding:20px}
