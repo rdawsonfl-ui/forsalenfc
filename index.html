@@ -2317,15 +2317,8 @@ function renderTapPage(listing, profile, cardCode){
         <button class="tbtn tbtn-save" onclick="saveContactTap()">Save</button>
       </div>
     </div>
-    <div class="buyer-greeting">
-      <div class="bg-icon">🏠</div>
-      <div>
-        <div class="bg-hi">Hi ${esc(listing.buyer_name||'')} — ${esc(headline)}</div>
-        <div class="bg-sub">Shown by ${esc(agentName)}${listing.showing_date?' · '+esc(listing.showing_date):''}${listing.showing_time?' '+esc(listing.showing_time):''}</div>
-      </div>
-    </div>
     <div class="tap-listings">
-      <div class="tl-label">Properties Shown</div>
+      <div class="tl-label">Properties You Just Viewed${listing.buyer_name?` — ${esc(listing.buyer_name)}`:''}</div>
       ${propsHtml}
     </div>
     <div class="interest-section">
