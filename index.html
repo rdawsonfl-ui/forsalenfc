@@ -158,6 +158,9 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .prop-row-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .prop-row-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--teal);text-transform:uppercase}
 .prop-remove-btn{background:rgba(224,80,80,.1);border:1px solid rgba(224,80,80,.25);color:var(--red);padding:4px 10px;border-radius:3px;cursor:pointer;font-size:10px;font-family:'DM Sans',sans-serif;font-weight:600}
+.prop-trash-btn{background:transparent;border:1px solid var(--border);width:32px;height:32px;border-radius:6px;cursor:pointer;font-size:15px;line-height:1;display:inline-flex;align-items:center;justify-content:center;padding:0;transition:all .15s;color:var(--muted)}
+.prop-trash-btn:hover{background:rgba(224,80,80,.12);border-color:var(--red);color:var(--red)}
+.prop-trash-btn:active{transform:scale(.95)}
 .prop-preview{width:100%;aspect-ratio:16/9;background:var(--bg);border:1px dashed var(--border);border-radius:6px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
 .prop-preview img{width:100%;height:100%;object-fit:cover;display:block}
 .prop-preview-placeholder{color:var(--muted);font-size:11px;font-family:'DM Mono',monospace;letter-spacing:1px;padding:10px;text-align:center}
@@ -1471,10 +1474,15 @@ function renderProps(){
   badge.textContent = `${FORM_PROPS.length} / 3`;
   addBtn.disabled = FORM_PROPS.length >= 3;
   el.innerHTML = FORM_PROPS.map((p, i)=>{
+    // Hide trash on the only row when it's the lone empty starter row (nothing to delete)
+    const onlyEmpty = (FORM_PROPS.length === 1 && !p.listing_url && !p.image_url);
+    const trashBtn = onlyEmpty
+      ? ''
+      : `<button class="prop-trash-btn" onclick="confirmRemoveProperty(${i})" title="Remove this property" aria-label="Remove this property">🗑️</button>`;
     return `<div class="prop-row" data-i="${i}">
       <div class="prop-row-head">
         <div class="prop-row-label">${i===0?'Hero Property':'Property '+(i+1)}</div>
-        <button class="prop-remove-btn" onclick="removeProperty(${i})">Remove</button>
+        ${trashBtn}
       </div>
       <div class="prop-preview" id="ppreview-${i}">${propPreviewHtml(p.image_url)}</div>
       <div class="prop-inputs">
@@ -1647,6 +1655,17 @@ function removeProperty(i){
   FORM_PROPS.splice(i,1);
   if(FORM_PROPS.length === 0) FORM_PROPS.push({ image_url:'', listing_url:'' });
   renderProps();
+}
+
+function confirmRemoveProperty(i){
+  const p = FORM_PROPS[i];
+  const label = i === 0 ? 'Hero Property' : `Property ${i+1}`;
+  const hasContent = p && (p.listing_url || p.image_url);
+  if(hasContent){
+    if(!confirm(`Remove ${label}?\n\nThis can't be undone — you'll need to paste the listing URL again to add it back.`)) return;
+  }
+  removeProperty(i);
+  showToast(`${label} removed`,'success');
 }
 
 async function saveCard(){
