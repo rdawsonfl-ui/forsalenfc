@@ -480,13 +480,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
       </div>
     </section>
 
-    <!-- Section 2 (when no cards): ORDER CARDS big block -->
-    <!-- Section 2 (when cards exist): MY CARDS big, then Order More small -->
-    <section class="dash-section" id="dashCardsSection" style="display:none">
-      <div class="dash-section-title">My Cards</div>
-      <div class="dash-section-sub" id="dashCardsSummary">—</div>
-    </section>
-
+    <!-- Section 2: ORDER CARDS (big when no cards, thin "Order More" when cards exist) -->
     <section class="dash-section" id="dashOrderSection">
       <div class="dash-section-title" id="dashOrderTitle">Order Cards</div>
       <div class="dash-section-sub" id="dashOrderSub">Order your first batch of NFC cards.</div>
@@ -1166,7 +1160,7 @@ function renderDashboard(){
   const profileSectionEl = document.getElementById('dashProfileSection');
   const profileIncompleteEl = document.getElementById('dashProfileIncomplete');
   const profileCompleteEl   = document.getElementById('dashProfileComplete');
-  const cardsSection  = document.getElementById('dashCardsSection');
+  const cardsSection  = null; // removed — duplicate of banner
   const orderSection  = document.getElementById('dashOrderSection');
   const orderTitle    = document.getElementById('dashOrderTitle');
   const orderSub      = document.getElementById('dashOrderSub');
@@ -1188,7 +1182,7 @@ function renderDashboard(){
   trialHost.style.display = 'none';
   primaryWrap.innerHTML = '';
   profileSectionEl.style.display = 'none';
-  cardsSection.style.display = 'none';
+  cardsSection?.style && (cardsSection.style.display = 'none');
   orderSection.style.display = 'none';
   orderSection.classList.remove('secondary');
 
@@ -1271,22 +1265,13 @@ function renderDashboard(){
   profileSectionEl.style.display = 'block';
   profileIncompleteEl.style.display = 'none';
   profileCompleteEl.style.display = 'block';
-  // My Cards status block (no button)
-  cardsSection.style.display = 'block';
-  document.getElementById('dashCardsSummary').textContent =
-    `${CARDS.length} cards · ${avail} available · ${assigned} assigned`;
-  // Order More — secondary
+  // Order More — secondary (sits below banner + primary CTA + profile summary)
   orderSection.style.display = 'block';
   orderSection.classList.add('secondary');
   orderTitle.textContent = 'Order More Cards';
   orderSub.textContent   = 'Running low? Order another batch.';
   orderBtn.textContent   = 'Order More';
   orderBtn.disabled      = false;
-  // Ensure Order sits below Cards
-  const dashWrap = orderSection.parentElement;
-  if(cardsSection.nextElementSibling !== orderSection){
-    dashWrap.insertBefore(orderSection, cardsSection.nextElementSibling);
-  }
 }
 
 // Kept as a no-op shim so nothing else breaks if it still calls it.
