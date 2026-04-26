@@ -2329,7 +2329,7 @@ function buildPropLink(p, heroClass, index, total, agentPhone){
   // CTA row: primary "View Property" + small ❓ ask-question button. Stops bubbling so
   // tapping ❓ doesn't also trigger the View Property click.
   const ctaRow = `<div class="prop-cta-row">
-    <div class="prop-cta">${esc(label)}</div>
+    <button type="button" class="prop-cta" onclick="openListing('${safeHref}')">${esc(label)}</button>
     <a class="prop-ask" href="${esc(askHref)}" onclick="event.stopPropagation();" aria-label="Ask a question about this property">?</a>
   </div>`;
   if(hasImg){
