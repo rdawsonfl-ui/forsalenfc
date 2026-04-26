@@ -2231,21 +2231,9 @@ async function loadTapPageFromQuery(){
 
   db.rpc('record_tap', { p_card_code: cardCode, p_user_agent: (navigator.userAgent||'').slice(0,200) });
 
-  // AUTO-REDIRECT: if the card has exactly one property with a listing URL,
-  // skip the branded page and send the buyer directly to the listing.
-  const rawProps = Array.isArray(listing.properties_json) ? listing.properties_json : [];
-  const validProps = rawProps
-    .map(p => (typeof p === 'string') ? { image_url:'', listing_url:p } : p)
-    .filter(p => p && p.listing_url && String(p.listing_url).trim());
-  if(validProps.length === 1){
-    const target = normalizeUrl(validProps[0].listing_url);
-    // Briefly show a loading state so the user knows something is happening
-    tc.innerHTML = `<div class="card-not-found"><p><span class="loading"></span>Opening listing…</p></div>`;
-    // Give record_tap a moment to fire before navigating away
-    setTimeout(()=>{ window.location.replace(target); }, 150);
-    return true;
-  }
-
+  // Always show the branded page — the agent's Call/Text buttons must be visible
+  // before the buyer leaves for Zillow. View-listing links open in a new tab so
+  // when the buyer comes back, our page is still right there.
   renderTapPage(listing, profile, cardCode);
   return true;
 }
@@ -2253,7 +2241,7 @@ async function loadTapPageFromQuery(){
 function buildPropLink(p, heroClass, index, total){
   const href = p.listing_url ? normalizeUrl(p.listing_url) : '';
   const hasImg = !!p.image_url;
-  const linkAttrs = href ? `href="${esc(href)}" target="_blank" rel="noopener"` : '';
+  const linkAttrs = href ? `href="${esc(href)}" target="_blank" rel="noopener noreferrer"` : '';
   // Clean label — never expose the raw URL to the buyer
   const label = total > 1
     ? (index === 0 ? 'View Property 1 →' : `View Property ${index + 1} →`)
