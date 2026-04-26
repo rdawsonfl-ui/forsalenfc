@@ -199,14 +199,19 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .tl-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--orange);text-transform:uppercase;margin-bottom:12px;text-align:center}
 
 /* Image-first property cards */
-.hero-prop,.sub-prop{display:block;width:100%;margin-bottom:14px;border-radius:10px;overflow:hidden;background:var(--surface);border:1px solid var(--border);text-decoration:none;color:inherit;cursor:pointer;transition:all .15s;padding:0;font-family:inherit;text-align:left}
+.hero-prop,.sub-prop{display:block;width:100%;margin-bottom:14px;border-radius:10px;overflow:hidden;background:var(--surface);border:1px solid var(--border);text-decoration:none;color:inherit;transition:all .15s}
 .hero-prop:hover,.sub-prop:hover{border-color:var(--orange);transform:translateY(-1px)}
+.prop-img-btn{display:block;width:100%;padding:0;border:0;background:transparent;cursor:pointer;font-family:inherit}
 .hero-prop img{width:100%;display:block;aspect-ratio:16/10;object-fit:cover;background:var(--bg)}
 .sub-prop{margin-bottom:12px;border-radius:8px}
 .sub-prop img{width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--bg);display:block}
-.prop-cta{padding:14px 16px;font-size:14px;font-weight:700;color:var(--white);background:var(--orange);text-align:center;letter-spacing:.5px}
+.prop-cta-row{display:flex;align-items:stretch;width:100%}
+.prop-cta{flex:1;min-width:0;padding:14px 16px;font-size:14px;font-weight:700;color:var(--white);background:var(--orange);text-align:center;letter-spacing:.5px;border:0;cursor:pointer;font-family:inherit}
 .sub-prop .prop-cta{padding:12px 14px;font-size:13px}
 .hero-prop.no-image .prop-cta,.sub-prop.no-image .prop-cta{padding:18px}
+.prop-ask{flex:0 0 auto;width:48px;display:flex;align-items:center;justify-content:center;background:var(--surface);border-left:1px solid var(--border);color:var(--orange);font-size:20px;font-weight:700;text-decoration:none;cursor:pointer;transition:background .12s, color .12s;font-family:inherit;line-height:1}
+.prop-ask:hover,.prop-ask:active{background:var(--orange);color:var(--white)}
+.sub-prop .prop-ask{width:42px;font-size:18px}
 
 .interest-section{margin:12px 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px}
 .is-title{font-size:14px;font-weight:600;color:var(--white);margin-bottom:4px}
@@ -2239,24 +2244,106 @@ async function loadTapPageFromQuery(){
   return true;
 }
 
-function buildPropLink(p, heroClass, index, total){
+// Try to pull a clean street address out of a listing URL.
+// Works for Zillow ("/homedetails/16111-Tortuga-St-Bokeelia-FL-33922/..."),
+// Realtor.com ("/realestateandhomes-detail/16111-Tortuga-St_Bokeelia_FL_33922_..."),
+// Redfin ("/FL/Bokeelia/16111-Tortuga-St-33922/home/..."), and similar slug formats.
+// Returns a string like "16111 Tortuga St, Bokeelia FL" or "" if it can't parse.
+function parseAddressFromUrl(url){
+  if(!url) return '';
+  try {
+    const u = new URL(url);
+    const path = decodeURIComponent(u.pathname);
+    const segs = path.split('/').filter(Boolean);
+    // Redfin pattern: /FL/Bokeelia/16111-Tortuga-St-33922/home/...
+    // If path starts with /STATE/City/ (uppercase 2-letter state), capture them as fallback.
+    let prefixState = '', prefixCity = '';
+    if(segs.length >= 3 && /^[A-Z]{2}$/.test(segs[0])){
+      prefixState = segs[0];
+      prefixCity = segs[1].replace(/-/g,' ');
+    }
+    for(const s of segs){
+      if(!/^\d+[-_]/.test(s)) continue;
+      const tokens = s.replace(/_/g,'-').split('-');
+      // Keep tokens until we hit a 5-digit ZIP (skipping index 0 = street number)
+      const kept = [];
+      for(let ti=0; ti<tokens.length; ti++){
+        const t = tokens[ti];
+        if(ti > 0 && /^\d{5}$/.test(t)) break;
+        kept.push(t);
+      }
+      if(kept.length < 3) continue;
+      const last = kept[kept.length - 1];
+      // Strict uppercase 2-letter state check (so suffixes like "St" don't match)
+      if(/^[A-Z]{2}$/.test(last) && kept.length >= 3){
+        const state = last;
+        const streetSuffix = /^(St|Ave|Avenue|Blvd|Boulevard|Dr|Drive|Ln|Lane|Rd|Road|Way|Ct|Court|Pl|Place|Cir|Circle|Ter|Terrace|Pkwy|Parkway|Hwy|Highway|Trl|Trail)\.?$/i;
+        let streetEndIdx = -1;
+        for(let i = kept.length - 2; i >= 1; i--){
+          if(streetSuffix.test(kept[i])){ streetEndIdx = i; break; }
+        }
+        if(streetEndIdx > 0 && streetEndIdx < kept.length - 1){
+          const street = kept.slice(0, streetEndIdx + 1).join(' ');
+          const city  = kept.slice(streetEndIdx + 1, kept.length - 1).join(' ');
+          return `${street}, ${city} ${state}`.replace(/\s+/g,' ').trim();
+        }
+        // Fallback: state present but suffix not found — split halfway
+        const halfish = Math.max(2, Math.floor((kept.length - 1) / 2));
+        const street = kept.slice(0, halfish).join(' ');
+        const city = kept.slice(halfish, kept.length - 1).join(' ');
+        return `${street}, ${city} ${state}`.replace(/\s+/g,' ').trim();
+      }
+      // No state at end of address segment — use Redfin-style prefix if available
+      if(prefixState){
+        const street = kept.join(' ');
+        return `${street}, ${prefixCity} ${prefixState}`.replace(/\s+/g,' ').trim();
+      }
+      // Last resort
+      return kept.join(' ').replace(/\s+/g,' ').trim();
+    }
+    return '';
+  } catch { return ''; }
+}
+
+// Build the SMS href for the ❓ button. Includes property address if we can
+// parse it from the URL; otherwise uses the generic fallback.
+function buildAskSmsHref(agentPhone, listingUrl){
+  const phone = (agentPhone||'').replace(/\D/g,'');
+  const addr  = parseAddressFromUrl(listingUrl);
+  const body  = addr
+    ? `Hi, I'm looking at ${addr}.\n\nI have a question.`
+    : `Hi, I'm looking at this property.\n\nI have a question.`;
+  // iOS uses ?body=, Android uses ?body= too in modern versions; & vs ; varies.
+  // We use ?body= which both platforms accept.
+  return `sms:${phone}?&body=${encodeURIComponent(body)}`;
+}
+
+function buildPropLink(p, heroClass, index, total, agentPhone){
   const href = p.listing_url ? normalizeUrl(p.listing_url) : '';
   const hasImg = !!p.image_url;
   const safeHref = esc(href);
   const label = total > 1
     ? (index === 0 ? 'View Property 1 →' : `View Property ${index + 1} →`)
     : 'View Full Listing →';
-  // Use a <button> not an <a> — mobile browsers more reliably honor window.open()
-  // when triggered from a button click that's clearly a user gesture.
+  const askHref = href ? buildAskSmsHref(agentPhone, href) : buildAskSmsHref(agentPhone, '');
+  // CTA row: primary "View Property" + small ❓ ask-question button. Stops bubbling so
+  // tapping ❓ doesn't also trigger the View Property click.
+  const ctaRow = `<div class="prop-cta-row">
+    <div class="prop-cta">${esc(label)}</div>
+    <a class="prop-ask" href="${esc(askHref)}" onclick="event.stopPropagation();" aria-label="Ask a question about this property">?</a>
+  </div>`;
   if(hasImg){
-    return `<button class="${heroClass}" type="button" onclick="openListing('${safeHref}')">
-      <img src="${esc(p.image_url)}" alt="" onerror="this.style.display='none'">
-      <div class="prop-cta">${esc(label)}</div>
-    </button>`;
+    return `<div class="${heroClass}">
+      <button type="button" class="prop-img-btn" onclick="openListing('${safeHref}')" aria-label="${esc(label)}">
+        <img src="${esc(p.image_url)}" alt="" onerror="this.style.display='none'">
+      </button>
+      ${ctaRow}
+    </div>`;
   } else {
-    return `<button class="${heroClass} no-image" type="button" onclick="openListing('${safeHref}')">
-      <div class="prop-cta">${esc(label)}</div>
-    </button>`;
+    return `<div class="${heroClass} no-image">
+      <button type="button" class="prop-img-btn" onclick="openListing('${safeHref}')" aria-label="${esc(label)}" style="display:none"></button>
+      ${ctaRow}
+    </div>`;
   }
 }
 
@@ -2298,9 +2385,9 @@ function renderTapPage(listing, profile, cardCode){
 
   let propsHtml = '';
   if(props.length){
-    propsHtml += buildPropLink(props[0], 'hero-prop', 0, props.length);
+    propsHtml += buildPropLink(props[0], 'hero-prop', 0, props.length, profile.phone);
     for(let i=1;i<props.length;i++){
-      propsHtml += buildPropLink(props[i], 'sub-prop', i, props.length);
+      propsHtml += buildPropLink(props[i], 'sub-prop', i, props.length, profile.phone);
     }
   } else {
     propsHtml = '<div class="empty-state">No properties added yet.</div>';
