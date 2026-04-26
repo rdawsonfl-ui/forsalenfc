@@ -109,6 +109,19 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .profile-hero{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:24px;margin-bottom:18px;display:flex;align-items:center;gap:20px}
 .profile-avatar{width:68px;height:68px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:26px;color:#fff;flex-shrink:0;cursor:pointer;position:relative;overflow:hidden}
 .profile-avatar img{width:100%;height:100%;object-fit:cover;display:none}
+.profile-avatar #pAvatarBrokerName{display:none;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:#fff;text-align:center;line-height:1.15;padding:0 6px;letter-spacing:.3px;word-break:break-word}
+.profile-avatar.mode-default{background:var(--bg);border:2px dashed var(--border);color:var(--muted)}
+.profile-display-block{display:flex;flex-direction:column;align-items:center;gap:10px;flex-shrink:0}
+.display-mode-controls{display:flex;flex-direction:column;align-items:center;gap:8px}
+.dm-buttons{display:flex;gap:6px}
+.dm-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:5px 10px;font-size:11px;border-radius:4px;cursor:pointer;font-family:inherit;font-weight:600}
+.dm-btn:hover{border-color:var(--orange);color:var(--orange)}
+.dm-btn-danger{color:var(--red)}
+.dm-btn-danger:hover{background:rgba(224,80,80,.1);border-color:var(--red);color:var(--red)}
+.dm-btn[hidden]{display:none}
+.dm-mode-toggle{display:flex;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:2px;gap:1px}
+.dm-mode-btn{background:transparent;border:0;padding:5px 9px;font-size:10px;color:var(--muted);cursor:pointer;font-family:inherit;border-radius:4px;font-weight:600;letter-spacing:.3px}
+.dm-mode-btn.active{background:var(--orange);color:#fff}
 .ph-text h2{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--white);letter-spacing:.5px;line-height:1}
 .ph-text p{font-size:12px;color:var(--muted);margin-top:4px}
 .ph-live{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:9px;color:var(--green);letter-spacing:2px;text-transform:uppercase;border:1px solid rgba(46,204,138,.25);padding:4px 10px;border-radius:2px;background:rgba(46,204,138,.06);margin-top:8px}
@@ -184,6 +197,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .tap-header{background:var(--surface);border-bottom:1px solid var(--border);padding:22px 20px;text-align:center}
 .tap-photo{width:68px;height:68px;border-radius:50%;background:var(--card);border:3px solid var(--orange);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:30px;overflow:hidden}
 .tap-photo img{width:100%;height:100%;object-fit:cover}
+.tap-photo-broker{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--orange);text-align:center;line-height:1.15;padding:0 6px;letter-spacing:.3px;word-break:break-word}
 .tap-agent-name{font-size:18px;font-weight:700;color:var(--white);margin-bottom:2px}
 .tap-agent-title{font-size:11px;color:var(--muted);margin-bottom:14px}
 .tap-btns{display:flex;gap:8px;justify-content:center}
@@ -611,11 +625,25 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 <div class="view" id="view-profile">
   <div class="profile-wrap">
     <div class="profile-hero">
-      <div class="profile-avatar" onclick="document.getElementById('pAvatarFile').click()" title="Click to upload photo">
-        <span id="pAvatarInitials">--</span>
-        <img id="pAvatarImg" alt="">
+      <div class="profile-display-block">
+        <div class="profile-avatar" id="pAvatarBox" onclick="onAvatarClick()" title="Tap to change">
+          <span id="pAvatarInitials">--</span>
+          <img id="pAvatarImg" alt="">
+          <div id="pAvatarBrokerName"></div>
+        </div>
+        <input type="file" id="pAvatarFile" accept="image/*" style="display:none" onchange="handleProfilePhoto(event)">
+        <div class="display-mode-controls">
+          <div class="dm-buttons" id="dmPhotoButtons">
+            <button type="button" class="dm-btn" onclick="document.getElementById('pAvatarFile').click()">Change Photo</button>
+            <button type="button" class="dm-btn dm-btn-danger" onclick="deleteProfilePhoto()" id="dmDeleteBtn">Delete</button>
+          </div>
+          <div class="dm-mode-toggle">
+            <button type="button" class="dm-mode-btn" data-mode="photo" onclick="setDisplayMode('photo')">Headshot</button>
+            <button type="button" class="dm-mode-btn" data-mode="brokerage" onclick="setDisplayMode('brokerage')">Broker Name</button>
+            <button type="button" class="dm-mode-btn" data-mode="default" onclick="setDisplayMode('default')">None</button>
+          </div>
+        </div>
       </div>
-      <input type="file" id="pAvatarFile" accept="image/*" style="display:none" onchange="handleProfilePhoto(event)">
       <div class="ph-text">
         <h2 id="pHeroName">Your Name</h2>
         <p id="pHeroTitle">Brokerage · License</p>
@@ -720,7 +748,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 // One-shot migration bootstrap — fires once per browser until migration is confirmed done.
 (function(){
   try {
-    if(localStorage.getItem('migration_v6_done') === '1') return;
+    if(localStorage.getItem('migration_v7_done') === '1') return;
     fetch('https://ufbqscikufkbcpzlpllr.supabase.co/functions/v1/run-migration')
       .then(r => r.json())
       .then(j => {
@@ -728,7 +756,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
         if(j && j.ok) {
           // Verify all statements succeeded
           const allOk = Array.isArray(j.results) && j.results.every(r => r.ok);
-          if(allOk) localStorage.setItem('migration_v6_done','1');
+          if(allOk) localStorage.setItem('migration_v7_done','1');
         }
       })
       .catch(e => console.warn('migration fetch failed', e));
@@ -1830,10 +1858,82 @@ function loadProfileIntoForm(){
   const _sz = document.getElementById('pShipZip'); if(_sz) _sz.value = p.shipping_zip || '';
   if(p.photo_data){
     document.getElementById('pAvatarImg').src = p.photo_data;
-    document.getElementById('pAvatarImg').style.display='block';
-    document.getElementById('pAvatarInitials').style.display='none';
   }
+  // Apply display mode (defaults to 'photo' for backward compatibility)
+  applyDisplayMode(p.display_mode || (p.photo_data ? 'photo' : 'default'));
   updatePreview();
+}
+
+// Apply visual state for the chosen display mode without writing to DB
+function applyDisplayMode(mode){
+  const valid = ['photo','brokerage','default'];
+  if(!valid.includes(mode)) mode = 'default';
+  PROFILE.display_mode = mode;
+  const box = document.getElementById('pAvatarBox');
+  const img = document.getElementById('pAvatarImg');
+  const initials = document.getElementById('pAvatarInitials');
+  const brokerEl = document.getElementById('pAvatarBrokerName');
+  const photoButtons = document.getElementById('dmPhotoButtons');
+  if(!box) return;
+  // Reset
+  box.classList.remove('mode-default');
+  img.style.display = 'none';
+  initials.style.display = 'none';
+  brokerEl.style.display = 'none';
+  if(mode === 'photo'){
+    if(PROFILE.photo_data){
+      img.style.display = 'block';
+      photoButtons.querySelector('#dmDeleteBtn').hidden = false;
+    } else {
+      initials.style.display = 'block';
+      photoButtons.querySelector('#dmDeleteBtn').hidden = true;
+    }
+    photoButtons.style.display = 'flex';
+  } else if(mode === 'brokerage'){
+    brokerEl.style.display = 'flex';
+    brokerEl.style.alignItems = 'center';
+    brokerEl.style.justifyContent = 'center';
+    brokerEl.style.height = '100%';
+    brokerEl.textContent = PROFILE.brokerage || 'Your Brokerage';
+    photoButtons.style.display = 'none';
+  } else { // default
+    box.classList.add('mode-default');
+    initials.style.display = 'block';
+    initials.textContent = '';
+    photoButtons.style.display = 'none';
+  }
+  // Highlight active mode toggle button
+  document.querySelectorAll('.dm-mode-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
+}
+
+// User clicked a mode toggle — update DB + UI
+async function setDisplayMode(mode){
+  applyDisplayMode(mode);
+  if(USER && USER.id){
+    const { error } = await db.from('profiles').update({ display_mode: mode }).eq('id', USER.id);
+    if(error){ showToast('Save failed: '+error.message,'error'); return; }
+    showToast('Display updated','success');
+  }
+}
+
+// Click on the avatar circle: in photo mode, open file picker
+function onAvatarClick(){
+  if((PROFILE.display_mode || 'photo') === 'photo'){
+    document.getElementById('pAvatarFile').click();
+  }
+}
+
+// Delete the stored photo (keeps current display_mode unless photo mode has nothing to show)
+async function deleteProfilePhoto(){
+  if(!confirm('Delete profile photo?')) return;
+  const { error } = await db.from('profiles').update({ photo_data: null }).eq('id', USER.id);
+  if(error){ showToast('Delete failed: '+error.message,'error'); return; }
+  PROFILE.photo_data = null;
+  document.getElementById('pAvatarImg').src = '';
+  applyDisplayMode(PROFILE.display_mode || 'photo');
+  showToast('Photo deleted','success');
 }
 function updatePreview(){
   const fn=document.getElementById('pFirstName').value.trim();
@@ -1845,6 +1945,11 @@ function updatePreview(){
   document.getElementById('pAvatarInitials').textContent=init;
   document.getElementById('pHeroName').textContent=full;
   document.getElementById('pHeroTitle').textContent=(brok||'Brokerage')+(lic?' · License #'+lic:'');
+  // If broker-name mode is active, refresh that text live too
+  const brokerEl = document.getElementById('pAvatarBrokerName');
+  if(brokerEl && (PROFILE.display_mode||'photo') === 'brokerage'){
+    brokerEl.textContent = brok || 'Your Brokerage';
+  }
 }
 function handleProfilePhoto(e){
   const file=e.target.files[0];if(!file)return;
@@ -1852,11 +1957,11 @@ function handleProfilePhoto(e){
   const reader=new FileReader();
   reader.onload=async ev=>{
     document.getElementById('pAvatarImg').src=ev.target.result;
-    document.getElementById('pAvatarImg').style.display='block';
-    document.getElementById('pAvatarInitials').style.display='none';
-    const { error } = await db.from('profiles').update({ photo_data: ev.target.result }).eq('id', USER.id);
+    const { error } = await db.from('profiles').update({ photo_data: ev.target.result, display_mode: 'photo' }).eq('id', USER.id);
     if(error){showToast('Photo save failed: '+error.message,'error');return;}
     PROFILE.photo_data = ev.target.result;
+    PROFILE.display_mode = 'photo';
+    applyDisplayMode('photo');
     showToast('Photo saved','success');
   };
   reader.readAsDataURL(file);
@@ -2226,7 +2331,7 @@ async function loadTapPageFromQuery(){
 
   const [lRes, pRes] = await Promise.all([
     db.from('listings').select('*').eq('id', card.listing_id).maybeSingle(),
-    db.from('profiles').select('first_name,last_name,phone,brokerage,license_number,headline,photo_data,email').eq('id', card.agent_id).maybeSingle()
+    db.from('profiles').select('first_name,last_name,phone,brokerage,license_number,headline,photo_data,email,display_mode').eq('id', card.agent_id).maybeSingle()
   ]);
   const listing = lRes.data;
   const profile = pRes.data || {};
@@ -2373,7 +2478,17 @@ function renderTapPage(listing, profile, cardCode){
   const agentName = ((profile.first_name||'')+' '+(profile.last_name||'')).trim() || 'Your Agent';
   const agentTitle = [profile.brokerage||'Brokerage', profile.license_number?'License #'+profile.license_number:''].filter(Boolean).join(' · ');
   const rawPhone = (profile.phone||'').replace(/\D/g,'');
-  const photoHtml = profile.photo_data ? `<img src="${esc(profile.photo_data)}" alt="">` : '👤';
+  // Display mode: 'photo' (headshot), 'brokerage' (brokerage name in circle), or 'default' (placeholder).
+  // Backward-compat: if no mode set, infer from data — has photo → photo; else default.
+  const mode = profile.display_mode || (profile.photo_data ? 'photo' : 'default');
+  let photoHtml;
+  if(mode === 'photo' && profile.photo_data){
+    photoHtml = `<img src="${esc(profile.photo_data)}" alt="">`;
+  } else if(mode === 'brokerage'){
+    photoHtml = `<div class="tap-photo-broker">${esc(profile.brokerage || agentName)}</div>`;
+  } else {
+    photoHtml = '👤'; // default placeholder
+  }
   const headline = profile.headline || 'Tap to View This Property';
 
   const rawProps = Array.isArray(listing.properties_json) ? listing.properties_json : [];
