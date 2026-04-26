@@ -2241,8 +2241,17 @@ async function loadTapPageFromQuery(){
 function buildPropLink(p, heroClass, index, total){
   const href = p.listing_url ? normalizeUrl(p.listing_url) : '';
   const hasImg = !!p.image_url;
-  const linkAttrs = href ? `href="${esc(href)}" target="_blank" rel="noopener noreferrer"` : '';
-  // Clean label — never expose the raw URL to the buyer
+  // We attach an onclick that pushes a history state THEN opens the listing.
+  // Behavior:
+  //  - Push history state ensures the browser's "back" button always returns to this page
+  //    even if Realtor/Zillow do internal redirects.
+  //  - We try window.open with _blank first (most reliable on iOS/Android Chrome)
+  //  - If the browser refuses (popup blocked or returns null), we navigate same-tab.
+  //    Since we pushed state, back still returns here.
+  const safeHref = esc(href);
+  const linkAttrs = href
+    ? `href="${safeHref}" onclick="return openListing(event,'${safeHref}')"`
+    : '';
   const label = total > 1
     ? (index === 0 ? 'View Property 1 →' : `View Property ${index + 1} →`)
     : 'View Full Listing →';
@@ -2256,6 +2265,26 @@ function buildPropLink(p, heroClass, index, total){
       <div class="prop-cta">${esc(label)}</div>
     </a>`;
   }
+}
+
+// Click handler for property links on the buyer-tap page.
+// Returns false to prevent the browser's default link navigation —
+// we handle it ourselves so the back button reliably returns to the agent's page.
+function openListing(event, url){
+  try { event.preventDefault(); } catch {}
+  if(!url) return false;
+  // Push a sentinel history state so back-button returns here even if
+  // Realtor or Zillow do internal redirects.
+  try { history.pushState({ buyerTap: true }, '', window.location.href); } catch {}
+  // Try true new tab first (most mobile browsers honor this when called from a tap)
+  let opened = null;
+  try { opened = window.open(url, '_blank', 'noopener,noreferrer'); } catch {}
+  if(!opened){
+    // Browser blocked or refused — same-tab nav. Back button still returns
+    // to this page because of the pushState above.
+    window.location.href = url;
+  }
+  return false;
 }
 
 function renderTapPage(listing, profile, cardCode){
