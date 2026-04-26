@@ -209,9 +209,9 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .prop-cta{flex:1;min-width:0;padding:14px 16px;font-size:14px;font-weight:700;color:var(--white);background:var(--orange);text-align:center;letter-spacing:.5px;border:0;cursor:pointer;font-family:inherit}
 .sub-prop .prop-cta{padding:12px 14px;font-size:13px}
 .hero-prop.no-image .prop-cta,.sub-prop.no-image .prop-cta{padding:18px}
-.prop-ask{flex:0 0 auto;width:48px;display:flex;align-items:center;justify-content:center;background:var(--surface);border-left:1px solid var(--border);color:var(--orange);font-size:20px;font-weight:700;text-decoration:none;cursor:pointer;transition:background .12s, color .12s;font-family:inherit;line-height:1}
-.prop-ask:hover,.prop-ask:active{background:var(--orange);color:var(--white)}
-.sub-prop .prop-ask{width:42px;font-size:18px}
+.prop-ask{flex:0 0 auto;width:48px;display:flex;align-items:center;justify-content:center;background:var(--surface);border-left:1px solid var(--border);color:var(--orange);font-size:18px;font-weight:700;text-decoration:none;cursor:pointer;transition:background .12s;font-family:inherit;line-height:1}
+.prop-ask:hover,.prop-ask:active{background:var(--orange)}
+.sub-prop .prop-ask{width:42px;font-size:16px}
 
 .interest-section{margin:12px 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px}
 .is-title{font-size:14px;font-weight:600;color:var(--white);margin-bottom:4px}
@@ -2330,7 +2330,7 @@ function buildPropLink(p, heroClass, index, total, agentPhone){
   // tapping ❓ doesn't also trigger the View Property click.
   const ctaRow = `<div class="prop-cta-row">
     <button type="button" class="prop-cta" onclick="openListing('${safeHref}')">${esc(label)}</button>
-    <a class="prop-ask" href="${esc(askHref)}" onclick="event.stopPropagation();" aria-label="Ask a question about this property">?</a>
+    <a class="prop-ask" href="${esc(askHref)}" onclick="event.stopPropagation();" aria-label="Ask a question about this property">💬</a>
   </div>`;
   if(hasImg){
     return `<div class="${heroClass}">
