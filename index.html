@@ -199,7 +199,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .tl-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--orange);text-transform:uppercase;margin-bottom:12px}
 
 /* Image-first property cards */
-.hero-prop,.sub-prop{display:block;margin-bottom:14px;border-radius:10px;overflow:hidden;background:var(--surface);border:1px solid var(--border);text-decoration:none;color:inherit;cursor:pointer;transition:all .15s}
+.hero-prop,.sub-prop{display:block;width:100%;margin-bottom:14px;border-radius:10px;overflow:hidden;background:var(--surface);border:1px solid var(--border);text-decoration:none;color:inherit;cursor:pointer;transition:all .15s;padding:0;font-family:inherit;text-align:left}
 .hero-prop:hover,.sub-prop:hover{border-color:var(--orange);transform:translateY(-1px)}
 .hero-prop img{width:100%;display:block;aspect-ratio:16/10;object-fit:cover;background:var(--bg)}
 .sub-prop{margin-bottom:12px;border-radius:8px}
@@ -215,6 +215,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(12,15,26,0.96);backdrop-fi
 .if-group input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:4px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 12px;outline:none}
 .if-success{background:rgba(46,204,138,.1);border:1px solid var(--green);color:var(--green);padding:12px;border-radius:4px;font-size:13px;text-align:center;display:none;margin-top:10px}
 .powered-by{text-align:center;padding:24px 16px;font-size:11px;color:var(--muted)}
+.retap-hint{margin:18px 16px 0;padding:12px 14px;background:rgba(0,196,167,.08);border:1px solid rgba(0,196,167,.25);border-radius:8px;font-size:12px;color:var(--teal);text-align:center;line-height:1.5}
 .powered-by a{color:var(--orange);text-decoration:none;cursor:pointer}
 .card-not-found{max-width:480px;margin:60px auto;padding:40px 24px;text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:8px}
 .card-not-found h2{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--white);margin-bottom:8px}
@@ -2241,50 +2242,43 @@ async function loadTapPageFromQuery(){
 function buildPropLink(p, heroClass, index, total){
   const href = p.listing_url ? normalizeUrl(p.listing_url) : '';
   const hasImg = !!p.image_url;
-  // We attach an onclick that pushes a history state THEN opens the listing.
-  // Behavior:
-  //  - Push history state ensures the browser's "back" button always returns to this page
-  //    even if Realtor/Zillow do internal redirects.
-  //  - We try window.open with _blank first (most reliable on iOS/Android Chrome)
-  //  - If the browser refuses (popup blocked or returns null), we navigate same-tab.
-  //    Since we pushed state, back still returns here.
   const safeHref = esc(href);
-  const linkAttrs = href
-    ? `href="${safeHref}" onclick="return openListing(event,'${safeHref}')"`
-    : '';
   const label = total > 1
     ? (index === 0 ? 'View Property 1 →' : `View Property ${index + 1} →`)
     : 'View Full Listing →';
+  // Use a <button> not an <a> — mobile browsers more reliably honor window.open()
+  // when triggered from a button click that's clearly a user gesture.
   if(hasImg){
-    return `<a class="${heroClass}" ${linkAttrs}>
+    return `<button class="${heroClass}" type="button" onclick="openListing('${safeHref}')">
       <img src="${esc(p.image_url)}" alt="" onerror="this.style.display='none'">
       <div class="prop-cta">${esc(label)}</div>
-    </a>`;
+    </button>`;
   } else {
-    return `<a class="${heroClass} no-image" ${linkAttrs}>
+    return `<button class="${heroClass} no-image" type="button" onclick="openListing('${safeHref}')">
       <div class="prop-cta">${esc(label)}</div>
-    </a>`;
+    </button>`;
   }
 }
 
-// Click handler for property links on the buyer-tap page.
-// Returns false to prevent the browser's default link navigation —
-// we handle it ourselves so the back button reliably returns to the agent's page.
-function openListing(event, url){
-  try { event.preventDefault(); } catch {}
-  if(!url) return false;
-  // Push a sentinel history state so back-button returns here even if
-  // Realtor or Zillow do internal redirects.
-  try { history.pushState({ buyerTap: true }, '', window.location.href); } catch {}
-  // Try true new tab first (most mobile browsers honor this when called from a tap)
-  let opened = null;
-  try { opened = window.open(url, '_blank', 'noopener,noreferrer'); } catch {}
-  if(!opened){
-    // Browser blocked or refused — same-tab nav. Back button still returns
-    // to this page because of the pushState above.
-    window.location.href = url;
+// Open a property listing in a separate browser tab/window so the agent's
+// branded page stays open behind it. Mobile browsers honor window.open()
+// from a tap-triggered button much more reliably than <a target="_blank">.
+function openListing(url){
+  if(!url) return;
+  // Push a sentinel onto history so even in same-tab fallback, the phone's
+  // back button returns to the agent page (not Realtor's redirect chain).
+  try { history.pushState({ buyerTap: true, ts: Date.now() }, '', window.location.href); } catch {}
+  // Try a real new tab first.
+  let win = null;
+  try { win = window.open(url, '_blank'); } catch {}
+  if(win && !win.closed){
+    // New tab opened — try to harden the relationship for security
+    try { win.opener = null; } catch {}
+    return;
   }
-  return false;
+  // Browser refused new tab — same-tab nav. The pushState above ensures
+  // back returns here.
+  window.location.href = url;
 }
 
 function renderTapPage(listing, profile, cardCode){
@@ -2343,6 +2337,7 @@ function renderTapPage(listing, profile, cardCode){
       <button class="btn full" id="btnInterest" onclick="submitInterest('${esc(listing.id)}',${listing.leads||0})">Send to Agent</button>
       <div class="if-success" id="ifSuccess">✓ Agent has been notified.</div>
     </div>
+    <div class="retap-hint">💡 Lost your way? Just tap the card again to return here.</div>
     <div class="powered-by">Powered by <a onclick="window.location.href='/'">ForSaleNFC</a></div>
   </div>`;
   window.__tapProfile = profile;
